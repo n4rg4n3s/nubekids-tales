@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* ============================================
+   CUSTOM THEME - NubeKids
+   ============================================ */
+@theme {
+    /* Fuentes */
+    --font-display: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+
+    /* Colores de marca */
+    --color-cream: #FDFBF7;
+    --color-magic-purple: #8B5CF6;
+    --color-sneaker-yellow: #FBBF24;
+    --color-sky-blue: #38BDF8;
+    --color-mint-green: #34D399;
+    --color-ink-black: #1E293B;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-cream);
+    color: var(--color-ink-black);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos con Fredoka */
+h1,
+h2,
+h3,
+.font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+
+/* ============================================
+   TACTILE BUTTON STYLES (Design Document)
+   ============================================ */
+.btn-tactile {
+    border: 3px solid var(--color-ink-black);
+    box-shadow: 4px 4px 0px var(--color-ink-black);
+    transition: all 0.1s ease;
+}
+
+.btn-tactile:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--color-ink-black);
+}
+
+.btn-tactile:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px var(--color-ink-black);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-magic-purple);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7C3AED;
+}

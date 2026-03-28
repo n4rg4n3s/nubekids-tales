@@ -1,0 +1,247 @@
+// src/components/wizard/StepStory.tsx
+// Paso 4: La Historia - Género visual e idioma
+// La edad del lector se infiere del Step 1 (edad del protagonista)
+
+import { motion } from 'framer-motion';
+import type { Genre, Language, TenantConfig, AgeGroup } from '../../types';
+import { GENRES, LANGUAGES, AGE_GROUP_CONFIGS } from '../../types';
+
+// Importar imágenes de estilos por tenant
+// shoe-store
+import shoeStore3D from '../../assets/styles/shoe-store/3d-animation-magic.webp';
+import shoeStoreFairytale from '../../assets/styles/shoe-store/classic-fairytale.webp';
+import shoeStoreAnime from '../../assets/styles/shoe-store/anime-adventure.webp';
+import shoeStoreClaymation from '../../assets/styles/shoe-store/whimsical-claymation.webp';
+import shoeStoreCustom from '../../assets/styles/shoe-store/custom.webp';
+
+// fashion-store
+import fashionStore3D from '../../assets/styles/fashion-store/3d-animation-magic.webp';
+import fashionStoreFairytale from '../../assets/styles/fashion-store/classic-fairytale.webp';
+import fashionStoreAnime from '../../assets/styles/fashion-store/anime-adventure.webp';
+import fashionStoreClaymation from '../../assets/styles/fashion-store/whimsical-claymation.webp';
+import fashionStoreCustom from '../../assets/styles/fashion-store/custom.webp';
+
+// direct-b2c
+import directB2C3D from '../../assets/styles/direct-b2c/3d-animation-magic.webp';
+import directB2CFairytale from '../../assets/styles/direct-b2c/classic-fairytale.webp';
+import directB2CAnime from '../../assets/styles/direct-b2c/anime-adventure.webp';
+import directB2CClaymation from '../../assets/styles/direct-b2c/whimsical-claymation.webp';
+import directB2CCustom from '../../assets/styles/direct-b2c/custom.webp';
+
+export interface StoryData {
+  ageGroup: AgeGroup;
+  genre: Genre;
+  language: Language;
+}
+
+interface StepStoryProps {
+  data: StoryData;
+  onChange: (data: StoryData) => void;
+  tenantConfig: TenantConfig;
+  inferredAgeGroup: AgeGroup;
+}
+
+// Mapeo de imágenes por tenant y género
+const STYLE_IMAGES: Record<string, Record<Genre, string>> = {
+  'shoe-store': {
+    '3D Animation Magic': shoeStore3D,
+    'Classic Fairytale': shoeStoreFairytale,
+    'Anime Adventure': shoeStoreAnime,
+    'Whimsical Claymation': shoeStoreClaymation,
+    'Custom': shoeStoreCustom,
+  },
+  'fashion-store': {
+    '3D Animation Magic': fashionStore3D,
+    'Classic Fairytale': fashionStoreFairytale,
+    'Anime Adventure': fashionStoreAnime,
+    'Whimsical Claymation': fashionStoreClaymation,
+    'Custom': fashionStoreCustom,
+  },
+  'direct-b2c': {
+    '3D Animation Magic': directB2C3D,
+    'Classic Fairytale': directB2CFairytale,
+    'Anime Adventure': directB2CAnime,
+    'Whimsical Claymation': directB2CClaymation,
+    'Custom': directB2CCustom,
+  },
+};
+
+// Descripciones por género (sin emojis)
+const GENRE_DESCRIPTIONS: Record<Genre, string> = {
+  '3D Animation Magic': 'Estilo Pixar/Disney moderno',
+  'Classic Fairytale': 'Ilustración de cuento clásico',
+  'Anime Adventure': 'Estilo manga japonés',
+  'Whimsical Claymation': 'Estilo plastilina/stop-motion',
+  'Custom': 'Estilo personalizado',
+};
+
+// Banderas por idioma
+const LANGUAGE_FLAGS: Record<Language, string> = {
+  'Español': 'ES',
+  'English': 'GB',
+  'Français': 'FR',
+  'Português': 'PT',
+  'Italiano': 'IT',
+};
+
+export default function StepStory({
+  data,
+  onChange,
+  tenantConfig,
+  inferredAgeGroup
+}: StepStoryProps) {
+
+  // Actualizar ageGroup si es diferente al inferido
+  if (data.ageGroup !== inferredAgeGroup) {
+    onChange({ ...data, ageGroup: inferredAgeGroup });
+  }
+
+  const ageGroupConfig = AGE_GROUP_CONFIGS[inferredAgeGroup];
+
+  // Obtener imágenes del tenant actual (fallback a direct-b2c)
+  const tenantImages = STYLE_IMAGES[tenantConfig.verticalId] || STYLE_IMAGES['direct-b2c'];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      {/* Info de edad detectada */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 bg-gradient-to-r from-[#8B5CF6]/10 to-[#38BDF8]/10 rounded-xl border-2 border-[#8B5CF6]/30"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">
+            {inferredAgeGroup === 'tiny' ? '🧒' : inferredAgeGroup === 'little' ? '👦' : '🧑'}
+          </span>
+          <div>
+            <p className="font-bold text-[#1E293B]">
+              Cuento para {ageGroupConfig.label}
+            </p>
+            <p className="text-sm text-[#1E293B]/60">
+              {inferredAgeGroup === 'tiny' && 'Frases cortas, mucha repetición y onomatopeyas'}
+              {inferredAgeGroup === 'little' && 'Vocabulario simple, emociones claras'}
+              {inferredAgeGroup === 'reader' && 'Vocabulario rico, arco narrativo completo'}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Selector de género visual */}
+      <div>
+        <label className="block text-sm font-bold text-[#1E293B] mb-3">
+          Estilo visual del cuento
+        </label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {GENRES.filter(g => tenantConfig.activeGenres.includes(g)).map((genre) => {
+            const isSelected = data.genre === genre;
+            const imageUrl = tenantImages[genre];
+
+            return (
+              <motion.button
+                key={genre}
+                type="button"
+                onClick={() => onChange({ ...data, genre })}
+                className={`
+                  relative overflow-hidden rounded-xl border-3 text-left transition-all
+                  ${isSelected
+                    ? 'border-[#8B5CF6] shadow-[4px_4px_0px_#1E293B]'
+                    : 'border-[#1E293B]/20 hover:border-[#8B5CF6]/50'
+                  }
+                `}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {/* Imagen de fondo */}
+                <div
+                  className="aspect-[4/3] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${imageUrl})` }}
+                >
+                  {/* Overlay gradient para legibilidad */}
+                  <div className={`
+                    absolute inset-0 
+                    ${isSelected
+                      ? 'bg-gradient-to-t from-[#8B5CF6]/90 via-[#8B5CF6]/40 to-transparent'
+                      : 'bg-gradient-to-t from-black/70 via-black/30 to-transparent'
+                    }
+                  `} />
+                </div>
+
+                {/* Texto sobre la imagen */}
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className={`font-bold text-sm ${isSelected ? 'text-white' : 'text-white'}`}>
+                    {genre}
+                  </p>
+                  <p className="text-xs text-white/80 mt-0.5">
+                    {GENRE_DESCRIPTIONS[genre]}
+                  </p>
+                </div>
+
+                {/* Checkmark si está seleccionado */}
+                {isSelected && (
+                  <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                    <span className="text-[#8B5CF6] text-sm">✓</span>
+                  </div>
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Selector de idioma */}
+      <div>
+        <label className="block text-sm font-bold text-[#1E293B] mb-3">
+          Idioma del cuento
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {LANGUAGES.filter(l => tenantConfig.activeLanguages.includes(l)).map((language) => {
+            const isSelected = data.language === language;
+            const flagCode = LANGUAGE_FLAGS[language];
+
+            return (
+              <motion.button
+                key={language}
+                type="button"
+                onClick={() => onChange({ ...data, language })}
+                className={`
+                  px-4 py-2.5 rounded-xl border-3 font-bold text-sm flex items-center gap-2 transition-all
+                  ${isSelected
+                    ? 'border-[#8B5CF6] bg-[#8B5CF6] text-white shadow-[3px_3px_0px_#1E293B]'
+                    : 'border-[#1E293B]/20 bg-white text-[#1E293B] hover:border-[#8B5CF6]/50'
+                  }
+                `}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-xs font-mono bg-white/20 px-1.5 py-0.5 rounded">
+                  {flagCode}
+                </span>
+                <span>{language}</span>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Resumen final */}
+      {data.genre && data.language && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-gradient-to-r from-[#34D399]/10 to-[#FBBF24]/10 rounded-xl border-2 border-[#34D399]/30"
+        >
+          <p className="text-sm text-[#1E293B]">
+            <span className="font-bold text-[#34D399]">✓ Todo listo:</span>{' '}
+            Cuento en <strong>{data.language}</strong> con estilo <strong>{data.genre}</strong>
+            {' '}para niños de <strong>{ageGroupConfig.label}</strong>
+          </p>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
