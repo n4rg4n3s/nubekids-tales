@@ -1,12 +1,13 @@
 ﻿// src/App.tsx
-// NubeKids - App principal con validación de token y flujo Setup → Orchestrator → Book
+// NubeKids - App principal con sistema de mock para desarrollo rápido
 
 import { useEffect, useState, useCallback } from 'react';
 import { validateToken, getTokenFromUrl } from './services/tokenService';
 import type { TenantData, TokenData } from './services/tokenService';
-import type { TenantConfig, AgentBrief } from './types';
+import type { TenantConfig, AgentBrief, ComicFace } from './types';
 import Setup from './components/Setup';
 import type { SetupData } from './components/Setup';
+import Book from './components/Book';
 import { loadTenantConfig, getTenantIdFromUrl } from './config/tenantLoader';
 
 // Sistema multiagente
@@ -14,6 +15,12 @@ import { agentDeps } from './services/dependencies';
 import type { SessionContext } from './services/dependencies';
 import { orchestrate } from './services/agents';
 import type { OrchestratorResult } from './services/agents';
+
+// Generación de imágenes
+import { generateAllImages } from './services/imageGenerationService';
+
+// Sistema de desarrollo/mock
+import { DEV_CONFIG, isDevMockMode, getMockBrief, getMockImages } from './dev';
 
 // Estados de la aplicación
 type AppState = 'loading' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error';
@@ -37,38 +44,49 @@ function App() {
   const [appState, setAppState] = useState<AppState>('loading');
   const [error, setError] = useState<string | null>(null);
 
-  // Datos del tenant (desde Supabase si hay token)
+  // Datos del tenant
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
-
-  // Config completa del tenant (desde tenantLoader)
   const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(null);
 
-  // Datos del setup completado
+  // Datos del setup
   const [setupData, setSetupData] = useState<SetupData | null>(null);
 
   // Resultado del orchestrator
   const [agentBrief, setAgentBrief] = useState<AgentBrief | null>(null);
   const [orchestratorTiming, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
 
-  // API Key de Gemini (necesaria para los agentes)
+  // Páginas del libro
+  const [pages, setPages] = useState<ComicFace[]>([]);
+  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0 });
+
+  // API Key
   const [apiKey, setApiKey] = useState<string>('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
+  // ============================================
+  // LOG DEV MODE
+  // ============================================
+  useEffect(() => {
+    if (isDevMockMode()) {
+      console.log('🧪 [DEV] Modo MOCK activado - No se llamará a Gemini');
+      console.log('🧪 [DEV] Para usar el flujo real, cambia USE_MOCK_DATA a false en src/dev/mockConfig.ts');
+    }
+  }, []);
+
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
   useEffect(() => {
     async function initialize() {
       try {
         const tokenCode = getTokenFromUrl();
 
         if (tokenCode) {
-          // MODO B2B CON TOKEN: validar token desde Supabase
           const result = await validateToken(tokenCode);
-
           if (result.valid && result.tenant && result.token) {
             setTenantData(result.tenant);
             setTokenData(result.token);
-
-            // Cargar config completa del tenant desde archivos locales
             const config = loadTenantConfig(result.tenant.tenantId);
             setTenantConfig(config);
           } else {
@@ -77,19 +95,20 @@ function App() {
             return;
           }
         } else {
-          // MODO SIN TOKEN: usar ?tenant= param o default B2C
           const tenantId = getTenantIdFromUrl();
           const config = loadTenantConfig(tenantId);
           setTenantConfig(config);
         }
 
-        // Verificar si hay API key guardada
-        const savedApiKey = localStorage.getItem('gemini_api_key');
-        if (savedApiKey) {
-          setApiKey(savedApiKey);
-          agentDeps.initialize(savedApiKey);
-        } else {
-          setShowApiKeyInput(true);
+        // Solo verificar API key si NO estamos en modo mock
+        if (!isDevMockMode()) {
+          const savedApiKey = localStorage.getItem('gemini_api_key');
+          if (savedApiKey) {
+            setApiKey(savedApiKey);
+            agentDeps.initialize(savedApiKey);
+          } else {
+            setShowApiKeyInput(true);
+          }
         }
 
         setAppState('setup');
@@ -103,7 +122,10 @@ function App() {
     initialize();
   }, []);
 
-  // Handler para guardar API Key
+  // ============================================
+  // HANDLERS
+  // ============================================
+
   const handleApiKeySubmit = useCallback((key: string) => {
     if (key.trim()) {
       localStorage.setItem('gemini_api_key', key.trim());
@@ -113,7 +135,6 @@ function App() {
     }
   }, []);
 
-  // Construir SessionContext desde SetupData
   const buildSessionContext = useCallback((data: SetupData, config: TenantConfig): SessionContext => {
     return {
       tenantConfig: config,
@@ -129,7 +150,130 @@ function App() {
     };
   }, []);
 
-  // Handler cuando el usuario completa el Setup
+  // ============================================
+  // FLUJO MOCK (Desarrollo rápido)
+  // ============================================
+  const runMockFlow = useCallback(async (data: SetupData) => {
+    console.log('🧪 [DEV] Ejecutando flujo MOCK...');
+
+    setAppState('orchestrating');
+
+    // Simular delay del orchestrator
+    await new Promise(resolve => setTimeout(resolve, DEV_CONFIG.MOCK_ORCHESTRATOR_DELAY_MS));
+
+    // Obtener brief mock
+    const mockBrief = getMockBrief(10);
+    setAgentBrief(mockBrief);
+    setOrchestratorTiming({
+      ragMs: 50,
+      narrativeMs: 500,
+      storytellingMs: 500,
+      visualBriefMs: 400,
+      totalMs: DEV_CONFIG.MOCK_ORCHESTRATOR_DELAY_MS,
+    });
+
+    console.log('🧪 [DEV] AgentBrief mock cargado');
+
+    // Generar imágenes mock
+    setAppState('generating');
+    setGenerationProgress({ current: 0, total: mockBrief.storyBeats.length });
+
+    const mockImageUrls = await getMockImages(
+      mockBrief.storyBeats.length,
+      DEV_CONFIG.MOCK_IMAGE_DELAY_MS,
+      (current, total) => setGenerationProgress({ current, total })
+    );
+
+    // Construir páginas
+    const bookPages: ComicFace[] = mockBrief.storyBeats.map((beat, idx) => ({
+      id: `page-${idx}`,
+      type: idx === 0 ? 'cover' : idx === mockBrief.storyBeats.length - 1 ? 'back_cover' : 'story',
+      imageUrl: mockImageUrls[idx],
+      narrative: beat,
+      choices: beat.choices || [],
+      isLoading: false,
+      pageIndex: idx,
+      isDecisionPage: (beat.choices?.length ?? 0) > 0,
+    }));
+
+    setPages(bookPages);
+    setAppState('reading');
+
+    console.log('🧪 [DEV] Flujo mock completado - Libro listo');
+  }, []);
+
+  // ============================================
+  // FLUJO REAL (Producción)
+  // ============================================
+  const runRealFlow = useCallback(async (data: SetupData, config: TenantConfig) => {
+    console.log('🚀 Ejecutando flujo REAL...');
+
+    if (!agentDeps.isInitialized) {
+      setShowApiKeyInput(true);
+      return;
+    }
+
+    setAppState('orchestrating');
+
+    try {
+      // FASE 1: Orchestrator
+      const sessionContext = buildSessionContext(data, config);
+      agentDeps.setSession(sessionContext);
+
+      const result = await orchestrate(sessionContext, agentDeps);
+
+      if (!result.success || !result.agentBrief) {
+        throw new Error(result.error || 'Error desconocido en el orchestrator');
+      }
+
+      setAgentBrief(result.agentBrief);
+      setOrchestratorTiming(result.timing);
+      console.log('✅ AgentBrief generado:', result.agentBrief);
+
+      // FASE 2: Generar imágenes
+      setAppState('generating');
+      setGenerationProgress({ current: 0, total: result.agentBrief.visualDirections.length });
+
+      const imageResults = await generateAllImages(
+        result.agentBrief.visualDirections,
+        data.heroPhoto,
+        data.itemImage,
+        data.heroDescription || undefined,
+        agentDeps,
+        (current, total) => setGenerationProgress({ current: current + 1, total })
+      );
+
+      // FASE 3: Construir páginas
+      const bookPages: ComicFace[] = result.agentBrief.storyBeats.map((beat, idx) => {
+        const imageResult = imageResults[idx];
+        return {
+          id: `page-${idx}`,
+          type: idx === 0 ? 'cover' : idx === result.agentBrief!.storyBeats.length - 1 ? 'back_cover' : 'story',
+          imageUrl: imageResult?.success && imageResult.imageBase64
+            ? `data:image/png;base64,${imageResult.imageBase64}`
+            : undefined,
+          narrative: beat,
+          choices: beat.choices || [],
+          isLoading: false,
+          pageIndex: idx,
+          isDecisionPage: (beat.choices?.length ?? 0) > 0,
+        };
+      });
+
+      setPages(bookPages);
+      setAppState('reading');
+      console.log('📖 Libro generado con', bookPages.length, 'páginas');
+
+    } catch (err) {
+      console.error('❌ Error:', err);
+      setError(err instanceof Error ? err.message : 'Error generando el cuento');
+      setAppState('error');
+    }
+  }, [buildSessionContext]);
+
+  // ============================================
+  // HANDLER PRINCIPAL
+  // ============================================
   const handleStartAdventure = useCallback(async (data: SetupData) => {
     if (!tenantConfig) {
       setError('Configuración del tenant no disponible');
@@ -137,52 +281,29 @@ function App() {
       return;
     }
 
-    if (!agentDeps.isInitialized) {
-      setShowApiKeyInput(true);
-      return;
-    }
-
-    console.log('🚀 Starting adventure with:', data);
+    console.log('🎬 Iniciando aventura:', data.heroName);
     setSetupData(data);
-    setAppState('orchestrating');
 
-    try {
-      // Construir contexto de sesión
-      const sessionContext = buildSessionContext(data, tenantConfig);
-      agentDeps.setSession(sessionContext);
-
-      // Ejecutar el pipeline multiagente
-      const result = await orchestrate(sessionContext, agentDeps);
-
-      if (result.success && result.agentBrief) {
-        setAgentBrief(result.agentBrief);
-        setOrchestratorTiming(result.timing);
-        setAppState('generating');
-
-        console.log('✅ AgentBrief generado:', result.agentBrief);
-        console.log('⏱️ Timing:', result.timing);
-      } else {
-        throw new Error(result.error || 'Error desconocido en el orchestrator');
-      }
-    } catch (err) {
-      console.error('❌ Error en orchestrator:', err);
-      setError(err instanceof Error ? err.message : 'Error generando el cuento');
-      setAppState('error');
+    if (isDevMockMode()) {
+      await runMockFlow(data);
+    } else {
+      await runRealFlow(data, tenantConfig);
     }
-  }, [tenantConfig, buildSessionContext]);
+  }, [tenantConfig, runMockFlow, runRealFlow]);
 
-  // Handler para reiniciar
   const handleReset = useCallback(() => {
     setSetupData(null);
     setAgentBrief(null);
     setOrchestratorTiming(null);
+    setPages([]);
+    setGenerationProgress({ current: 0, total: 0 });
     setError(null);
     agentDeps.cleanup();
     setAppState('setup');
   }, []);
 
   // ============================================
-  // RENDER: Modal de API Key
+  // RENDER: Modal API Key
   // ============================================
   const renderApiKeyModal = () => {
     if (!showApiKeyInput) return null;
@@ -220,17 +341,26 @@ function App() {
               Guardar y continuar
             </button>
           </form>
-
-          <p className="text-xs text-[#1E293B]/40 mt-4 text-center">
-            Tu API Key se guarda localmente en tu navegador
-          </p>
         </div>
       </div>
     );
   };
 
   // ============================================
-  // RENDER por estado
+  // RENDER: Dev Mode Banner
+  // ============================================
+  const renderDevBanner = () => {
+    if (!isDevMockMode()) return null;
+
+    return (
+      <div className="fixed top-0 left-0 right-0 bg-yellow-400 text-yellow-900 text-center py-1 text-sm font-medium z-50">
+        🧪 MODO DESARROLLO — Datos mock activos — Sin llamadas a Gemini
+      </div>
+    );
+  };
+
+  // ============================================
+  // RENDER POR ESTADO
   // ============================================
 
   if (appState === 'loading') {
@@ -252,7 +382,7 @@ function App() {
           <p className="text-red-500 text-xl mb-4 font-medium">{error}</p>
           <button
             onClick={handleReset}
-            className="inline-block px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B] hover:shadow-[1px_1px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+            className="inline-block px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B]"
           >
             Volver al inicio
           </button>
@@ -264,128 +394,102 @@ function App() {
   if (appState === 'setup' && tenantConfig) {
     return (
       <>
+        {renderDevBanner()}
         {renderApiKeyModal()}
-        <Setup
-          tenantConfig={tenantConfig}
-          initialItemModel={tokenData?.itemName || ''}
-          onComplete={handleStartAdventure}
-        />
+        <div className={isDevMockMode() ? 'pt-8' : ''}>
+          <Setup
+            tenantConfig={tenantConfig}
+            initialItemModel={tokenData?.itemName || ''}
+            onComplete={handleStartAdventure}
+          />
+        </div>
       </>
     );
   }
 
-  if (appState === 'orchestrating' && setupData && tenantConfig) {
+  if (appState === 'orchestrating' && tenantConfig) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: tenantConfig.brandColors.background }}
-      >
-        <div className="text-center p-8">
-          <div className="text-6xl mb-4 animate-spin">🎭</div>
-          <p
-            className="text-2xl font-bold mb-2"
-            style={{ color: tenantConfig.brandColors.primary }}
-          >
-            Los expertos están trabajando...
-          </p>
-          <div className="text-[#1E293B]/60 space-y-1">
-            <p>📚 Consultando biblioteca pedagógica...</p>
-            <p>🧠 Diseñando el arco narrativo...</p>
-            <p>✍️ Escribiendo la historia...</p>
-            <p>🎨 Preparando las ilustraciones...</p>
+      <>
+        {renderDevBanner()}
+        <div
+          className={`min-h-screen flex items-center justify-center ${isDevMockMode() ? 'pt-8' : ''}`}
+          style={{ backgroundColor: tenantConfig.brandColors.background }}
+        >
+          <div className="text-center p-8">
+            <div className="text-6xl mb-4 animate-spin">🎭</div>
+            <p
+              className="text-2xl font-bold mb-2"
+              style={{ color: tenantConfig.brandColors.primary }}
+            >
+              {isDevMockMode() ? 'Cargando datos mock...' : 'Los expertos están trabajando...'}
+            </p>
+            {!isDevMockMode() && (
+              <div className="text-[#1E293B]/60 space-y-1">
+                <p>📚 Consultando biblioteca pedagógica...</p>
+                <p>🧠 Diseñando el arco narrativo...</p>
+                <p>✍️ Escribiendo la historia...</p>
+                <p>🎨 Preparando las ilustraciones...</p>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  if (appState === 'generating' && setupData && tenantConfig && agentBrief) {
+  if (appState === 'generating' && tenantConfig) {
+    const progressPercent = generationProgress.total > 0
+      ? Math.round((generationProgress.current / generationProgress.total) * 100)
+      : 0;
+
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: tenantConfig.brandColors.background }}
-      >
-        <div className="text-center p-8 max-w-2xl">
-          <div className="text-6xl mb-4">✅</div>
-          <p
-            className="text-2xl font-bold mb-4"
-            style={{ color: tenantConfig.brandColors.primary }}
-          >
-            ¡Brief del cuento generado!
-          </p>
-
-          {/* Info del protagonista */}
-          <div className="bg-white/80 rounded-xl p-4 mb-4 text-left">
-            <p className="font-medium text-[#1E293B]">
-              Protagonista: {setupData.heroName} ({setupData.heroAge} años)
+      <>
+        {renderDevBanner()}
+        <div
+          className={`min-h-screen flex items-center justify-center ${isDevMockMode() ? 'pt-8' : ''}`}
+          style={{ backgroundColor: tenantConfig.brandColors.background }}
+        >
+          <div className="text-center p-8 max-w-md">
+            <div className="text-6xl mb-4">🎨</div>
+            <p
+              className="text-2xl font-bold mb-4"
+              style={{ color: tenantConfig.brandColors.primary }}
+            >
+              {isDevMockMode() ? 'Cargando imágenes...' : 'Dibujando las ilustraciones...'}
             </p>
+
+            <div className="w-full bg-white/50 rounded-full h-4 border-2 border-[#1E293B] overflow-hidden mb-4">
+              <div
+                className="h-full transition-all duration-300 rounded-full"
+                style={{
+                  width: `${progressPercent}%`,
+                  backgroundColor: tenantConfig.brandColors.primary,
+                }}
+              />
+            </div>
+
             <p className="text-[#1E293B]/60">
-              Estilo: {setupData.genre} • {setupData.language}
+              Página {generationProgress.current} de {generationProgress.total}
             </p>
           </div>
-
-          {/* Arco narrativo */}
-          <div className="bg-white/80 rounded-xl p-4 mb-4 text-left">
-            <h3 className="font-bold text-[#8B5CF6] mb-2">🎯 Arco Narrativo</h3>
-            <p className="text-[#1E293B] text-sm">{agentBrief.narrativeArc}</p>
-          </div>
-
-          {/* Beats generados */}
-          <div className="bg-white/80 rounded-xl p-4 mb-4 text-left">
-            <h3 className="font-bold text-[#8B5CF6] mb-2">
-              📖 {agentBrief.storyBeats.length} Páginas
-            </h3>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {agentBrief.storyBeats.slice(0, 5).map((beat, idx) => (
-                <div key={idx} className="text-sm border-l-2 border-[#8B5CF6] pl-2">
-                  <span className="font-medium">Pág {idx + 1}:</span>{' '}
-                  <span className="text-[#1E293B]/70">
-                    {beat.caption?.substring(0, 60) || beat.scene.substring(0, 60)}...
-                  </span>
-                </div>
-              ))}
-              {agentBrief.storyBeats.length > 5 && (
-                <p className="text-xs text-[#1E293B]/50">
-                  + {agentBrief.storyBeats.length - 5} páginas más...
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Timing */}
-          {orchestratorTiming && (
-            <div className="bg-green-100 rounded-xl p-3 mb-4 text-left text-sm">
-              <p className="font-medium text-green-800">
-                ⏱️ Tiempo total: {(orchestratorTiming.totalMs / 1000).toFixed(1)}s
-              </p>
-              <p className="text-green-700 text-xs">
-                RAG: {orchestratorTiming.ragMs}ms •
-                Narrativa: {(orchestratorTiming.narrativeMs / 1000).toFixed(1)}s •
-                Historia: {(orchestratorTiming.storytellingMs / 1000).toFixed(1)}s •
-                Visual: {(orchestratorTiming.visualBriefMs / 1000).toFixed(1)}s
-              </p>
-            </div>
-          )}
-
-          {/* TODO Banner */}
-          <div className="bg-yellow-100 rounded-lg border-2 border-yellow-400 p-4 mb-4">
-            <p className="text-yellow-800 font-medium">
-              ✅ Fase 3B completada - Sistema multiagente funcional
-            </p>
-            <p className="text-yellow-700 text-sm mt-1">
-              Siguiente: Conectar AgentBrief → Generación de imágenes → Book.tsx
-            </p>
-          </div>
-
-          {/* Botón reiniciar */}
-          <button
-            onClick={handleReset}
-            className="px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B] hover:shadow-[1px_1px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-          >
-            Crear otro cuento
-          </button>
         </div>
-      </div>
+      </>
+    );
+  }
+
+  if (appState === 'reading' && tenantConfig && pages.length > 0 && setupData) {
+    return (
+      <>
+        {renderDevBanner()}
+        <div className={isDevMockMode() ? 'pt-8' : ''}>
+          <Book
+            pages={pages}
+            tenantConfig={tenantConfig}
+            heroName={setupData.heroName}
+            onReset={handleReset}
+          />
+        </div>
+      </>
     );
   }
 
