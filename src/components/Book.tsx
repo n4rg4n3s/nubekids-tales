@@ -1,8 +1,16 @@
 // src/components/Book.tsx
-// Visor de libro con efecto de libro abierto estilo storybook
+// Visor de libro con efecto page-flip + export PDF
+// Ratio libro abierto: 16:9 | Ratio imagen: 4:5
+// Usa: npm install react-pageflip jspdf
 
-import { useState, useEffect } from 'react';
+import { useRef, useCallback, forwardRef, useState, useEffect } from 'react';
+import HTMLFlipBook from 'react-pageflip';
 import type { ComicFace, TenantConfig } from '../types';
+import { exportToPdf } from '../utils/pdfExport';
+
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 interface BookProps {
     pages: ComicFace[];
@@ -11,63 +19,384 @@ interface BookProps {
     onReset: () => void;
 }
 
+interface PageProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+// ============================================================================
+// CONSTANTES
+// ============================================================================
+
+const INK_BLACK = '#1E293B';
+const PAGE_RATIO = 8 / 9; // Mantener 16:9 para el libro
+
+// ============================================================================
+// COMPONENTE DE PÁGINA
+// ============================================================================
+
+const Page = forwardRef<HTMLDivElement, PageProps>(({ children, className = '' }, ref) => {
+    return (
+        <div ref={ref} className={`page-wrapper ${className}`}>
+            {children}
+        </div>
+    );
+});
+
+Page.displayName = 'Page';
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
 export default function Book({ pages, tenantConfig, heroName, onReset }: BookProps) {
-    const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const [isAnimating, setIsAnimating] = useState(false);
+    const bookRef = useRef<any>(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [dimensions, setDimensions] = useState({ width: 400, height: 450 });
 
-    const currentPage = pages[currentPageIndex];
-    const isFirstPage = currentPageIndex === 0;
-    const isLastPage = currentPageIndex === pages.length - 1;
+    // Estado para export PDF
+    const [isExporting, setIsExporting] = useState(false);
+    const [exportProgress, setExportProgress] = useState({ percent: 0, message: '' });
 
-    // Navegación con teclado
+    // Colores dinámicos del tenant
+    const colors = {
+        primary: tenantConfig.brandColors.primary,
+        accent: tenantConfig.brandColors.accent,
+        background: tenantConfig.brandColors.background,
+    };
+
+    // Calcular dimensiones responsivas (mantener 16:9)
+    useEffect(() => {
+        const updateDimensions = () => {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            const availableWidth = vw * 0.85;
+            const availableHeight = vh * 0.70;
+
+            let pageWidth = availableWidth / 2;
+            let pageHeight = pageWidth / PAGE_RATIO;
+
+            if (pageHeight > availableHeight) {
+                pageHeight = availableHeight;
+                pageWidth = pageHeight * PAGE_RATIO;
+            }
+
+            pageWidth = Math.max(280, Math.min(pageWidth, 500));
+            pageHeight = Math.max(315, Math.min(pageHeight, 565));
+
+            setDimensions({
+                width: Math.floor(pageWidth),
+                height: Math.floor(pageHeight)
+            });
+        };
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+        return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
+    // Navegación
+    const handlePrevPage = useCallback(() => {
+        bookRef.current?.pageFlip()?.flipPrev();
+    }, []);
+
+    const handleNextPage = useCallback(() => {
+        bookRef.current?.pageFlip()?.flipNext();
+    }, []);
+
+    const onFlip = useCallback((e: any) => {
+        setCurrentPage(e.data);
+    }, []);
+
+    // Navegación por teclado
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'ArrowRight' && !isLastPage) {
+            if (isExporting) return; // Deshabilitar durante export
+
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
                 handleNextPage();
-            } else if (e.key === 'ArrowLeft' && !isFirstPage) {
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
                 handlePrevPage();
+            } else if (e.key === 'Escape') {
+                onReset();
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentPageIndex, isFirstPage, isLastPage]);
+    }, [handleNextPage, handlePrevPage, onReset, isExporting]);
 
-    const handleNextPage = () => {
-        if (isLastPage || isAnimating) return;
-        setIsAnimating(true);
-        setTimeout(() => {
-            setCurrentPageIndex(prev => prev + 1);
-            setIsAnimating(false);
-        }, 300);
+    // Export PDF
+    const handleExportPdf = async () => {
+        setIsExporting(true);
+        setExportProgress({ percent: 0, message: 'Preparando PDF...' });
+
+        try {
+            await exportToPdf({
+                pages,
+                heroName,
+                tenantConfig,
+                onProgress: (percent, message) => {
+                    setExportProgress({ percent, message });
+                },
+            });
+        } catch (error) {
+            console.error('Error exportando PDF:', error);
+            alert('Error al generar el PDF. Por favor, inténtalo de nuevo.');
+        } finally {
+            setIsExporting(false);
+        }
     };
 
-    const handlePrevPage = () => {
-        if (isFirstPage || isAnimating) return;
-        setIsAnimating(true);
-        setTimeout(() => {
-            setCurrentPageIndex(prev => prev - 1);
-            setIsAnimating(false);
-        }, 300);
+    // Construir las páginas
+    const buildPages = () => {
+        const bookPages: React.ReactNode[] = [];
+
+        // === PORTADA ===
+        bookPages.push(
+            <Page key="cover" className="cover-page">
+                <div
+                    className="h-full flex flex-col items-center justify-center p-4"
+                    style={{ backgroundColor: colors.background }}
+                >
+                    {pages[0]?.imageUrl && (
+                        <div
+                            className="w-[85%] rounded-xl overflow-hidden mb-3"
+                            style={{
+                                aspectRatio: '4/5',
+                                border: `3px solid ${INK_BLACK}`,
+                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                            }}
+                        >
+                            <img
+                                src={pages[0].imageUrl}
+                                alt="Portada"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    )}
+
+                    <h1
+                        className="text-lg md:text-xl font-display font-bold text-center leading-tight"
+                        style={{ color: colors.primary }}
+                    >
+                        La Aventura de {heroName}
+                    </h1>
+
+                    <div
+                        className="mt-2 px-3 py-1 rounded-full text-white text-xs font-bold"
+                        style={{
+                            backgroundColor: colors.primary,
+                            border: `2px solid ${INK_BLACK}`,
+                        }}
+                    >
+                        {tenantConfig.tenantName}
+                    </div>
+                </div>
+            </Page>
+        );
+
+        // === PÁGINAS DEL CUENTO ===
+        pages.forEach((page, idx) => {
+            // Página de IMAGEN
+            bookPages.push(
+                <Page key={`img-${idx}`} className="image-page">
+                    <div
+                        className="h-full flex items-center justify-center p-3"
+                        style={{ backgroundColor: colors.background }}
+                    >
+                        <div
+                            className="w-full rounded-lg overflow-hidden"
+                            style={{
+                                aspectRatio: '4/5',
+                                border: `3px solid ${INK_BLACK}`,
+                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                            }}
+                        >
+                            {page.imageUrl ? (
+                                <img
+                                    src={page.imageUrl}
+                                    alt={`Ilustración página ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                                    <span className="text-gray-400 text-sm">Sin imagen</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Page>
+            );
+
+            // Página de TEXTO
+            bookPages.push(
+                <Page key={`text-${idx}`} className="text-page">
+                    <div
+                        className="h-full flex flex-col justify-between p-4"
+                        style={{ backgroundColor: colors.background }}
+                    >
+                        {/* Número de página */}
+                        <div className="flex justify-center mb-2">
+                            <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-sm"
+                                style={{
+                                    backgroundColor: colors.primary,
+                                    border: `2px solid ${INK_BLACK}`,
+                                }}
+                            >
+                                {idx + 1}
+                            </div>
+                        </div>
+
+                        {/* Texto del cuento */}
+                        <div className="flex-1 flex flex-col justify-center space-y-3">
+                            {page.narrative?.caption && (
+                                <p
+                                    className="text-sm md:text-base font-body leading-relaxed text-center"
+                                    style={{ color: INK_BLACK }}
+                                >
+                                    {page.narrative.caption}
+                                </p>
+                            )}
+
+                            {page.narrative?.dialogue && (
+                                <p
+                                    className="text-sm md:text-base font-body italic leading-relaxed text-center"
+                                    style={{ color: colors.primary }}
+                                >
+                                    "{page.narrative.dialogue}"
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Decoración */}
+                        <div className="flex justify-center text-lg" style={{ color: colors.accent }}>
+                            ✦  ✦  ✦
+                        </div>
+                    </div>
+                </Page>
+            );
+        });
+
+        // === CONTRAPORTADA ===
+        bookPages.push(
+            <Page key="back-cover" className="back-cover-page">
+                <div
+                    className="h-full flex flex-col items-center justify-center p-4 text-center"
+                    style={{ backgroundColor: colors.background }}
+                >
+                    <div className="text-5xl mb-4">🌟</div>
+
+                    <h2
+                        className="text-2xl md:text-3xl font-display font-bold mb-2"
+                        style={{ color: colors.primary }}
+                    >
+                        ¡Fin!
+                    </h2>
+
+                    <p className="text-sm font-body mb-4" style={{ color: INK_BLACK }}>
+                        Esperamos que hayas disfrutado<br />esta aventura mágica
+                    </p>
+
+                    <div
+                        className="px-3 py-1 rounded-full text-white text-xs font-bold"
+                        style={{
+                            backgroundColor: colors.primary,
+                            border: `2px solid ${INK_BLACK}`,
+                        }}
+                    >
+                        {tenantConfig.tenantName}
+                    </div>
+                </div>
+            </Page>
+        );
+
+        return bookPages;
     };
+
+    const bookPagesElements = buildPages();
+
+    // Contador de páginas (par/impar)
+    const totalPairs = Math.ceil(bookPagesElements.length / 2);
+    const displayPage = Math.floor(currentPage / 2) + 1;
+    const displayTotal = totalPairs;
+
+    // Verificar si estamos en primera o última página
+    const isFirstPage = currentPage === 0;
+    const isLastPage = currentPage >= bookPagesElements.length - 2;
 
     return (
         <div
             className="min-h-screen flex flex-col"
-            style={{ backgroundColor: '#1a1a2e' }}
+            style={{ backgroundColor: colors.background }}
         >
-            {/* Header minimalista */}
-            <header className="p-4 flex justify-between items-center">
-                <h1 className="text-white/80 text-lg font-medium">
-                    {heroName}'s Adventure
+            {/* Modal de progreso PDF */}
+            {isExporting && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div
+                        className="bg-white rounded-xl p-6 max-w-sm w-full mx-4"
+                        style={{ border: `3px solid ${INK_BLACK}` }}
+                    >
+                        <h3
+                            className="text-lg font-display font-bold mb-4 text-center"
+                            style={{ color: colors.primary }}
+                        >
+                            Generando PDF...
+                        </h3>
+
+                        {/* Barra de progreso */}
+                        <div
+                            className="w-full h-4 rounded-full overflow-hidden mb-3"
+                            style={{ backgroundColor: '#f0f0f0', border: `2px solid ${INK_BLACK}` }}
+                        >
+                            <div
+                                className="h-full transition-all duration-300"
+                                style={{
+                                    width: `${exportProgress.percent}%`,
+                                    backgroundColor: colors.primary,
+                                }}
+                            />
+                        </div>
+
+                        <p
+                            className="text-sm text-center font-body"
+                            style={{ color: INK_BLACK }}
+                        >
+                            {exportProgress.message}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Header */}
+            <header className="px-4 py-3 flex justify-between items-center">
+                <h1
+                    className="text-base font-display font-bold"
+                    style={{ color: colors.primary }}
+                >
+                    {tenantConfig.tenantName}
                 </h1>
-                <div className="flex items-center gap-4">
-                    <span className="text-white/50 text-sm">
-                        {currentPageIndex + 1} / {pages.length}
+                <div className="flex items-center gap-3">
+                    <span
+                        className="text-sm font-body font-medium"
+                        style={{ color: INK_BLACK }}
+                    >
+                        Página {displayPage} de {displayTotal}
                     </span>
                     <button
                         onClick={onReset}
-                        className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/80 rounded-lg text-sm transition-colors"
+                        disabled={isExporting}
+                        className="px-3 py-1.5 rounded-lg font-display font-bold text-xs btn-tactile disabled:opacity-60"
+                        style={{
+                            backgroundColor: 'white',
+                            border: `3px solid ${INK_BLACK}`,
+                            boxShadow: `3px 3px 0px ${INK_BLACK}`,
+                            color: INK_BLACK,
+                        }}
                     >
                         ✕ Cerrar
                     </button>
@@ -75,170 +404,142 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             </header>
 
             {/* Book Container */}
-            <main className="flex-1 flex items-center justify-center p-4 md:p-8">
-                <div className="w-full max-w-6xl">
-
-                    {/* Book Spread - Efecto libro abierto */}
-                    <div
-                        className="relative bg-[#f5f0e6] rounded-lg overflow-hidden"
-                        style={{
-                            aspectRatio: '2 / 1',
-                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0,0,0,0.1)',
-                        }}
+            <main className="flex-1 flex items-center justify-center px-4 py-2">
+                <div
+                    className="relative rounded-xl p-2"
+                    style={{
+                        backgroundColor: 'white',
+                        border: `3px solid ${INK_BLACK}`,
+                        boxShadow: `6px 6px 0px ${INK_BLACK}`,
+                    }}
+                >
+                    <HTMLFlipBook
+                        ref={bookRef}
+                        width={dimensions.width}
+                        height={dimensions.height}
+                        size="stretch"
+                        minWidth={280}
+                        maxWidth={500}
+                        minHeight={315}
+                        maxHeight={565}
+                        showCover={true}
+                        mobileScrollSupport={true}
+                        drawShadow={true}
+                        flippingTime={600}
+                        usePortrait={false}
+                        startPage={0}
+                        startZIndex={0}
+                        autoSize={true}
+                        maxShadowOpacity={0.3}
+                        showPageCorners={true}
+                        disableFlipByClick={false}
+                        onFlip={onFlip}
+                        className=""
+                        style={{}}
+                        useMouseEvents={true}
+                        swipeDistance={30}
+                        clickEventForward={true}
                     >
-                        {/* Sombra del lomo central */}
-                        <div
-                            className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-16 z-20 pointer-events-none"
-                            style={{
-                                background: 'linear-gradient(to right, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.05) 30%, transparent 50%, rgba(0,0,0,0.05) 70%, rgba(0,0,0,0.15) 100%)',
-                            }}
-                        />
-
-                        {/* Línea del lomo */}
-                        <div
-                            className="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 z-20 pointer-events-none"
-                            style={{
-                                background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.2) 80%, transparent)',
-                            }}
-                        />
-
-                        <div className="flex h-full">
-
-                            {/* Página Izquierda - Imagen */}
-                            <div className="w-1/2 h-full relative overflow-hidden">
-                                {/* Efecto de curvatura de página */}
-                                <div
-                                    className="absolute inset-0 z-10 pointer-events-none"
-                                    style={{
-                                        background: 'linear-gradient(to right, rgba(0,0,0,0.03) 0%, transparent 10%, transparent 85%, rgba(0,0,0,0.08) 100%)',
-                                    }}
-                                />
-
-                                {/* Imagen */}
-                                <div
-                                    className={`h-full transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
-                                >
-                                    {currentPage.imageUrl ? (
-                                        <img
-                                            src={currentPage.imageUrl}
-                                            alt={`Página ${currentPageIndex + 1}`}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                            <span className="text-6xl opacity-30">🖼️</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Página Derecha - Texto */}
-                            <div className="w-1/2 h-full relative overflow-hidden bg-[#fdfbf7]">
-                                {/* Efecto de curvatura de página */}
-                                <div
-                                    className="absolute inset-0 z-10 pointer-events-none"
-                                    style={{
-                                        background: 'linear-gradient(to left, rgba(0,0,0,0.02) 0%, transparent 10%, transparent 90%, rgba(0,0,0,0.06) 100%)',
-                                    }}
-                                />
-
-                                {/* Textura de papel sutil */}
-                                <div
-                                    className="absolute inset-0 opacity-30 pointer-events-none"
-                                    style={{
-                                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E")`,
-                                    }}
-                                />
-
-                                {/* Contenido */}
-                                <div
-                                    className={`relative z-0 h-full flex flex-col p-6 md:p-10 transition-opacity duration-300 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}
-                                >
-                                    {/* Número de página decorativo */}
-                                    <div className="text-center mb-4">
-                                        <span
-                                            className="text-2xl md:text-3xl font-serif"
-                                            style={{ color: tenantConfig.brandColors.primary }}
-                                        >
-                                            {currentPageIndex + 1}
-                                        </span>
-                                    </div>
-
-                                    {/* Texto principal */}
-                                    <div className="flex-1 flex flex-col justify-center">
-                                        <p className="text-base md:text-lg lg:text-xl text-[#2d2d2d] leading-relaxed font-serif text-justify">
-                                            {currentPage.narrative?.caption || currentPage.narrative?.scene}
-                                        </p>
-
-                                        {currentPage.narrative?.dialogue && (
-                                            <p
-                                                className="mt-6 text-base md:text-lg italic font-serif"
-                                                style={{ color: tenantConfig.brandColors.primary }}
-                                            >
-                                                "{currentPage.narrative.dialogue}"
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* Decoración inferior */}
-                                    <div className="text-center mt-4 opacity-30">
-                                        <span className="text-2xl">✦</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Botones de navegación flotantes */}
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={isFirstPage || isAnimating}
-                            className={`absolute left-4 top-1/2 -translate-y-1/2 z-30
-                w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm
-                flex items-center justify-center text-white text-xl
-                transition-all duration-200
-                ${isFirstPage ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-black/40 hover:scale-110'}
-              `}
-                            aria-label="Página anterior"
-                        >
-                            ‹
-                        </button>
-
-                        <button
-                            onClick={handleNextPage}
-                            disabled={isLastPage || isAnimating}
-                            className={`absolute right-4 top-1/2 -translate-y-1/2 z-30
-                w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm
-                flex items-center justify-center text-white text-xl
-                transition-all duration-200
-                ${isLastPage ? 'opacity-0 pointer-events-none' : 'opacity-100 hover:bg-black/40 hover:scale-110'}
-              `}
-                            aria-label="Página siguiente"
-                        >
-                            ›
-                        </button>
-                    </div>
-
-                    {/* Indicador de páginas */}
-                    <div className="flex justify-center mt-6 gap-2">
-                        {pages.map((_, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => !isAnimating && setCurrentPageIndex(idx)}
-                                className={`w-2 h-2 rounded-full transition-all duration-200 ${idx === currentPageIndex
-                                        ? 'w-6 bg-white'
-                                        : 'bg-white/30 hover:bg-white/50'
-                                    }`}
-                                aria-label={`Ir a página ${idx + 1}`}
-                            />
-                        ))}
-                    </div>
-
-                    {/* Instrucciones */}
-                    <p className="text-center text-white/30 text-sm mt-4">
-                        Usa ← → o haz clic en los botones para navegar
-                    </p>
+                        {bookPagesElements}
+                    </HTMLFlipBook>
                 </div>
             </main>
+
+            {/* Controls - Botones de navegación centrados */}
+            <footer className="px-4 py-3 flex justify-center items-center gap-6">
+                {/* Botón Anterior */}
+                <button
+                    onClick={handlePrevPage}
+                    disabled={isFirstPage || isExporting}
+                    className="px-5 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    style={{
+                        backgroundColor: colors.accent,
+                        border: `3px solid ${INK_BLACK}`,
+                        boxShadow: isFirstPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                        color: INK_BLACK,
+                    }}
+                >
+                    ← Anterior
+                </button>
+
+                {/* Botón Siguiente */}
+                <button
+                    onClick={handleNextPage}
+                    disabled={isLastPage || isExporting}
+                    className="px-5 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    style={{
+                        backgroundColor: colors.accent,
+                        border: `3px solid ${INK_BLACK}`,
+                        boxShadow: isLastPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                        color: INK_BLACK,
+                    }}
+                >
+                    Siguiente →
+                </button>
+            </footer>
+
+            {/* Botón de PDF */}
+            <div className="px-4 pb-3 flex justify-center">
+                <button
+                    onClick={handleExportPdf}
+                    disabled={isExporting}
+                    className="px-6 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
+                    style={{
+                        backgroundColor: colors.primary,
+                        border: `3px solid ${INK_BLACK}`,
+                        boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                        color: 'white',
+                    }}
+                >
+                    📥 Descargar PDF
+                </button>
+            </div>
+
+            {/* Instrucciones */}
+            <p
+                className="text-center text-xs pb-2 font-body"
+                style={{ color: INK_BLACK, opacity: 0.5 }}
+            >
+                Haz clic en las esquinas o usa los botones • ← → para teclado • ESC para cerrar
+            </p>
+
+            {/* Estilos */}
+            <style>{`
+        .page-wrapper {
+          width: 100%;
+          height: 100%;
+          background: ${colors.background};
+          overflow: hidden;
+        }
+        
+        .cover-page {
+          border-radius: 0 8px 8px 0;
+        }
+        
+        .back-cover-page {
+          border-radius: 8px 0 0 8px;
+        }
+
+        .image-page img {
+          transition: transform 0.3s ease;
+        }
+
+        /* Efecto táctil neobrutalist para botones */
+        .btn-tactile:hover:not(:disabled) {
+          transform: translate(2px, 2px);
+          box-shadow: 2px 2px 0px ${INK_BLACK} !important;
+        }
+        .btn-tactile:active:not(:disabled) {
+          transform: translate(4px, 4px);
+          box-shadow: 0px 0px 0px ${INK_BLACK} !important;
+        }
+
+        @media print {
+          header, footer, p:last-of-type {
+            display: none !important;
+          }
+        }
+      `}</style>
         </div>
     );
 }

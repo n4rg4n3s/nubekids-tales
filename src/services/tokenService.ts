@@ -1,5 +1,5 @@
 ﻿// src/services/tokenService.ts
-import { supabase } from '../config/supabase';
+import { supabase } from '../lib/supabase';
 
 export interface TokenData {
   id: string;
@@ -42,6 +42,10 @@ export interface ValidateTokenResult {
  * Validates a token from URL and returns tenant + token data
  */
 export async function validateToken(tokenCode: string): Promise<ValidateTokenResult> {
+  if (!supabase) {
+    return { valid: false, error: 'Servicio no disponible (Supabase no configurado)' };
+  }
+
   try {
     const { data: tokenRow, error: tokenError } = await supabase
       .from('tokens')
@@ -112,6 +116,11 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
  * Marks a token as used (call this when story generation starts)
  */
 export async function consumeToken(tokenId: string): Promise<boolean> {
+  if (!supabase) {
+    console.error('Cannot consume token: Supabase not configured');
+    return false;
+  }
+
   try {
     const { error: tokenError } = await supabase
       .from('tokens')

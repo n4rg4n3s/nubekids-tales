@@ -16,9 +16,6 @@ import type { SessionContext } from './services/dependencies';
 import { orchestrate } from './services/agents';
 import type { OrchestratorResult } from './services/agents';
 
-// Servicio de generación de imágenes
-import { generateStoryImage } from './services/imageGenerationService';
-
 // Mock / Dev
 import { DEV_CONFIG, isDevMockMode } from './dev';
 import { getMockImages } from './dev';
@@ -187,18 +184,12 @@ function App() {
   // ============================================
   // GENERACIÓN DE IMÁGENES
   // ============================================
-  const generateImages = useCallback(async (
-    brief: AgentBrief,
-    setupDataRef: SetupData
-  ): Promise<ComicFace[]> => {
+  const generateImages = useCallback(async (brief: AgentBrief): Promise<ComicFace[]> => {
     const totalPages = brief.storyBeats.length;
     const generatedPages: ComicFace[] = [];
 
-    console.log(`🎨 [App] Generando ${totalPages} imágenes...`);
-
     for (let i = 0; i < totalPages; i++) {
       const beat = brief.storyBeats[i];
-      const visualPrompt = brief.visualDirections[i] || beat.scene;
 
       setGenerationProgress({
         current: i + 1,
@@ -216,29 +207,10 @@ function App() {
         await new Promise(resolve => setTimeout(resolve, DEV_CONFIG.MOCK_IMAGE_DELAY_MS));
       } else {
         // Modo producción: generar con Gemini
-        console.log(`🎨 [App] Generando imagen ${i + 1}/${totalPages}...`);
-
-        const imageResult = await generateStoryImage(
-          {
-            visualPrompt,
-            heroPhoto: setupDataRef.heroPhoto || null,
-            itemImage: setupDataRef.itemImage || null,
-            heroDescription: setupDataRef.heroDescription,
-            pageIndex: i,
-          },
-          agentDeps
-        );
-
-        if (imageResult.success && imageResult.imageBase64) {
-          // Convertir base64 a data URL
-          imageUrl = `data:image/png;base64,${imageResult.imageBase64}`;
-          console.log(`   ✅ Imagen ${i + 1} generada exitosamente (${imageResult.durationMs}ms)`);
-        } else {
-          console.error(`   ❌ Error generando imagen ${i + 1}:`, imageResult.error);
-          // Fallback a placeholder si falla
-          const mockImages = getMockImages(totalPages);
-          imageUrl = mockImages[i];
-        }
+        // TODO: Implementar llamada real a imageGenerationService
+        // Por ahora usar placeholder también en producción
+        const mockImages = getMockImages(totalPages);
+        imageUrl = mockImages[i];
       }
 
       generatedPages.push({
@@ -252,7 +224,6 @@ function App() {
       });
     }
 
-    console.log(`🎨 [App] Generación de imágenes completada`);
     return generatedPages;
   }, []);
 
@@ -269,48 +240,51 @@ function App() {
       return;
     }
 
+    console.log('🚀 Starting adventure with:', data);
     setSetupData(data);
     setAppState('orchestrating');
 
     try {
-      // FASE 1: Orchestrate (RAG + Narrative + Storytelling + Visual Brief)
+      // Construir contexto de sesión
       const sessionContext = buildSessionContext(data, tenantConfig);
-      console.log('🎭 Iniciando orchestración...');
+      agentDeps.setSession(sessionContext);
 
-      const orchestratorResult = await orchestrate(sessionContext, agentDeps);
+      // Ejecutar el pipeline multiagente
+      const result = await orchestrate(sessionContext, agentDeps);
 
-      if (!orchestratorResult.success || !orchestratorResult.agentBrief) {
-        throw new Error(orchestratorResult.error || 'Error en orchestración');
+      if (result.success && result.agentBrief) {
+        setAgentBrief(result.agentBrief);
+        setOrchestratorTiming(result.timing);
+
+        console.log('✅ AgentBrief generado:', result.agentBrief);
+        console.log('⏱️ Timing:', result.timing);
+
+        // Pasar a generación de imágenes
+        setAppState('generating');
+
+        const generatedPages = await generateImages(result.agentBrief);
+        setPages(generatedPages);
+
+        // ¡Listo para leer!
+        setAppState('reading');
+      } else {
+        throw new Error(result.error || 'Error desconocido en el orchestrator');
       }
-
-      console.log('✅ Orchestración completada');
-      setAgentBrief(orchestratorResult.agentBrief);
-      setOrchestratorTiming(orchestratorResult.timing);
-
-      // FASE 2: Generar imágenes
-      setAppState('generating');
-      console.log('🎨 Iniciando generación de imágenes...');
-
-      const generatedPages = await generateImages(orchestratorResult.agentBrief, data);
-
-      console.log('✅ Generación completada');
-      setPages(generatedPages);
-      setAppState('reading');
-
     } catch (err) {
-      console.error('Error en generación:', err);
-      setError(err instanceof Error ? err.message : 'Error desconocido');
+      console.error('❌ Error en orchestrator:', err);
+      setError(err instanceof Error ? err.message : 'Error generando el cuento');
       setAppState('error');
     }
   }, [tenantConfig, buildSessionContext, generateImages]);
 
-  // Reset para volver al inicio
+  // Handler para reiniciar
   const handleReset = useCallback(() => {
     setSetupData(null);
     setAgentBrief(null);
+    setOrchestratorTiming(null);
     setPages([]);
-    setError(null);
     setGenerationProgress({ current: 0, total: 0, message: '' });
+    setError(null);
     agentDeps.cleanup();
     setAppState('setup');
   }, []);

@@ -2,6 +2,7 @@
 // Paso 4: La Historia - Género visual e idioma
 // La edad del lector se infiere del Step 1 (edad del protagonista)
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import type { Genre, Language, TenantConfig, AgeGroup } from '../../types';
 import { GENRES, LANGUAGES, AGE_GROUP_CONFIGS } from '../../types';
@@ -92,9 +93,12 @@ export default function StepStory({
 }: StepStoryProps) {
 
   // Actualizar ageGroup si es diferente al inferido
-  if (data.ageGroup !== inferredAgeGroup) {
-    onChange({ ...data, ageGroup: inferredAgeGroup });
-  }
+  // IMPORTANTE: Usar useEffect para evitar setState durante render
+  useEffect(() => {
+    if (data.ageGroup !== inferredAgeGroup) {
+      onChange({ ...data, ageGroup: inferredAgeGroup });
+    }
+  }, [inferredAgeGroup, data, onChange]);
 
   const ageGroupConfig = AGE_GROUP_CONFIGS[inferredAgeGroup];
 

@@ -1,0 +1,200 @@
+// src/App.tsx
+// NubeKids - App principal con validación de token y flujo Setup → Orchestrator → Book
+
+import { useEffect, useState, useCallback } from 'react';
+import { validateToken, getTokenFromUrl } from './services/tokenService';
+import type { TenantData, TokenData } from './services/tokenService';
+import type { TenantConfig, AgentBrief, ComicFace } from './types';
+import Setup from './components/Setup';
+import type { SetupData } from './components/Setup';
+import Book from './components/Book';
+import { loadTenantConfig, getTenantIdFromUrl } from './config/tenantLoader';
+
+// Sistema multiagente
+import { agentDeps } from './services/dependencies';
+import type { SessionContext } from './services/dependencies';
+import { orchestrate } from './services/agents';
+import type { OrchestratorResult } from './services/agents';
+
+// Mock / Dev
+import { DEV_CONFIG, isDevMockMode } from './dev';
+import { getMockImages } from './dev';
+
+// Estados de la aplicación
+type AppState = 'loading' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error';
+
+// Mapa de edad del wizard → AgeGroup
+function mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
+  switch (ageRange) {
+    case '3-4':
+      return 'tiny';
+    case '5-6':
+      return 'little';
+    case '7-8':
+    case '9-10':
+      return 'reader';
+    default:
+      return 'little';
+  }
+}
+
+// Mensajes aleatorios para el loading
+const LOADING_MESSAGES = {
+  orchestrating: [
+    '📚 Consultando nuestra biblioteca pedagógica...',
+    '🧠 Diseñando un arco narrativo único...',
+    '✍️ Escribiendo cada página con cariño...',
+    '🎨 Preparando las direcciones artísticas...',
+  ],
+  generating: [
+    '🖌️ Pintando las ilustraciones mágicas...',
+    '✨ Añadiendo un toque de magia a cada escena...',
+    '🌟 Dando vida a los personajes...',
+    '🎭 Creando momentos mágicos...',
+  ],
+};
+
+function App() {
+  const [appState, setAppState] = useState<AppState>('loading');
+  const [error, setError] = useState<string | null>(null);
+
+  // Datos del tenant (desde Supabase si hay token)
+  const [tenantData, setTenantData] = useState<TenantData | null>(null);
+  const [tokenData, setTokenData] = useState<TokenData | null>(null);
+
+  // Config completa del tenant (desde tenantLoader)
+  const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(null);
+
+  // Datos del setup completado
+  const [setupData, setSetupData] = useState<SetupData | null>(null);
+
+  // Resultado del orchestrator
+  const [agentBrief, setAgentBrief] = useState<AgentBrief | null>(null);
+  const [orchestratorTiming, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
+
+  // Páginas generadas para el Book
+  const [pages, setPages] = useState<ComicFace[]>([]);
+  const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0, message: '' });
+
+  // API Key de Gemini (necesaria para los agentes)
+  const [apiKey, setApiKey] = useState<string>('');
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+
+  // ============================================
+  // PROTECCIÓN DE NAVEGACIÓN
+  // ============================================
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Solo bloquear durante generación activa
+      if (appState === 'orchestrating' || appState === 'generating') {
+        e.preventDefault();
+        e.returnValue = ''; // Chrome requiere esto
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [appState]);
+
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
+  useEffect(() => {
+    async function initialize() {
+      try {
+        // Log del modo actual
+        if (isDevMockMode()) {
+          console.log('🎭 MODO DESARROLLO — Datos mock activos — Sin llamadas a Gemini');
+        } else {
+          console.log('🚀 MODO PRODUCCIÓN — Generación real con Gemini API');
+        }
+
+        const tokenCode = getTokenFromUrl();
+
+        if (tokenCode) {
+          // MODO B2B CON TOKEN: validar token desde Supabase
+          const result = await validateToken(tokenCode);
+
+          if (result.valid && result.tenant && result.token) {
+            setTenantData(result.tenant);
+            setTokenData(result.token);
+
+            // Cargar config completa del tenant desde archivos locales
+            const config = loadTenantConfig(result.tenant.tenantId);
+            setTenantConfig(config);
+          } else {
+            setError(result.error || 'Token inválido o expirado');
+            setAppState('error');
+            return;
+          }
+        } else {
+          // MODO SIN TOKEN: usar ?tenant= param o default B2C
+          const tenantId = getTenantIdFromUrl();
+          const config = loadTenantConfig(tenantId);
+          setTenantConfig(config);
+        }
+
+        // Verificar si hay API key guardada
+        const savedApiKey = localStorage.getItem('gemini_api_key');
+        if (savedApiKey) {
+          setApiKey(savedApiKey);
+          agentDeps.initialize(savedApiKey);
+        } else {
+          setShowApiKeyInput(true);
+        }
+
+        setAppState('setup');
+      } catch (err) {
+        console.error('Error inicializando:', err);
+        setError('Error al cargar la aplicación');
+        setAppState('error');
+      }
+    }
+
+    initialize();
+  }, []);
+
+  // Handler para guardar API Key
+  const handleApiKeySubmit = useCallback((key: string) => {
+    if (key.trim()) {
+      localStorage.setItem('gemini_api_key', key.trim());
+      setApiKey(key.trim());
+      agentDeps.initialize(key.trim());
+      setShowApiKeyInput(false);
+    }
+  }, []);
+
+  // Construir SessionContext desde SetupData
+  const buildSessionContext = useCallback((data: SetupData, config: TenantConfig): SessionContext => {
+    return {
+      tenantConfig: config,
+      heroName: data.heroName,
+      heroDescription: data.heroDescription,
+      heroPhoto: data.heroPhoto,
+      itemImage: data.itemImage,
+      itemDescription: data.itemDescription,
+      ageGroup: mapAgeRangeToAgeGroup(data.heroAge),
+      language: data.language,
+      genre: data.genre,
+      pedagogyProfile: data.pedagogy,
+    };
+  }, []);
+
+  // ============================================
+  // GENERACIÓN DE IMÁGENES
+  // ============================================
+  const generateImages = useCallback(async (brief: AgentBrief): Promise<ComicFace[]> => {
+    const totalPages = brief.storyBeats.length;
+    const generatedPages: ComicFace[] = [];
+
+    for (let i = 0; i < totalPages; i++) {
+      const beat = brief.storyBeats[i];
+
+      setGenerationProgress({
+        current: i + 1,
+        total: totalPages,
+        message: LOADING_MESSAGES.generating[i % LOADING_MESSAGES.generating.length],
+      });
+
+      let imageUrl: string;
