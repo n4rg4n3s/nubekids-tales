@@ -113,7 +113,7 @@ export function base64ToDataUrl(
   base64: string,
   mimeType: string = 'image/jpeg'
 ): string {
-  return \data:\;base64,\\;
+  return `data:${mimeType};base64,${base64}`;
 }
 
 /**
@@ -127,9 +127,9 @@ export function dataUrlToBase64(dataUrl: string): string {
  * Get file size in human-readable format.
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return \\ B\;
-  if (bytes < 1024 * 1024) return \\ KB\;
-  return \\ MB\;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 /**

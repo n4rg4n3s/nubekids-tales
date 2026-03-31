@@ -29,7 +29,9 @@ interface PageProps {
 // ============================================================================
 
 const INK_BLACK = '#1E293B';
-const PAGE_RATIO = 8 / 9; // Mantener 16:9 para el libro
+const SPREAD_RATIO = 16 / 9; // Libro abierto completo
+const TARGET_SPREAD_WIDTH = 900; // Ancho total del libro abierto (2 páginas)
+const TARGET_SPREAD_HEIGHT = Math.round((TARGET_SPREAD_WIDTH * 9) / 16);
 
 // ============================================================================
 // COMPONENTE DE PÁGINA
@@ -52,7 +54,10 @@ Page.displayName = 'Page';
 export default function Book({ pages, tenantConfig, heroName, onReset }: BookProps) {
     const bookRef = useRef<any>(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const [dimensions, setDimensions] = useState({ width: 400, height: 450 });
+    const [bookSize, setBookSize] = useState({
+        spreadWidth: TARGET_SPREAD_WIDTH,
+        spreadHeight: TARGET_SPREAD_HEIGHT,
+    });
 
     // Estado para export PDF
     const [isExporting, setIsExporting] = useState(false);
@@ -65,29 +70,32 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         background: tenantConfig.brandColors.background,
     };
 
-    // Calcular dimensiones responsivas (mantener 16:9)
+    // Calcular dimensiones con ratio 16:9 estricto para el libro abierto
     useEffect(() => {
         const updateDimensions = () => {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
 
-            const availableWidth = vw * 0.85;
-            const availableHeight = vh * 0.70;
+            // En desktop damos prioridad al ancho 900; en móvil, ancho disponible.
+            const horizontalPadding = vw < 768 ? 24 : 80;
+            const availableWidth = Math.max(320, vw - horizontalPadding);
+            const availableHeight = Math.max(220, vh - (vw < 768 ? 260 : 420));
 
-            let pageWidth = availableWidth / 2;
-            let pageHeight = pageWidth / PAGE_RATIO;
+            let spreadWidth = vw >= 1024
+                ? Math.min(TARGET_SPREAD_WIDTH, availableWidth)
+                : availableWidth;
+            let spreadHeight = spreadWidth / SPREAD_RATIO;
 
-            if (pageHeight > availableHeight) {
-                pageHeight = availableHeight;
-                pageWidth = pageHeight * PAGE_RATIO;
+            // En mobile/tablet, ajustar por alto manteniendo 16:9.
+            // En desktop, respetar 900x506 aunque implique más scroll vertical.
+            if (vw < 1024 && spreadHeight > availableHeight) {
+                spreadHeight = availableHeight;
+                spreadWidth = spreadHeight * SPREAD_RATIO;
             }
 
-            pageWidth = Math.max(280, Math.min(pageWidth, 500));
-            pageHeight = Math.max(315, Math.min(pageHeight, 565));
-
-            setDimensions({
-                width: Math.floor(pageWidth),
-                height: Math.floor(pageHeight)
+            setBookSize({
+                spreadWidth: Math.floor(spreadWidth),
+                spreadHeight: Math.floor(spreadHeight),
             });
         };
 
@@ -159,41 +167,27 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         bookPages.push(
             <Page key="cover" className="cover-page">
                 <div
-                    className="h-full flex flex-col items-center justify-center p-4"
+                    className="h-full flex items-center justify-center p-4"
                     style={{ backgroundColor: colors.background }}
                 >
-                    {pages[0]?.imageUrl && (
+                    <div className="w-full max-w-[360px] text-center flex flex-col items-center">
+                        <h1
+                            className="text-2xl md:text-4xl font-display font-bold leading-tight"
+                            style={{ color: colors.primary }}
+                        >
+                            La Aventura de {heroName}
+                        </h1>
+
                         <div
-                            className="w-[85%] rounded-xl overflow-hidden mb-3"
+                            className="mt-4 px-6 py-2 rounded-full text-white text-base md:text-lg font-bold"
                             style={{
-                                aspectRatio: '4/5',
+                                backgroundColor: colors.primary,
                                 border: `3px solid ${INK_BLACK}`,
-                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                boxShadow: `2px 2px 0px ${INK_BLACK}`,
                             }}
                         >
-                            <img
-                                src={pages[0].imageUrl}
-                                alt="Portada"
-                                className="w-full h-full object-cover"
-                            />
+                            {tenantConfig.tenantName}
                         </div>
-                    )}
-
-                    <h1
-                        className="text-lg md:text-xl font-display font-bold text-center leading-tight"
-                        style={{ color: colors.primary }}
-                    >
-                        La Aventura de {heroName}
-                    </h1>
-
-                    <div
-                        className="mt-2 px-3 py-1 rounded-full text-white text-xs font-bold"
-                        style={{
-                            backgroundColor: colors.primary,
-                            border: `2px solid ${INK_BLACK}`,
-                        }}
-                    >
-                        {tenantConfig.tenantName}
                     </div>
                 </div>
             </Page>
@@ -286,30 +280,57 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         bookPages.push(
             <Page key="back-cover" className="back-cover-page">
                 <div
-                    className="h-full flex flex-col items-center justify-center p-4 text-center"
+                    className="h-full flex items-center justify-center p-4"
                     style={{ backgroundColor: colors.background }}
                 >
-                    <div className="text-5xl mb-4">🌟</div>
-
-                    <h2
-                        className="text-2xl md:text-3xl font-display font-bold mb-2"
-                        style={{ color: colors.primary }}
-                    >
-                        ¡Fin!
-                    </h2>
-
-                    <p className="text-sm font-body mb-4" style={{ color: INK_BLACK }}>
-                        Esperamos que hayas disfrutado<br />esta aventura mágica
-                    </p>
-
                     <div
-                        className="px-3 py-1 rounded-full text-white text-xs font-bold"
-                        style={{
-                            backgroundColor: colors.primary,
-                            border: `2px solid ${INK_BLACK}`,
-                        }}
+                        className="w-full max-w-[320px] md:max-w-[360px] rounded-2xl px-5 py-5 md:px-6 md:py-6 text-center"
+                        style={{ backgroundColor: '#FCFBF8' }}
                     >
-                        {tenantConfig.tenantName}
+                        <div className="text-4xl md:text-5xl mb-2">🌟</div>
+
+                        <h2
+                            className="text-3xl md:text-4xl font-display font-bold mb-2"
+                            style={{ color: colors.primary }}
+                        >
+                            ¡Fin!
+                        </h2>
+
+                        <p className="text-base md:text-lg font-body mb-5 md:mb-6 leading-relaxed" style={{ color: INK_BLACK, opacity: 0.7 }}>
+                            Esperamos que hayas disfrutado
+                            <br />
+                            esta aventura mágica
+                        </p>
+
+                        <div className="flex flex-col gap-4">
+                            <button
+                                onClick={handleExportPdf}
+                                disabled={isExporting}
+                                className="w-full px-5 py-3 rounded-xl font-display font-bold text-lg md:text-xl btn-tactile disabled:opacity-60"
+                                style={{
+                                    backgroundColor: colors.primary,
+                                    border: `3px solid ${INK_BLACK}`,
+                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                    color: 'white',
+                                }}
+                            >
+                                📥 Descargar PDF
+                            </button>
+
+                            <button
+                                onClick={onReset}
+                                disabled={isExporting}
+                                className="w-full px-5 py-3 rounded-xl font-display font-bold text-lg md:text-xl btn-tactile disabled:opacity-60"
+                                style={{
+                                    backgroundColor: colors.accent,
+                                    border: `3px solid ${INK_BLACK}`,
+                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                    color: INK_BLACK,
+                                }}
+                            >
+                                ✨ Nuevo Cuento
+                            </button>
+                        </div>
                     </div>
                 </div>
             </Page>
@@ -328,10 +349,12 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
     // Verificar si estamos en primera o última página
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage >= bookPagesElements.length - 2;
+    const pageWidth = Math.floor(bookSize.spreadWidth / 2);
+    const pageHeight = Math.floor(bookSize.spreadHeight);
 
     return (
         <div
-            className="min-h-screen flex flex-col"
+            className="min-h-screen flex flex-col relative"
             style={{ backgroundColor: colors.background }}
         >
             {/* Modal de progreso PDF */}
@@ -373,16 +396,16 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             )}
 
             {/* Header */}
-            <header className="px-4 py-3 flex justify-between items-center">
+            <header className="w-full px-4 mt-6 md:mt-[200px] mb-5 flex justify-center items-center gap-4 md:gap-10">
                 <h1
-                    className="text-base font-display font-bold"
+                    className="text-xl md:text-2xl font-display font-bold"
                     style={{ color: colors.primary }}
                 >
                     {tenantConfig.tenantName}
                 </h1>
                 <div className="flex items-center gap-3">
                     <span
-                        className="text-sm font-body font-medium"
+                        className="text-sm md:text-base font-body font-medium"
                         style={{ color: INK_BLACK }}
                     >
                         Página {displayPage} de {displayTotal}
@@ -390,7 +413,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                     <button
                         onClick={onReset}
                         disabled={isExporting}
-                        className="px-3 py-1.5 rounded-lg font-display font-bold text-xs btn-tactile disabled:opacity-60"
+                        className="px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
                         style={{
                             backgroundColor: 'white',
                             border: `3px solid ${INK_BLACK}`,
@@ -404,24 +427,27 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             </header>
 
             {/* Book Container */}
-            <main className="flex-1 flex items-center justify-center px-4 py-2">
+            <main className="flex-1 flex flex-col items-center justify-start px-4 pb-8">
                 <div
-                    className="relative rounded-xl p-2"
+                    className="relative rounded-xl"
                     style={{
                         backgroundColor: 'white',
                         border: `3px solid ${INK_BLACK}`,
                         boxShadow: `6px 6px 0px ${INK_BLACK}`,
+                        width: `${bookSize.spreadWidth}px`,
+                        height: `${bookSize.spreadHeight}px`,
+                        maxWidth: 'calc(100vw - 24px)',
                     }}
                 >
                     <HTMLFlipBook
                         ref={bookRef}
-                        width={dimensions.width}
-                        height={dimensions.height}
-                        size="stretch"
-                        minWidth={280}
-                        maxWidth={500}
-                        minHeight={315}
-                        maxHeight={565}
+                        width={pageWidth}
+                        height={pageHeight}
+                        size="fixed"
+                        minWidth={160}
+                        maxWidth={pageWidth}
+                        minHeight={180}
+                        maxHeight={pageHeight}
                         showCover={true}
                         mobileScrollSupport={true}
                         drawShadow={true}
@@ -429,7 +455,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                         usePortrait={false}
                         startPage={0}
                         startZIndex={0}
-                        autoSize={true}
+                        autoSize={false}
                         maxShadowOpacity={0.3}
                         showPageCorners={true}
                         disableFlipByClick={false}
@@ -443,65 +469,47 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                         {bookPagesElements}
                     </HTMLFlipBook>
                 </div>
+                {/* Controls - Pegados al contenedor del libro */}
+                <footer className="mt-5 flex justify-center items-center gap-4 md:gap-6">
+                    {/* Botón Anterior */}
+                    <button
+                        onClick={handlePrevPage}
+                        disabled={isFirstPage || isExporting}
+                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        style={{
+                            backgroundColor: colors.accent,
+                            border: `3px solid ${INK_BLACK}`,
+                            boxShadow: isFirstPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                            color: INK_BLACK,
+                        }}
+                    >
+                        ← Anterior
+                    </button>
+
+                    {/* Botón Siguiente */}
+                    <button
+                        onClick={handleNextPage}
+                        disabled={isLastPage || isExporting}
+                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                        style={{
+                            backgroundColor: colors.accent,
+                            border: `3px solid ${INK_BLACK}`,
+                            boxShadow: isLastPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                            color: INK_BLACK,
+                        }}
+                    >
+                        Siguiente →
+                    </button>
+                </footer>
+
+                {/* Instrucciones */}
+                <p
+                    className="mt-2 text-center text-xs font-body"
+                    style={{ color: INK_BLACK, opacity: 0.5 }}
+                >
+                    Haz clic en las esquinas o usa los botones • ← → para teclado • ESC para cerrar
+                </p>
             </main>
-
-            {/* Controls - Botones de navegación centrados */}
-            <footer className="px-4 py-3 flex justify-center items-center gap-6">
-                {/* Botón Anterior */}
-                <button
-                    onClick={handlePrevPage}
-                    disabled={isFirstPage || isExporting}
-                    className="px-5 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    style={{
-                        backgroundColor: colors.accent,
-                        border: `3px solid ${INK_BLACK}`,
-                        boxShadow: isFirstPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
-                        color: INK_BLACK,
-                    }}
-                >
-                    ← Anterior
-                </button>
-
-                {/* Botón Siguiente */}
-                <button
-                    onClick={handleNextPage}
-                    disabled={isLastPage || isExporting}
-                    className="px-5 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    style={{
-                        backgroundColor: colors.accent,
-                        border: `3px solid ${INK_BLACK}`,
-                        boxShadow: isLastPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
-                        color: INK_BLACK,
-                    }}
-                >
-                    Siguiente →
-                </button>
-            </footer>
-
-            {/* Botón de PDF */}
-            <div className="px-4 pb-3 flex justify-center">
-                <button
-                    onClick={handleExportPdf}
-                    disabled={isExporting}
-                    className="px-6 py-2.5 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
-                    style={{
-                        backgroundColor: colors.primary,
-                        border: `3px solid ${INK_BLACK}`,
-                        boxShadow: `4px 4px 0px ${INK_BLACK}`,
-                        color: 'white',
-                    }}
-                >
-                    📥 Descargar PDF
-                </button>
-            </div>
-
-            {/* Instrucciones */}
-            <p
-                className="text-center text-xs pb-2 font-body"
-                style={{ color: INK_BLACK, opacity: 0.5 }}
-            >
-                Haz clic en las esquinas o usa los botones • ← → para teclado • ESC para cerrar
-            </p>
 
             {/* Estilos */}
             <style>{`
