@@ -67,7 +67,7 @@ async function generateQueryEmbedding(
         },
     });
 
-    return response.embeddings[0].values;
+    return response.embeddings?.[0]?.values ?? [];
 }
 
 // ─── Build Semantic Query from Session Context ───────────────

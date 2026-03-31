@@ -182,53 +182,82 @@ async function drawStoryPage(
     });
   }
 
-  // Columna derecha: numero + texto
+  // Columna derecha: numero + texto (centrado vertical y horizontalmente)
   const rightCenterX = rightX + PANEL_WIDTH / 2;
-  const textAreaWidth = PANEL_WIDTH - 20;
-  let currentY = panelY + 16;
+  const textAreaWidth = PANEL_WIDTH - 24;
 
-  pdf.setFillColor(primary);
-  pdf.circle(rightCenterX, currentY, 5.5, 'F');
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(10);
-  pdf.setTextColor('#FFFFFF');
-  pdf.text(String(pageNumber), rightCenterX, currentY + 3.2, { align: 'center' });
-
-  currentY += 16;
   const caption = (page.narrative?.caption || page.narrative?.scene || '').trim();
   const dialogue = (page.narrative?.dialogue || '').trim();
 
-  if (caption) {
-    pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(12.5);
-    pdf.setTextColor(INK_BLACK);
-    const captionLines = pdf.splitTextToSize(caption, textAreaWidth) as string[];
+  // Font sizes (~50% larger than before)
+  const CAPTION_SIZE = 19;
+  const DIALOGUE_SIZE = 17;
+  const CAPTION_LINE_H = 9.5;
+  const DIALOGUE_LINE_H = 8.8;
+  const CIRCLE_R = 7;
+  const DECOR_H = 14;
 
-    for (const line of captionLines) {
-      if (currentY > panelY + PANEL_HEIGHT - 28) break;
-      pdf.text(line, rightCenterX, currentY, { align: 'center' });
-      currentY += 6.8;
-    }
+  // Pre-calculate caption lines at the larger font size
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(CAPTION_SIZE);
+  const captionLines = caption ? pdf.splitTextToSize(caption, textAreaWidth) as string[] : [];
+
+  pdf.setFont('helvetica', 'italic');
+  pdf.setFontSize(DIALOGUE_SIZE);
+  const dialogueLines = dialogue ? pdf.splitTextToSize(`"${dialogue}"`, textAreaWidth) as string[] : [];
+
+  // Calculate total block height for vertical centering
+  let blockHeight = CIRCLE_R * 2 + 10; // circle + gap after circle
+  blockHeight += captionLines.length * CAPTION_LINE_H;
+  if (dialogueLines.length > 0) {
+    blockHeight += 8 + dialogueLines.length * DIALOGUE_LINE_H; // gap + dialogue
   }
+  blockHeight += DECOR_H; // decoration at bottom
 
-  if (dialogue) {
-    currentY += 5;
-    pdf.setFont('helvetica', 'italic');
-    pdf.setFontSize(11.5);
-    pdf.setTextColor(primary);
-    const dialogueLines = pdf.splitTextToSize(`"${dialogue}"`, textAreaWidth) as string[];
+  // Start Y so the block is vertically centered in the panel
+  let currentY = panelY + (PANEL_HEIGHT - blockHeight) / 2 + CIRCLE_R;
 
-    for (const line of dialogueLines) {
-      if (currentY > panelY + PANEL_HEIGHT - 20) break;
-      pdf.text(line, rightCenterX, currentY, { align: 'center' });
-      currentY += 6.2;
-    }
-  }
-
+  // Page number circle (fill only, no stroke border)
+  pdf.setFillColor(primary);
+  pdf.circle(rightCenterX, currentY, CIRCLE_R, 'F');
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(12);
+  pdf.setTextColor('#FFFFFF');
+  pdf.text(String(pageNumber), rightCenterX, currentY + 4, { align: 'center' });
+
+  currentY += CIRCLE_R + 10;
+
+  // Caption text
+  if (captionLines.length > 0) {
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(CAPTION_SIZE);
+    pdf.setTextColor(INK_BLACK);
+
+    for (const line of captionLines) {
+      pdf.text(line, rightCenterX, currentY, { align: 'center' });
+      currentY += CAPTION_LINE_H;
+    }
+  }
+
+  // Dialogue text
+  if (dialogueLines.length > 0) {
+    currentY += 8;
+    pdf.setFont('helvetica', 'italic');
+    pdf.setFontSize(DIALOGUE_SIZE);
+    pdf.setTextColor(primary);
+
+    for (const line of dialogueLines) {
+      pdf.text(line, rightCenterX, currentY, { align: 'center' });
+      currentY += DIALOGUE_LINE_H;
+    }
+  }
+
+  // Decoration
+  currentY += 6;
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(14);
   pdf.setTextColor(accent);
-  pdf.text('✦  ✦  ✦', rightCenterX, panelY + PANEL_HEIGHT - 10, { align: 'center' });
+  pdf.text('*   *   *', rightCenterX, currentY, { align: 'center' });
 }
 
 function drawBackCover(pdf: jsPDF, tenantConfig: TenantConfig): void {

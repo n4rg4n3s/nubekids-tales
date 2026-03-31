@@ -1,5 +1,5 @@
-﻿// src/App.tsx
-// NubeKids - App principal con validación de token y flujo Setup → Orchestrator → Book
+// src/App.tsx
+// NubeKids - App principal con validación de token y flujo Auth → Setup → Orchestrator → Book
 
 import { useEffect, useState, useCallback } from 'react';
 import { validateToken, getTokenFromUrl } from './services/tokenService';
@@ -9,6 +9,17 @@ import Setup from './components/Setup';
 import type { SetupData } from './components/Setup';
 import Book from './components/Book';
 import { loadTenantConfig, getTenantIdFromUrl } from './config/tenantLoader';
+
+// Auth
+import { useAuthContext } from './context/AuthContext';
+import LoginPage from './components/auth/LoginPage';
+import SignUpPage from './components/auth/SignUpPage';
+import AuthCallback from './components/auth/AuthCallback';
+
+// Créditos
+import { CreditBalance } from './components/credits/CreditBalance';
+import { NoCreditsBanner } from './components/credits/NoCreditsBanner';
+import { consumeCredit } from './services/creditService';
 
 // Sistema multiagente
 import { agentDeps } from './services/dependencies';
@@ -24,7 +35,7 @@ import { DEV_CONFIG, isDevMockMode } from './dev';
 import { getMockImages } from './dev';
 
 // Estados de la aplicación
-type AppState = 'loading' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error';
+type AppState = 'loading' | 'auth' | 'auth-callback' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error' | 'no-credits';
 
 // Mapa de edad del wizard → AgeGroup
 function mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
@@ -61,6 +72,11 @@ function App() {
   const [appState, setAppState] = useState<AppState>('loading');
   const [error, setError] = useState<string | null>(null);
 
+  // Auth
+  const auth = useAuthContext();
+  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
+  const [isAnonymousSession, setIsAnonymousSession] = useState(false);
+
   // Datos del tenant (desde Supabase si hay token)
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
@@ -72,8 +88,8 @@ function App() {
   const [setupData, setSetupData] = useState<SetupData | null>(null);
 
   // Resultado del orchestrator
-  const [agentBrief, setAgentBrief] = useState<AgentBrief | null>(null);
-  const [orchestratorTiming, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
+  const [_agentBrief, setAgentBrief] = useState<AgentBrief | null>(null);
+  const [_orchestratorTiming, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
 
   // Páginas generadas para el Book
   const [pages, setPages] = useState<ComicFace[]>([]);
@@ -104,6 +120,9 @@ function App() {
   // INICIALIZACIÓN
   // ============================================
   useEffect(() => {
+    // Wait for auth to finish loading before initializing
+    if (auth.loading) return;
+
     async function initialize() {
       try {
         // Log del modo actual
@@ -113,13 +132,22 @@ function App() {
           console.log('🚀 MODO PRODUCCIÓN — Generación real con Gemini API');
         }
 
+        // Check for OAuth callback
+        if (window.location.pathname === '/auth/callback') {
+          setAppState('auth-callback');
+          return;
+        }
+
         const tokenCode = getTokenFromUrl();
 
         if (tokenCode) {
           // MODO B2B CON TOKEN: validar token desde Supabase
+          // Skip auth — anonymous session
+          setIsAnonymousSession(true);
           const result = await validateToken(tokenCode);
 
           if (result.valid && result.tenant && result.token) {
+            console.log('🔍 tenantData.tenantId =', result.tenant.tenantId);
             setTenantData(result.tenant);
             setTokenData(result.token);
 
@@ -136,6 +164,20 @@ function App() {
           const tenantId = getTenantIdFromUrl();
           const config = loadTenantConfig(tenantId);
           setTenantConfig(config);
+
+          // Gate: require auth for B2C (unless already authenticated)
+          if (!auth.isAuthenticated) {
+            setAppState('auth');
+            // Still set up API key if available
+            const savedApiKey = localStorage.getItem('gemini_api_key');
+            if (savedApiKey) {
+              setApiKey(savedApiKey);
+              agentDeps.initialize(savedApiKey);
+            } else {
+              setShowApiKeyInput(true);
+            }
+            return;
+          }
         }
 
         // Verificar si hay API key guardada
@@ -156,7 +198,7 @@ function App() {
     }
 
     initialize();
-  }, []);
+  }, [auth.loading, auth.isAuthenticated]);
 
   // Handler para guardar API Key
   const handleApiKeySubmit = useCallback((key: string) => {
@@ -177,7 +219,7 @@ function App() {
       heroPhoto: data.heroPhoto,
       itemImage: data.itemImage,
       itemDescription: data.itemDescription,
-      ageGroup: mapAgeRangeToAgeGroup(data.heroAge),
+      ageGroup: data.ageGroup,
       language: data.language,
       genre: data.genre,
       pedagogyProfile: data.pedagogy,
@@ -221,8 +263,8 @@ function App() {
         const imageResult = await generateStoryImage(
           {
             visualPrompt,
-            heroPhoto: setupDataRef.heroPhoto || null,
-            itemImage: setupDataRef.itemImage || null,
+            heroPhoto: setupDataRef.heroPhoto ?? undefined,
+            itemImage: setupDataRef.itemImage ?? undefined,
             heroDescription: setupDataRef.heroDescription,
             pageIndex: i,
           },
@@ -266,6 +308,16 @@ function App() {
 
     if (!agentDeps.isInitialized) {
       setShowApiKeyInput(true);
+      return;
+    }
+
+    // Verificar y consumir 1 crédito ANTES de generar
+    const creditConsumed = await consumeCredit(
+      tenantData?.tenantId,
+      auth.user?.id
+    );
+    if (!creditConsumed) {
+      setAppState('no-credits');
       return;
     }
 
@@ -498,11 +550,72 @@ function App() {
     );
   }
 
+  // Auth gate: show login/signup for B2C users
+  if (appState === 'auth' && tenantConfig) {
+    return (
+      <>
+        {renderDevBanner()}
+        {authView === 'login' ? (
+          <LoginPage
+            tenantConfig={tenantConfig}
+            onLogin={auth.signIn}
+            onGoogleLogin={auth.signInWithGoogle}
+            onSwitchToSignUp={() => setAuthView('signup')}
+            error={auth.error}
+          />
+        ) : (
+          <SignUpPage
+            tenantConfig={tenantConfig}
+            onSignUp={auth.signUp}
+            onSwitchToLogin={() => setAuthView('login')}
+            error={auth.error}
+          />
+        )}
+      </>
+    );
+  }
+
+  // OAuth callback
+  if (appState === 'auth-callback') {
+    return (
+      <AuthCallback
+        onComplete={() => {
+          // Clear the /auth/callback path
+          window.history.replaceState({}, '', '/');
+          setAppState('loading');
+        }}
+      />
+    );
+  }
+
   if (appState === 'setup' && tenantConfig) {
     return (
       <>
         {renderDevBanner()}
         {renderApiKeyModal()}
+        {/* User menu for authenticated users */}
+        {(auth.isAuthenticated || isAnonymousSession) && (
+          <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
+            <CreditBalance
+              tenantId={tenantData?.tenantId}
+              userId={auth.user?.id}
+            />
+            <span className="text-xs font-medium" style={{ color: '#1E293B99' }}>
+              {auth.profile?.displayName || auth.user?.email}
+            </span>
+            <button
+              onClick={auth.signOut}
+              className="px-3 py-1 text-xs font-bold rounded-lg transition-all"
+              style={{
+                backgroundColor: 'white',
+                border: '2px solid #1E293B',
+                color: '#1E293B',
+              }}
+            >
+              Salir
+            </button>
+          </div>
+        )}
         <Setup
           tenantConfig={tenantConfig}
           initialItemModel={tokenData?.itemName || ''}
@@ -541,6 +654,15 @@ function App() {
           onReset={handleReset}
         />
       </>
+    );
+  }
+
+  if (appState === 'no-credits') {
+    return (
+      <NoCreditsBanner
+        isTenant={!!tenantData}
+        onBuyCredits={() => setAppState('setup')}
+      />
     );
   }
 

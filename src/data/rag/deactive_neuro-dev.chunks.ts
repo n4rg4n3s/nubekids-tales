@@ -1,4 +1,6 @@
 // src/data/rag/neuro-dev.chunks.ts
+
+import type { RagChunk } from '../../types';
 export const neuroDevChunks: RagChunk[] = [
     {
         id: 'neuro-1',

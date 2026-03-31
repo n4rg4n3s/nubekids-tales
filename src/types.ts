@@ -205,3 +205,25 @@ export interface RagQuery {
   pedagogy: PedagogyProfile;
   collections: string[];
 }
+
+// ============================================
+// AUTH & USER ROLES
+// ============================================
+
+/**
+ * ROLES:
+ * admin           → Equipo NubeKids. Acceso total.
+ * tenant_owner    → Dueño del e-Commerce. Gestiona SU tenant.
+ * tenant_member   → Empleado del e-Commerce (futuro V2).
+ * b2c_user        → Padre/madre registrado. Compra créditos, genera cuentos.
+ * anonymous_session → Usuario temporal vía link B2B. Sin cuenta.
+ */
+export type UserRole = 'admin' | 'tenant_owner' | 'tenant_member' | 'b2c_user' | 'anonymous_session';
+
+export interface UserProfile {
+  id: string;
+  role: UserRole;
+  displayName: string | null;
+  avatarUrl: string | null;
+  tenantId: string | null;
+}

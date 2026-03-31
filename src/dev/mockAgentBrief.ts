@@ -23,7 +23,7 @@ export const MOCK_AGENT_BRIEF: AgentBrief = {
         {
             scene: "Luna poniéndose los zapatos mientras estos empiezan a emitir un brillo suave dorado.",
             caption: "Cuando Luna se puso los zapatos, sintió un cosquilleo en los pies. Los zapatos comenzaron a brillar más fuerte.",
-            dialogue: null,
+            dialogue: undefined,
             choices: [],
             focus_char: 'hero',
         },
@@ -37,7 +37,7 @@ export const MOCK_AGENT_BRIEF: AgentBrief = {
         {
             scene: "Luna volando por el jardín, pasando cerca de las flores y mariposas que la miran con curiosidad.",
             caption: "Luna salió al jardín volando. Las mariposas la seguían y las flores parecían saludarla con sus pétalos.",
-            dialogue: null,
+            dialogue: undefined,
             choices: [],
             focus_char: 'hero',
         },
@@ -51,7 +51,7 @@ export const MOCK_AGENT_BRIEF: AgentBrief = {
         {
             scene: "Luna volando suavemente hacia la rama donde está el pajarito, con los brazos extendidos con cuidado.",
             caption: "Luna respiró hondo y voló hacia la rama. Sus zapatos brillaron más fuerte, dándole confianza.",
-            dialogue: null,
+            dialogue: undefined,
             choices: [],
             focus_char: 'hero',
         },
@@ -65,7 +65,7 @@ export const MOCK_AGENT_BRIEF: AgentBrief = {
         {
             scene: "Mamá curando al pajarito mientras Luna observa con sus zapatos aún brillando suavemente.",
             caption: "Mamá ayudó a curar el ala del pajarito. Luna se sintió muy orgullosa de haber sido valiente.",
-            dialogue: null,
+            dialogue: undefined,
             choices: [],
             focus_char: 'hero',
         },
@@ -79,7 +79,7 @@ export const MOCK_AGENT_BRIEF: AgentBrief = {
         {
             scene: "Luna sentada en el jardín al atardecer, con sus zapatos mágicos y el pajarito posado en su hombro.",
             caption: "Luna aprendió que la verdadera magia no estaba solo en los zapatos. Estaba en su corazón valiente.",
-            dialogue: null,
+            dialogue: undefined,
             choices: [],
             focus_char: 'hero',
         },

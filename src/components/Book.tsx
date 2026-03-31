@@ -206,8 +206,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             className="w-full rounded-lg overflow-hidden"
                             style={{
                                 aspectRatio: '4/5',
-                                border: `3px solid ${INK_BLACK}`,
-                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                border: '1px solid #E5E7EB',
                             }}
                         >
                             {page.imageUrl ? (
@@ -239,7 +238,6 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-sm"
                                 style={{
                                     backgroundColor: colors.primary,
-                                    border: `2px solid ${INK_BLACK}`,
                                 }}
                             >
                                 {idx + 1}
@@ -396,7 +394,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             )}
 
             {/* Header */}
-            <header className="w-full px-4 mt-6 md:mt-[200px] mb-5 flex justify-center items-center gap-4 md:gap-10">
+            <header className="w-full px-4 mt-6 mb-5 flex justify-center items-center gap-4 md:gap-10">
                 <h1
                     className="text-xl md:text-2xl font-display font-bold"
                     style={{ color: colors.primary }}
@@ -405,7 +403,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                 </h1>
                 <div className="flex items-center gap-3">
                     <span
-                        className="text-sm md:text-base font-body font-medium"
+                        className="text-sm md:text-base font-body font-medium text-center"
                         style={{ color: INK_BLACK }}
                     >
                         Página {displayPage} de {displayTotal}
@@ -427,7 +425,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             </header>
 
             {/* Book Container */}
-            <main className="flex-1 flex flex-col items-center justify-start px-4 pb-8">
+            <main className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
                 <div
                     className="relative rounded-xl"
                     style={{
@@ -437,6 +435,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                         width: `${bookSize.spreadWidth}px`,
                         height: `${bookSize.spreadHeight}px`,
                         maxWidth: 'calc(100vw - 24px)',
+                        overflow: 'hidden',
                     }}
                 >
                     <HTMLFlipBook
@@ -530,6 +529,12 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
 
         .image-page img {
           transition: transform 0.3s ease;
+        }
+
+        /* Remove react-pageflip default dark borders on pages */
+        .stf__item {
+          border: none !important;
+          box-shadow: none !important;
         }
 
         /* Efecto táctil neobrutalist para botones */

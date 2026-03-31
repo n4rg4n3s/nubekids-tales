@@ -32,6 +32,7 @@ export interface SetupData {
 
 interface SetupProps {
   tenantConfig: TenantConfig;
+  initialItemModel?: string;
   onComplete: (data: SetupData) => void;
 }
 
@@ -171,7 +172,7 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl mx-auto p-6"
+      className="w-full max-w-2xl mx-auto p-6 min-h-screen flex flex-col justify-center"
     >
       {/* Card principal con rotación sutil */}
       <div 
