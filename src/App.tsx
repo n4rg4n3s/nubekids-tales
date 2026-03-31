@@ -37,21 +37,6 @@ import { getMockImages } from './dev';
 // Estados de la aplicación
 type AppState = 'loading' | 'auth' | 'auth-callback' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error' | 'no-credits';
 
-// Mapa de edad del wizard → AgeGroup
-function _mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
-  switch (ageRange) {
-    case '3-4':
-      return 'tiny';
-    case '5-6':
-      return 'little';
-    case '7-8':
-    case '9-10':
-      return 'reader';
-    default:
-      return 'little';
-  }
-}
-
 // Mensajes aleatorios para el loading
 const LOADING_MESSAGES = {
   orchestrating: [
@@ -264,7 +249,7 @@ function App() {
           {
             visualPrompt,
             heroPhoto: setupDataRef.heroPhoto || undefined,
-            itemImage: setupDataRef.itemImage ?? undefined,
+            itemImage: setupDataRef.itemImage || undefined,
             heroDescription: setupDataRef.heroDescription,
             pageIndex: i,
           },
