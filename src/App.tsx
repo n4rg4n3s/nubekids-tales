@@ -250,7 +250,7 @@ function App() {
             visualPrompt,
             heroPhoto: setupDataRef.heroPhoto || undefined,
             itemImage: setupDataRef.itemImage || undefined,
-            heroDescription: setupDataRef.heroDescription,
+            heroDescription: setupDataRef.heroDescription || undefined,
             pageIndex: i,
           },
           agentDeps
