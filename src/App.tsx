@@ -263,7 +263,7 @@ function App() {
         const imageResult = await generateStoryImage(
           {
             visualPrompt,
-            heroPhoto: setupDataRef.heroPhoto === null ? undefined : setupDataRef.heroPhoto,
+            heroPhoto: setupDataRef.heroPhoto || undefined,
             itemImage: setupDataRef.itemImage ?? undefined,
             heroDescription: setupDataRef.heroDescription,
             pageIndex: i,
