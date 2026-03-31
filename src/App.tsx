@@ -38,7 +38,7 @@ import { getMockImages } from './dev';
 type AppState = 'loading' | 'auth' | 'auth-callback' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error' | 'no-credits';
 
 // Mapa de edad del wizard → AgeGroup
-function mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
+function _mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
   switch (ageRange) {
     case '3-4':
       return 'tiny';
@@ -96,7 +96,7 @@ function App() {
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0, message: '' });
 
   // API Key de Gemini (necesaria para los agentes)
-  const [apiKey, setApiKey] = useState<string>('');
+  const [_apiKey, setApiKey] = useState<string>('');
   const [showApiKeyInput, setShowApiKeyInput] = useState(false);
 
   // ============================================
@@ -252,7 +252,7 @@ function App() {
 
       if (isDevMockMode()) {
         // Modo mock: usar imágenes placeholder
-        const mockImages = getMockImages(totalPages);
+        const mockImages = await getMockImages(totalPages);
         imageUrl = mockImages[i];
         // Simular delay
         await new Promise(resolve => setTimeout(resolve, DEV_CONFIG.MOCK_IMAGE_DELAY_MS));
@@ -263,7 +263,7 @@ function App() {
         const imageResult = await generateStoryImage(
           {
             visualPrompt,
-            heroPhoto: setupDataRef.heroPhoto ?? undefined,
+            heroPhoto: setupDataRef.heroPhoto === null ? undefined : setupDataRef.heroPhoto,
             itemImage: setupDataRef.itemImage ?? undefined,
             heroDescription: setupDataRef.heroDescription,
             pageIndex: i,
@@ -278,7 +278,7 @@ function App() {
         } else {
           console.error(`   ❌ Error generando imagen ${i + 1}:`, imageResult.error);
           // Fallback a placeholder si falla
-          const mockImages = getMockImages(totalPages);
+          const mockImages = await getMockImages(totalPages);
           imageUrl = mockImages[i];
         }
       }
