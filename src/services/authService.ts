@@ -1,155 +1,92 @@
-// src/services/authService.ts
-// Authentication service wrapping Supabase Auth singleton
+/**
+ * authService.ts
+ * Autenticación con Supabase Auth (email + Google OAuth)
+ *
+ * FIX (Fase 9 bugfix):
+ * - signInWithGoogle usa redirectTo: window.location.origin (NO /auth/callback)
+ *   porque la app no tiene React Router. El cliente Supabase procesa
+ *   el #access_token del hash automáticamente al cargar la página raíz.
+ */
 
-import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { supabase, requireSupabase } from '../lib/supabase';
-import type { UserProfile, UserRole } from '../types';
+import { supabase } from '../lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
 
-// ============================================================================
-// TYPES
-// ============================================================================
+export type UserRole = 'admin' | 'tenant_owner' | 'tenant_member' | 'b2c_user';
 
 export interface AuthState {
   user: User | null;
   session: Session | null;
-  profile: UserProfile | null;
+  role: UserRole | null;
   loading: boolean;
 }
 
-// ============================================================================
-// SIGN UP
-// ============================================================================
-
+// ── Registro con email ──────────────────────────────────────────
 export async function signUpWithEmail(
   email: string,
   password: string,
   displayName: string
-): Promise<{ user: User | null }> {
-  const client = requireSupabase();
-
-  const { data, error } = await client.auth.signUp({
+) {
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { full_name: displayName },
+      // Al registrarse via email, Supabase envía un link de confirmación.
+      // Cuando el usuario hace clic, Supabase redirige aquí.
+      emailRedirectTo: window.location.origin,
     },
   });
-
   if (error) throw error;
-  return { user: data.user };
+  return data;
 }
 
-// ============================================================================
-// SIGN IN
-// ============================================================================
-
-export async function signInWithEmail(
-  email: string,
-  password: string
-): Promise<{ user: User | null; session: Session | null }> {
-  const client = requireSupabase();
-
-  const { data, error } = await client.auth.signInWithPassword({
+// ── Login con email ─────────────────────────────────────────────
+export async function signInWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-
   if (error) throw error;
-  return { user: data.user, session: data.session };
+  return data;
 }
 
-// ============================================================================
-// GOOGLE OAUTH
-// ============================================================================
-
-export async function signInWithGoogle(): Promise<void> {
-  const client = requireSupabase();
-
-  const { error } = await client.auth.signInWithOAuth({
+// ── Login con Google OAuth ──────────────────────────────────────
+export async function signInWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      // CRÍTICO: Redirigir a la RAÍZ, no a /auth/callback.
+      // La app no tiene React Router, así que /auth/callback no existe.
+      // El cliente Supabase detecta el #access_token= en el hash
+      // automáticamente al cargar cualquier página del origen.
+      redirectTo: window.location.origin,
     },
   });
-
   if (error) throw error;
+  return data;
 }
 
-// ============================================================================
-// SIGN OUT
-// ============================================================================
-
-export async function signOut(): Promise<void> {
-  const client = requireSupabase();
-  const { error } = await client.auth.signOut();
-  if (error) throw error;
-}
-
-// ============================================================================
-// SESSION
-// ============================================================================
-
-export async function getCurrentSession(): Promise<Session | null> {
-  if (!supabase) return null;
-
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    console.error('Error fetching session:', error);
-    return null;
-  }
-  return data.session;
-}
-
-export async function getCurrentUser(): Promise<User | null> {
-  if (!supabase) return null;
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error('Error fetching user:', error);
-    return null;
-  }
-  return data.user;
-}
-
-// ============================================================================
-// PROFILE (from public.profiles table)
-// ============================================================================
-
-export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  if (!supabase) return null;
-
+// ── Obtener rol del usuario ─────────────────────────────────────
+export async function getUserRole(userId: string): Promise<UserRole> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, role, display_name, avatar_url, tenant_id')
+    .select('role')
     .eq('id', userId)
-    .single();
+    .maybeSingle(); // maybeSingle evita error 406 si no existe el perfil aún
 
-  if (error) {
-    // Profile might not exist yet if trigger hasn't fired
-    console.warn('Could not fetch user profile:', error.message);
-    return null;
-  }
-
-  return {
-    id: data.id,
-    role: data.role as UserRole,
-    displayName: data.display_name,
-    avatarUrl: data.avatar_url,
-    tenantId: data.tenant_id,
-  };
+  if (error || !data) return 'b2c_user';
+  return data.role as UserRole;
 }
 
-// ============================================================================
-// AUTH STATE LISTENER
-// ============================================================================
+// ── Logout ──────────────────────────────────────────────────────
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+}
 
-export function onAuthStateChange(
-  callback: (event: AuthChangeEvent, session: Session | null) => void
-): { unsubscribe: () => void } {
-  if (!supabase) {
-    return { unsubscribe: () => {} };
-  }
-
-  const { data } = supabase.auth.onAuthStateChange(callback);
-  return { unsubscribe: () => data.subscription.unsubscribe() };
+// ── Sesión actual (para inicialización) ────────────────────────
+export async function getSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  return data.session;
 }

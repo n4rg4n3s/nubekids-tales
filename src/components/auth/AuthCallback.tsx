@@ -1,47 +1,65 @@
-// src/components/auth/AuthCallback.tsx
-// OAuth callback handler — loading screen while Supabase processes the redirect
-
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-
-interface AuthCallbackProps {
-  onComplete: () => void;
-}
-
 /**
- * Shown after Google OAuth redirect.
- * Supabase client auto-detects the session from the URL hash.
- * The AuthProvider's onAuthStateChange listener will fire SIGNED_IN,
- * and the App.tsx will transition to 'setup'.
- * 
- * This component is just a visual bridge for the brief moment
- * between redirect and session detection.
+ * AuthCallback.tsx
+ * Pantalla de "procesando login" que se muestra cuando la app
+ * detecta #access_token= en la URL (vuelta de Google OAuth).
+ *
+ * No necesita hacer nada activo: AuthContext.tsx procesa el hash
+ * automáticamente en getSession() y dispara onAuthStateChange(SIGNED_IN).
+ * App.tsx escucha ese evento y cambia de estado.
  */
-export default function AuthCallback({ onComplete }: AuthCallbackProps) {
-  useEffect(() => {
-    // Give Supabase a moment to process the callback
-    const timeout = setTimeout(() => {
-      onComplete();
-    }, 2000);
 
-    return () => clearTimeout(timeout);
-  }, [onComplete]);
-
+export function AuthCallback() {
   return (
-    <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center"
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#FDFBF7',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '24px',
+        fontFamily: 'Nunito, sans-serif',
+      }}
+    >
+      {/* Spinner */}
+      <div
+        style={{
+          width: '64px',
+          height: '64px',
+          border: '4px solid #E2E8F0',
+          borderTopColor: '#8B5CF6',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }}
+      />
+
+      <p
+        style={{
+          fontSize: '18px',
+          fontWeight: 600,
+          color: '#1E293B',
+          margin: 0,
+        }}
       >
-        <div className="text-6xl mb-4 animate-bounce">🔐</div>
-        <p className="text-[#8B5CF6] text-xl font-medium">
-          Verificando tu cuenta...
-        </p>
-        <p className="text-[#1E293B]/60 text-sm mt-2">
-          Un momento, estamos preparando todo
-        </p>
-      </motion.div>
+        Entrando a la magia...
+      </p>
+
+      <p
+        style={{
+          fontSize: '14px',
+          color: '#64748B',
+          margin: 0,
+        }}
+      >
+        Verificando tu cuenta
+      </p>
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
