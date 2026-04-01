@@ -55,7 +55,6 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     displayName: data.display_name ?? '',
     avatarUrl: data.avatar_url ?? null,
     tenantId: data.tenant_id ?? null,
-    created_at: data.created_at,
   };
 }
 
