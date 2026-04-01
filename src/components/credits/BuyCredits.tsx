@@ -37,7 +37,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
 
     useEffect(() => {
         getCreditPacks(channel)
-            .then(data => setPacks(data as CreditPack[]))
+            .then((data: CreditPack[]) => setPacks(data))
             .catch(() => setError('No se pudieron cargar los packs. Inténtalo de nuevo.'))
             .finally(() => setLoading(false));
     }, [channel]);

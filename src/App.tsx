@@ -18,7 +18,6 @@ import AuthCallback from './components/auth/AuthCallback';
 
 // Créditos
 import { CreditBalance } from './components/credits/CreditBalance';
-import { NoCreditsBanner } from './components/credits/NoCreditsBanner';
 // Stripe
 import BuyCredits from './components/credits/BuyCredits';
 import CreditsSuccess from './components/credits/CreditsSuccess';
