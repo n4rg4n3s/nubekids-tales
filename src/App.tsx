@@ -220,9 +220,11 @@ function App() {
         // ── Verificar API key ────────────────────────────────────────────────
         const savedApiKey = import.meta.env.VITE_GEMINI_API_KEY
           || localStorage.getItem('gemini_api_key');
+        console.log('🔑 API Key found:', !!savedApiKey); // ← añade esto temporalmente
         if (savedApiKey) {
           setApiKey(savedApiKey);
           agentDeps.initialize(savedApiKey);
+          setShowApiKeyInput(false); // ← añade esto también
         } else {
           setShowApiKeyInput(true);
         }
