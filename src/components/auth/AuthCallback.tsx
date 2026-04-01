@@ -1,12 +1,11 @@
-/**
- * AuthCallback.tsx
- * Pantalla de "procesando login" que se muestra cuando la app
- * detecta #access_token= en la URL (vuelta de Google OAuth).
- *
- * No necesita hacer nada activo: AuthContext.tsx procesa el hash
- * automáticamente en getSession() y dispara onAuthStateChange(SIGNED_IN).
- * App.tsx escucha ese evento y cambia de estado.
- */
+// src/components/auth/AuthCallback.tsx
+// Pantalla de "procesando login" que se muestra mientras App.tsx
+// espera a que useAuth() detecte el SIGNED_IN del hash OAuth.
+//
+// No necesita props ni lógica activa:
+// - authService.ts limpia el hash en onAuthStateChange(SIGNED_IN)
+// - useAuth.ts actualiza isAuthenticated = true
+// - App.tsx (useEffect) detecta ese cambio y pasa a 'setup'
 
 export function AuthCallback() {
   return (
@@ -34,24 +33,11 @@ export function AuthCallback() {
         }}
       />
 
-      <p
-        style={{
-          fontSize: '18px',
-          fontWeight: 600,
-          color: '#1E293B',
-          margin: 0,
-        }}
-      >
+      <p style={{ fontSize: '18px', fontWeight: 600, color: '#1E293B', margin: 0 }}>
         Entrando a la magia...
       </p>
 
-      <p
-        style={{
-          fontSize: '14px',
-          color: '#64748B',
-          margin: 0,
-        }}
-      >
+      <p style={{ fontSize: '14px', color: '#64748B', margin: 0 }}>
         Verificando tu cuenta
       </p>
 
