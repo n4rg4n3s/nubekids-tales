@@ -205,7 +205,8 @@ function App() {
           // Requiere login para B2C
           if (!auth.isAuthenticated) {
             setAppState('auth');
-            const savedApiKey = localStorage.getItem('gemini_api_key');
+            const savedApiKey = import.meta.env.VITE_GEMINI_API_KEY
+              || localStorage.getItem('gemini_api_key');
             if (savedApiKey) {
               setApiKey(savedApiKey);
               agentDeps.initialize(savedApiKey);
@@ -217,7 +218,8 @@ function App() {
         }
 
         // ── Verificar API key ────────────────────────────────────────────────
-        const savedApiKey = localStorage.getItem('gemini_api_key');
+        const savedApiKey = import.meta.env.VITE_GEMINI_API_KEY
+          || localStorage.getItem('gemini_api_key');
         if (savedApiKey) {
           setApiKey(savedApiKey);
           agentDeps.initialize(savedApiKey);
