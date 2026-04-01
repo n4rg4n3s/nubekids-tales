@@ -92,9 +92,7 @@ function App() {
   const [pages, setPages] = useState<ComicFace[]>([]);
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0, message: '' });
 
-  // API Key de Gemini (necesaria para los agentes)
-  const [_apiKey, setApiKey] = useState<string>('');
-  const [showApiKeyInput, setShowApiKeyInput] = useState(false);
+  // API Key de Gemini — se lee de VITE_GEMINI_API_KEY (inyectada en build time)
 
   // ============================================
   // PROTECCIÓN DE NAVEGACIÓN
@@ -205,28 +203,20 @@ function App() {
           // Requiere login para B2C
           if (!auth.isAuthenticated) {
             setAppState('auth');
-            const savedApiKey = import.meta.env.VITE_GEMINI_API_KEY
-              || localStorage.getItem('gemini_api_key');
-            if (savedApiKey) {
-              setApiKey(savedApiKey);
-              agentDeps.initialize(savedApiKey);
-            } else {
-              setShowApiKeyInput(true);
-            }
             return;
           }
         }
 
-        // ── Verificar API key ────────────────────────────────────────────────
-        const savedApiKey = import.meta.env.VITE_GEMINI_API_KEY
-          || localStorage.getItem('gemini_api_key');
-        console.log('🔑 API Key found:', !!savedApiKey); // ← añade esto temporalmente
-        if (savedApiKey) {
-          setApiKey(savedApiKey);
-          agentDeps.initialize(savedApiKey);
-          setShowApiKeyInput(false); // ← añade esto también
-        } else {
-          setShowApiKeyInput(true);
+        // ── Inicializar Gemini con variable de entorno ────────────────────────
+        const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (geminiKey) {
+          agentDeps.initialize(geminiKey);
+          console.log('🔑 Gemini API inicializada desde variable de entorno');
+        } else if (!isDevMockMode()) {
+          console.error('❌ VITE_GEMINI_API_KEY no configurada');
+          setError('Error de configuración: API Key no disponible. Contacta al administrador.');
+          setAppState('error');
+          return;
         }
 
         setAppState('setup');
@@ -239,16 +229,6 @@ function App() {
 
     initialize();
   }, [auth.loading, auth.isAuthenticated]);
-
-  // Handler para guardar API Key
-  const handleApiKeySubmit = useCallback((key: string) => {
-    if (key.trim()) {
-      localStorage.setItem('gemini_api_key', key.trim());
-      setApiKey(key.trim());
-      agentDeps.initialize(key.trim());
-      setShowApiKeyInput(false);
-    }
-  }, []);
 
   // Construir SessionContext desde SetupData
   const buildSessionContext = useCallback((data: SetupData, config: TenantConfig): SessionContext => {
@@ -342,7 +322,8 @@ function App() {
     }
 
     if (!agentDeps.isInitialized) {
-      setShowApiKeyInput(true);
+      setError('Gemini API no inicializada. Verifica la configuración.');
+      setAppState('error');
       return;
     }
 
@@ -401,54 +382,6 @@ function App() {
     agentDeps.cleanup();
     setAppState('setup');
   }, []);
-
-  // ============================================
-  // RENDER: Modal de API Key
-  // ============================================
-  const renderApiKeyModal = () => {
-    if (!showApiKeyInput) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl border-4 border-[#1E293B] shadow-[6px_6px_0px_#1E293B] p-8 max-w-md w-full mx-4">
-          <div className="text-center mb-6">
-            <div className="text-5xl mb-4">🔑</div>
-            <h2 className="text-2xl font-bold text-[#1E293B]">API Key de Gemini</h2>
-            <p className="text-[#1E293B]/60 mt-2">
-              Necesitamos tu API Key para crear la magia
-            </p>
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.target as HTMLFormElement;
-              const input = form.elements.namedItem('apiKey') as HTMLInputElement;
-              handleApiKeySubmit(input.value);
-            }}
-          >
-            <input
-              type="password"
-              name="apiKey"
-              placeholder="AIza..."
-              className="w-full px-4 py-3 text-lg border-3 border-[#1E293B] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[#8B5CF6]"
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="w-full px-6 py-3 bg-[#8B5CF6] text-white font-bold text-lg rounded-lg border-3 border-[#1E293B] shadow-[4px_4px_0px_#1E293B] hover:shadow-[2px_2px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
-            >
-              Guardar y continuar
-            </button>
-          </form>
-
-          <p className="text-xs text-[#1E293B]/40 mt-4 text-center">
-            Tu API Key se guarda localmente en tu navegador
-          </p>
-        </div>
-      </div>
-    );
-  };
 
   // ============================================
   // RENDER: Loading con protección
@@ -624,7 +557,6 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        {renderApiKeyModal()}
         {/* User menu para usuarios autenticados o sesiones anónimas B2B */}
         {(auth.isAuthenticated || isAnonymousSession) && (
           <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
