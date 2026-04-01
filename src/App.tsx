@@ -19,6 +19,9 @@ import AuthCallback from './components/auth/AuthCallback';
 // Créditos
 import { CreditBalance } from './components/credits/CreditBalance';
 import { NoCreditsBanner } from './components/credits/NoCreditsBanner';
+// Stripe
+import BuyCredits from './components/credits/BuyCredits';
+import CreditsSuccess from './components/credits/CreditsSuccess';
 import { consumeCredit } from './services/creditService';
 
 // Sistema multiagente
@@ -35,7 +38,7 @@ import { DEV_CONFIG, isDevMockMode } from './dev';
 import { getMockImages } from './dev';
 
 // Estados de la aplicación
-type AppState = 'loading' | 'auth' | 'auth-callback' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error' | 'no-credits';
+type AppState = 'loading' | 'auth' | 'auth-callback' | 'setup' | 'orchestrating' | 'generating' | 'reading' | 'error' | 'no-credits' | 'credits-success';
 
 // Mensajes aleatorios para el loading
 const LOADING_MESSAGES = {
@@ -120,6 +123,15 @@ function App() {
         // Check for OAuth callback
         if (window.location.pathname === '/auth/callback') {
           setAppState('auth-callback');
+          return;
+        }
+
+        // Check for Stripe success redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        if (window.location.pathname === '/credits/success' || urlParams.get('session_id')) {
+          // Limpiar la URL para que no quede el session_id visible
+          window.history.replaceState({}, '', '/');
+          setAppState('credits-success');
           return;
         }
 
@@ -642,11 +654,32 @@ function App() {
     );
   }
 
-  if (appState === 'no-credits') {
+  if (appState === 'no-credits' && tenantConfig) {
+    // Determinar canal según si es tenant B2B o usuario B2C
+    const channel = tenantData
+      ? (tenantData.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
+      : 'b2c';
+
     return (
-      <NoCreditsBanner
-        isTenant={!!tenantData}
-        onBuyCredits={() => setAppState('setup')}
+      <>
+        {renderDevBanner()}
+        <BuyCredits
+          channel={channel}
+          userId={auth.user?.id}
+          tenantId={tenantData?.tenantId}
+          onClose={() => setAppState('setup')}
+        />
+      </>
+    );
+  }
+
+  if (appState === 'credits-success') {
+    return (
+      <CreditsSuccess
+        onContinue={() => {
+          // Recargar créditos y volver al setup
+          setAppState('setup');
+        }}
       />
     );
   }
