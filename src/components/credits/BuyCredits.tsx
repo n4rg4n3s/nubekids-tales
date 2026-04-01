@@ -9,18 +9,10 @@
 
 import { useState, useEffect } from 'react';
 import { getCreditPacks } from '../../services/creditService';
+import type { CreditPack } from '../../services/creditService';
 import { redirectToCheckout } from '../../services/stripeService';
 import type { CreditPackId } from '../../services/stripeService';
 
-interface CreditPack {
-    id: string;
-    name: string;
-    description: string | null;
-    channel: string;
-    credits: number;
-    price_cents: number;
-    stripe_price_id: string;
-}
 
 interface BuyCreditsProps {
     channel: 'b2c' | 'b2b_standard' | 'b2b_premium';
