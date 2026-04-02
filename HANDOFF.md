@@ -1,36 +1,34 @@
+
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-01 (Sesión Fase 9 — Stripe + Compra de Créditos)
-> **Estado:** ✅ Fase 9 COMPLETADA — Flujo de pago end-to-end funcional
-> **Próximo paso:** Fase 10 — Flujo B2B → B2C completo
+> **Última actualización:** 2026-04-02 (Sesión Fase 10 — Flujo B2B → B2C completo)
+> **Estado:** ✅ Fase 10 COMPLETADA — Flujo B2B2C end-to-end funcional
+> **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
 
 ---
 
-## 🎉 LOGROS DE HOY (01 Abril 2026)
+## 🎉 LOGROS DE HOY (02 Abril 2026)
 
-### Fase 9 — Stripe + Compra de Créditos ← HOY
+### Fase 10 — Flujo B2B → B2C completo ← HOY
 
-1. ✅ **9 productos creados en Stripe** (cuenta acct_1CvoJ4DcvABCRuSU / Narganes)
-   - 3 packs B2C: NubeKids · 1/3/5 cuentos (4.99€ / 12.99€ / 19.99€)
-   - 3 packs B2B Standard: NubeKids · 50/200/500 cuentos | Tiendas
-   - 3 packs B2B Premium: NubeKids · 50/200/500 cuentos | Premium
-   - Copy en español, descripciones orientadas al valor emocional/pedagógico
-2. ✅ **`credit_packs` actualizada** — `stripe_price_id` + `price_cents` corregidos
-3. ✅ **`api/stripe/create-checkout.ts`** — Vercel serverless function
-4. ✅ **`api/stripe/webhook.ts`** — Añade créditos via RPC tras `checkout.session.completed`
-5. ✅ **`src/services/stripeService.ts`** — `redirectToCheckout()` desde frontend
-6. ✅ **`src/components/credits/BuyCredits.tsx`** — Pantalla de compra con design system NubeKids
-7. ✅ **`src/components/credits/CreditsSuccess.tsx`** — Confirmación post-pago
-8. ✅ **`App.tsx` actualizado** — Estados `'no-credits'` y `'credits-success'` integrados
-9. ✅ **Variables de entorno** configuradas en `.env.local` y Vercel Dashboard
-10. ✅ **Test end-to-end con Stripe CLI** — Webhook verificado, créditos añadidos correctamente
-11. ✅ **Deploy en Vercel exitoso** — Fix pnpm-lock.yaml + fix rutas TypeScript
+1. ✅ **`src/types.ts`** — Añadidos `B2BSessionParams`, `B2BSession`, `PaymentSource`, `PaymentDecision`
+2. ✅ **`src/services/queryParamsService.ts`** — Parser de query params B2B (`?tenant=`, `?item=`, `?item_image=`, `?customer_email=`, `?ref=`)
+3. ✅ **`src/services/sessionService.ts`** — `resolvePayment()`: lógica de quién paga el crédito
+4. ✅ **`src/utils/itemImageLoader.ts`** — Descarga imagen del producto con 3 fallbacks CORS (fetch → canvas → url-only)
+5. ✅ **`src/App.tsx`** — Integración completa: detección `?tenant=`, estado `b2bSession`, nuevos estados `post-story` y `promo-unavailable`, `handleReset` diferenciado B2B vs normal
+6. ✅ **`src/components/Setup.tsx`** — Props `initialItemImage`, `initialItemImageUrl`, `initialItemModel` funcionales. Bug corregido: `initialItemModel` ya se aplica a `itemData.description`
+7. ✅ **`src/components/wizard/StepItem.tsx`** — Pre-rellenado B2B, badge "Cargado automáticamente", fallback CORS con "Solo vista previa"
+8. ✅ **`src/components/PostStoryActions.tsx`** — CTA post-lectura con pricing, botón "Crear otro" → registro B2C
+9. ✅ **`src/components/auth/SignUpPage.tsx`** — `initialEmail` pre-rellenado con banner de conversión
+10. ✅ **`docs/nubekids_b2b2c_simulator.html`** — Herramienta de testing con 5 escenarios, checklist de Done y log
+11. ✅ **Deploy en Vercel exitoso** — TypeScript sin errores, build verde
 
 ### Decisiones tomadas en esta sesión
-- **Pricing B2C subido**: 2.99/6.99/9.99€ → 4.99/12.99/19.99€ (ancla de valor más coherente)
-- **Naming sin Starter/Growth/Scale**: productos nombrados por cantidad de cuentos
-- **Cuenta Stripe separada para NubeKids**: acct_1CvoJ4DcvABCRuSU (vacía, solo NubeKids)
-- **Modo LIVE desde el inicio**: productos creados directamente en producción
+- **`storeName` visible en ambos planes**: Standard y Premium muestran el nombre de la tienda en Step 3
+- **Fallback CORS graceful**: si la imagen no se puede convertir a base64, se muestra como preview visual pero no se envía a Gemini — el cuento usa la descripción textual
+- **`post-story` como estado separado**: no modifica la state machine existente, `b2bSession.storyGenerated` controla la bifurcación en `handleReset`
+- **Test CORS no simulable con URLs públicas**: la mayoría de CDNs modernos envían headers CORS correctos; el fallback se activará con CDNs privados de e-Commerce
+- **Integración Premium requiere desarrollo técnico en el e-Commerce**: documentado en `docs/INTEGRACION_PREMIUM.md`
 
 ---
 
@@ -42,7 +40,6 @@
 - Supabase Dashboard → Authentication → Providers → Google
 
 ### 2. Webhook Stripe en producción
-- El webhook configurado apunta a la URL de Vercel actual
 - Cuando se compre dominio propio → actualizar la URL en Stripe Dashboard
 - `Developers → Webhooks → [endpoint] → Update`
 
@@ -60,8 +57,8 @@
 | Fase 6 — Bugfix + Estabilización | ✅ Completa | Todos los bugs críticos resueltos |
 | Fase 7 — Autenticación | ✅ Completa | Supabase Auth + Google OAuth |
 | Fase 8 — Sistema de Créditos | ✅ Completa | Prepago funcional end-to-end |
-| Fase 9 — Stripe | ✅ **COMPLETA** | **Pago end-to-end verificado** ← HOY |
-| Fase 10 — Flujo B2B → B2C | ⏳ Pendiente | Query params + sessionService |
+| Fase 9 — Stripe | ✅ Completa | Pago end-to-end verificado |
+| Fase 10 — Flujo B2B → B2C | ✅ **COMPLETA** | **Funnel completo funcional** ← HOY |
 | Fase 11 — Deploy + Dominio + Legal | ⏳ Pendiente | Vercel ✅, falta dominio + legal |
 | Fase 12 — Dashboard Tenant | 🔮 Futuro | Post-lanzamiento |
 
@@ -79,6 +76,9 @@
 | **Stripe Checkout Sessions (no Elements)** | Hosted checkout: PCI compliance automático, sin UI de pago que construir |
 | **Stripe modo LIVE desde el inicio** | Cuenta separada y limpia para NubeKids — sin mezclar con otros SaaS |
 | **Precio B2C desde 4.99€** | Ancla de valor: 6x más barato que Wonderbly pero no al nivel de eBook genérico |
+| **`b2bSession` separado del flujo principal** | No modifica la state machine existente — objeto independiente que coexiste con `tenantData`/`tokenData` |
+| **Fallback CORS en 3 intentos** | fetch → canvas → url-only. Degrada gracefully sin romper el flujo |
+| **`post-story` como AppState** | Permite CTA de conversión B2B→B2C sin interferir con el estado `reading` |
 
 ---
 
@@ -87,22 +87,26 @@
 D:\nubekids-tales\
 ├── .env.local
 ├── package.json
-├── pnpm-lock.yaml                           # ✅ Sincronizado con pnpm
+├── pnpm-lock.yaml
 │
-├── api/                                     # ✅ NUEVO Fase 9 — Vercel serverless
+├── api/
 │   └── stripe/
 │       ├── create-checkout.ts
 │       └── webhook.ts
 │
+├── docs/                                    # ✅ NUEVO Fase 10
+│   ├── nubekids_b2b2c_simulator.html        # Herramienta de testing B2B2C
+│   └── INTEGRACION_PREMIUM.md              # Guía de integración para tenants Premium
+│
 ├── supabase/
 │   └── migrations/
-│       ├── 001_profiles_and_trigger.sql     # Fase 7
-│       └── stripe_price_id.sql              # ✅ NUEVO Fase 9
+│       ├── 001_profiles_and_trigger.sql
+│       └── stripe_price_id.sql
 │
 ├── src/
-│   ├── App.tsx                              # ✅ Estados no-credits + credits-success
+│   ├── App.tsx                              # ✅ b2bSession + post-story + promo-unavailable
 │   ├── main.tsx
-│   ├── types.ts
+│   ├── types.ts                             # ✅ B2BSessionParams, B2BSession, PaymentDecision
 │   │
 │   ├── lib/
 │   │   └── supabase.ts
@@ -117,29 +121,32 @@ D:\nubekids-tales\
 │   ├── components/
 │   │   ├── auth/
 │   │   │   ├── LoginPage.tsx
-│   │   │   ├── SignUpPage.tsx
+│   │   │   ├── SignUpPage.tsx               # ✅ initialEmail prop
 │   │   │   └── AuthCallback.tsx
 │   │   ├── credits/
 │   │   │   ├── CreditBalance.tsx
 │   │   │   ├── NoCreditsBanner.tsx
-│   │   │   ├── BuyCredits.tsx               # ✅ NUEVO Fase 9
-│   │   │   └── CreditsSuccess.tsx           # ✅ NUEVO Fase 9
+│   │   │   ├── BuyCredits.tsx
+│   │   │   └── CreditsSuccess.tsx
+│   │   ├── PostStoryActions.tsx             # ✅ NUEVO Fase 10
 │   │   ├── Book.tsx
-│   │   ├── Setup.tsx
+│   │   ├── Setup.tsx                        # ✅ initialItemImage, initialItemImageUrl
 │   │   └── wizard/
 │   │       ├── StepHero.tsx
 │   │       ├── StepPedagogy.tsx
-│   │       ├── StepItem.tsx
+│   │       ├── StepItem.tsx                 # ✅ pre-rellenado B2B + fallback CORS
 │   │       └── StepStory.tsx
 │   │
 │   ├── services/
 │   │   ├── authService.ts
 │   │   ├── creditService.ts
-│   │   ├── stripeService.ts                 # ✅ NUEVO Fase 9
+│   │   ├── stripeService.ts
 │   │   ├── imageGenerationService.ts
 │   │   ├── dependencies.ts
 │   │   ├── ragService.ts
 │   │   ├── tokenService.ts
+│   │   ├── queryParamsService.ts            # ✅ NUEVO Fase 10
+│   │   ├── sessionService.ts               # ✅ NUEVO Fase 10
 │   │   └── agents/
 │   │       ├── orchestratorAgent.ts
 │   │       ├── narrativeAgent.ts
@@ -148,7 +155,8 @@ D:\nubekids-tales\
 │   │
 │   ├── utils/
 │   │   ├── pdfExport.ts
-│   │   └── jsonParser.ts
+│   │   ├── jsonParser.ts
+│   │   └── itemImageLoader.ts              # ✅ NUEVO Fase 10
 │   │
 │   └── config/
 │       └── tenants/
@@ -201,13 +209,11 @@ VITE_USE_MOCK=true
 
 # .env.local — Backend serverless (sin prefijo VITE_)
 STRIPE_SECRET_KEY=sk_live_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx   # ← usar whsec de CLI en local, de Dashboard en prod
+STRIPE_WEBHOOK_SECRET=whsec_xxx
 SUPABASE_URL=https://eyirhuxpqaneiehnmguq.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=xxx
-FRONTEND_URL=http://localhost:5173  # ← URL de Vercel en producción
+FRONTEND_URL=http://localhost:5173
 ```
-
-> Todas las variables sin `VITE_` están también configuradas en Vercel Dashboard → Settings → Environment Variables.
 
 ---
 
@@ -219,21 +225,19 @@ FRONTEND_URL=http://localhost:5173  # ← URL de Vercel en producción
 | `@supabase/supabase-js` | latest | Auth + RAG + créditos | ✅ |
 | `react-pageflip` | ^2.0.3 | Book page-flip | ✅ |
 | `jspdf` | ^2.x | Export PDF | ✅ |
-| `stripe` | ^21.0.1 | Backend checkout sessions + webhook | ✅ Fase 9 |
-| `@vercel/node` | ^5.6.23 | Tipos para serverless functions | ✅ Fase 9 |
+| `stripe` | ^21.0.1 | Backend checkout sessions + webhook | ✅ |
+| `@vercel/node` | ^5.6.23 | Tipos para serverless functions | ✅ |
 
 ---
 
-## 🚀 Próximos Pasos — Fase 10
+## 🚀 Próximos Pasos — Fase 11
 
-Según `BUSINESS_TECH_SPEC.md` § 5 y § 6:
-
-1. **`src/utils/itemImageLoader.ts`** — Cargar `item_image` desde URL (Plan Premium B2B)
-2. **Ampliar query params soportados:**
-   `?tenant=xxx&item=nombre+producto&item_image=https://...&customer_email=padre@email.com`
-3. **Lógica de sesión anónima** — 1er cuento gratis via tenant, sin login
-4. **Flujo "crear otro cuento"** → CTA post-lectura → registro B2C → compra créditos
-5. **Pre-rellenar email** en registro si viene en query param
+1. **Comprar dominio** (nubekids.io / nubekidstales.com)
+2. **Configurar DNS** en Vercel
+3. **Actualizar webhook Stripe** con URL de producción definitiva
+4. **Google OAuth** — completar config en GCP con dominio definitivo
+5. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
+6. **Landing page** — hero, cómo funciona, pricing B2B y B2C, CTA
 
 ---
 
@@ -244,6 +248,7 @@ Según `BUSINESS_TECH_SPEC.md` § 5 y § 6:
 | Google OAuth config en GCP + Supabase | Media | ⏳ Cuando haya dominio |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |
+| Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 — `consume_credit` es atómico |
 | Violations react-pageflip touchstart | Baja | Ignorable (librería externa) |
 | No hay tests unitarios | Alta | Pendiente |
 | OCR para 4 PDFs de solo imágenes | Media | Pendiente |
@@ -259,29 +264,31 @@ Según `BUSINESS_TECH_SPEC.md` § 5 y § 6:
 
 ## 📊 Resumen Ejecutivo
 ```
-✅ Fase 1: Multitenancy — COMPLETADA
-✅ Fase 2: Wizard Setup — COMPLETADA
-✅ Fase 3: Sistema Multiagente + RAG V1 — COMPLETADA
-✅ Fase 4: Generación imágenes + Book — COMPLETADA
-✅ Fase 5: RAG V2 pgvector — COMPLETADA
-✅ Fase 6: Bugfix + Estabilización — COMPLETADA
-✅ Fase 7: Autenticación (Supabase Auth + OAuth) — COMPLETADA
-✅ Fase 8: Sistema de Créditos — COMPLETADA
-✅ Fase 9: Stripe + Compra de Créditos — COMPLETADA ← HOY
-⏳ Fase 10: Flujo B2B → B2C completo — SIGUIENTE
+✅ Fase 1:  Multitenancy — COMPLETADA
+✅ Fase 2:  Wizard Setup — COMPLETADA
+✅ Fase 3:  Sistema Multiagente + RAG V1 — COMPLETADA
+✅ Fase 4:  Generación imágenes + Book — COMPLETADA
+✅ Fase 5:  RAG V2 pgvector — COMPLETADA
+✅ Fase 6:  Bugfix + Estabilización — COMPLETADA
+✅ Fase 7:  Autenticación (Supabase Auth + OAuth) — COMPLETADA
+✅ Fase 8:  Sistema de Créditos — COMPLETADA
+✅ Fase 9:  Stripe + Compra de Créditos — COMPLETADA
+✅ Fase 10: Flujo B2B → B2C completo — COMPLETADA ← HOY
 ⏳ Fase 11: Deploy + Dominio + Legal — Vercel ✅, falta dominio + legal
 
-🎯 ESTADO: MVP COMERCIAL — Auth + Créditos + Pagos FUNCIONAL
-💳 PAGOS: Stripe end-to-end verificado con CLI (webhook → add_credits ✅)
+🎯 ESTADO: MVP COMERCIAL COMPLETO
+💳 PAGOS: Stripe end-to-end verificado
+🏪 B2B: Funnel completo Standard + Premium funcional
 🚀 DEPLOY: Vercel funcionando en push automático
 
-Falta implementar:
-- Flujo B2B → B2C completo (query params + sesión anónima)
-- Dominio propio + legal (GDPR, términos, privacidad)
+Falta para lanzamiento:
+- Dominio propio + configuración DNS
+- Legal (GDPR, términos, privacidad)
+- Landing page
 
-Estimación hasta lanzamiento: ~1-2 semanas de desarrollo.
+Estimación hasta lanzamiento: ~1 semana.
 ```
 
 ---
 
-*Fase 9 completada. MVP con pagos reales funcional. Listo para Fase 10 — Flujo B2B → B2C. 🚀*
+*Fase 10 completada. Funnel B2B2C funcional end-to-end. Listo para Fase 11 — Dominio + Legal. 🚀*

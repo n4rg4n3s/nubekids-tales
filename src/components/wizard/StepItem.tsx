@@ -88,7 +88,7 @@ export default function StepItem({
         >
           <p className="text-sm text-[#1E293B]">
             <span className="font-bold">✨ ¡Tu compra ya está aquí!</span>{' '}
-            Hemos cargado automáticamente el producto de tu pedido. Puedes continuar tal cual o cambiar la imagen.
+            Hemos cargado automáticamente tu compra de {tenantConfig.storeName || tenantConfig.tenantName}. ¡Conviértela en el objeto mágico del cuento!
           </p>
         </motion.div>
       )}

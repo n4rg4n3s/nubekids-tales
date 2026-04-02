@@ -339,7 +339,7 @@
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 3 y § 6
 
 ### ⏳ Fase 9 — Stripe + Compra de Créditos (PENDIENTE)
-- [ ] Crear productos y prices en Stripe Dashboard (test mode primero)
+- [x] Crear productos y prices en Stripe Dashboard (test mode primero)
 - [ ] Actualizar `credit_packs` con `stripe_price_id`
 - [ ] Crear `api/stripe/create-checkout.ts` (Vercel serverless function)
 - [ ] Crear `api/stripe/webhook.ts` (Vercel serverless function)
@@ -349,15 +349,17 @@
 - [ ] Probar webhook local con `stripe listen --forward-to localhost:3000/api/stripe/webhook`
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 4
 
-### ⏳ Fase 10 — Flujo B2B → B2C Completo (PENDIENTE)
-- [ ] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`)
-- [ ] Ampliar query params soportados: `?tenant=&item=&item_image=&customer_email=`
-- [ ] Implementar lógica de sesión anónima (1er cuento gratis via tenant)
-- [ ] Implementar flujo "crear otro cuento" → redirect a registro B2C
-- [ ] Pre-rellenar email en registro si viene en query param
-- [ ] Probar flujo completo: link B2B → cuento gratis → registro B2C → compra créditos
-- [ ] Crear documentación de integración para tenants (cómo generar el link)
-- [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 5 y § 6
+### ✅ Fase 10 — Flujo B2B → B2C Completo (COMPLETADA)
+- [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`)
+- [x] Ampliar query params soportados: `?tenant=&item=&item_image=&customer_email=&ref=`
+- [x] Implementar lógica de sesión anónima (1er cuento gratis via tenant)
+- [x] Implementar flujo "crear otro cuento" → redirect a registro B2C (`PostStoryActions.tsx`)
+- [x] Pre-rellenar email en registro si viene en query param (`initialEmail` en `SignUpPage`)
+- [x] Pantalla "Promoción no disponible" si tenant sin créditos (`promo-unavailable`)
+- [x] Fallback CORS en 3 intentos (fetch → canvas → url-only)
+- [x] Herramienta de testing (`docs/nubekids_b2b2c_simulator.html`)
+- [x] Documentación de integración para tenants (`docs/INTEGRACION_PREMIUM.md`)
+- [x] Deploy en Vercel funcional
 
 ### ⏳ Fase 11 — Dominio + Deploy + Legal (PENDIENTE)
 - [ ] Comprar dominio

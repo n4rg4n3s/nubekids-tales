@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NubeKids — Simulador B2B2C</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1E293B;
+    --purple: #8B5CF6;
+    --purple-light: #EDE9FE;
+    --green: #34D399;
+    --yellow: #FBBF24;
+    --red: #F87171;
+    --bg: #FDFBF7;
+    --white: #FFFFFF;
+    --shadow: 4px 4px 0px var(--ink);
+    --shadow-lg: 6px 6px 0px var(--ink);
+    --shadow-xl: 8px 8px 0px var(--ink);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 100px;
+    padding: 0.3rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: var(--shadow);
+    margin-bottom: 1rem;
+  }
+  .header h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--purple);
+    line-height: 1.1;
+  }
+  .header p {
+    color: #64748B;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 900px) {
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (min-width: 900px) {
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94A3B8;
+    margin-bottom: 1rem;
+    padding-left: 0.25rem;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .card-emoji {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .card-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .card-subtitle {
+    font-size: 0.78rem;
+    color: #64748B;
+    margin-top: 0.2rem;
+  }
+  .plan-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    border: 2px solid;
+    margin-top: 0.3rem;
+  }
+  .plan-standard { background: #FEF9C3; border-color: var(--yellow); color: #92400E; }
+  .plan-premium  { background: var(--purple-light); border-color: var(--purple); color: #5B21B6; }
+  .plan-b2c      { background: #D1FAE5; border-color: var(--green); color: #065F46; }
+  .plan-error    { background: #FEE2E2; border-color: var(--red); color: #991B1B; }
+
+  /* ── URL PREVIEW ── */
+  .url-preview {
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: #475569;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  .url-preview .param-key   { color: var(--purple); font-weight: 700; }
+  .url-preview .param-value { color: #0F766E; }
+  .url-preview .base-url    { color: var(--ink); font-weight: 700; }
+
+  /* ── INPUTS ── */
+  .field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    font-family: 'Space Mono', monospace;
+  }
+  .field input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid #CBD5E1;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.1);
+  }
+
+  /* ── BUTTON ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 3px solid var(--ink);
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-decoration: none;
+    width: 100%;
+    box-shadow: var(--shadow);
+  }
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px var(--ink);
+  }
+  .btn-purple { background: var(--purple); color: white; }
+  .btn-yellow { background: var(--yellow); color: var(--ink); }
+  .btn-green  { background: var(--green);  color: var(--ink); }
+  .btn-red    { background: var(--red);    color: white; }
+  .btn-white  { background: white;         color: var(--ink); }
+
+  /* ── CONFIG PANEL ── */
+  .config-panel {
+    background: var(--white);
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-xl);
+    margin-bottom: 2.5rem;
+  }
+  .config-panel h2 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+
+  /* ── LOG ── */
+  .log-panel {
+    background: #0F172A;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: var(--shadow-xl);
+    margin-top: 2rem;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .log-panel h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94A3B8;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .log-entry {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    line-height: 1.8;
+    color: #94A3B8;
+  }
+  .log-entry .log-time { color: #475569; }
+  .log-entry .log-url  { color: #34D399; word-break: break-all; }
+  .log-entry .log-label { color: #FBBF24; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 2px dashed #E2E8F0;
+    margin: 0.5rem 0;
+  }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    background: var(--purple-light);
+    border: 2px solid #C4B5FD;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: #5B21B6;
+    line-height: 1.5;
+  }
+  .info-box strong { font-weight: 700; }
+  .warn-box {
+    background: #FEF9C3;
+    border: 2px solid var(--yellow);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    color: #92400E;
+    line-height: 1.5;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">🧪 HERRAMIENTA DE TESTING</div>
+    <h1>NubeKids B2B2C Simulator</h1>
+    <p>Simula los distintos escenarios del flujo e-Commerce → NubeKids</p>
+  </div>
+
+  <!-- CONFIG PANEL -->
+  <div class="config-panel">
+    <h2>⚙️ Configuración global</h2>
+    <div class="grid-2">
+      <div class="field">
+        <label>BASE URL de NubeKids</label>
+        <input type="text" id="baseUrl" value="https://nubekids-tales.vercel.app" placeholder="https://nubekids-tales.vercel.app" oninput="refreshPreviews()">
+      </div>
+      <div class="field">
+        <label>TENANT ID (por defecto)</label>
+        <input type="text" id="tenantId" value="shoe-store-default" placeholder="shoe-store-default" oninput="refreshPreviews()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ESCENARIOS -->
+  <p class="section-title">🎬 Escenarios de test</p>
+
+  <div class="grid-3">
+
+    <!-- 1: Standard -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-emoji">🏪</div>
+        <div>
+          <div class="card-title">Plan Standard</div>
+          <div class="card-subtitle">Solo tenant ID. Sin foto de producto.</div>
+          <span class="plan-badge plan-standard">STANDARD</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label>Tenant ID</label>
+        <input type="text" id="s1_tenant" value="shoe-store-default" oninput="refreshPreviews()">
+      </div>
+      <div class="url-preview" id="prev_standard">—</div>
+      <button class="btn btn-yellow" onclick="openTest('standard')">
+        🚀 Abrir test Standard
+      </button>
+    </div>
+
+    <!-- 2: Premium -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-emoji">✨</div>
+        <div>
+          <div class="card-title">Plan Premium</div>
+          <div class="card-subtitle">Tenant + producto + foto + email.</div>
+          <span class="plan-badge plan-premium">PREMIUM</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label>Nombre del producto</label>
+        <input type="text" id="s2_item" value="Nike Air Max 90 Kids Rojo" oninput="refreshPreviews()">
+      </div>
+      <div class="field">
+        <label>URL imagen del producto</label>
+        <input type="text" id="s2_img" value="https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Nike+Shoes" oninput="refreshPreviews()">
+      </div>
+      <div class="field">
+        <label>Email del cliente</label>
+        <input type="text" id="s2_email" value="padre@test.com" oninput="refreshPreviews()">
+      </div>
+      <div class="url-preview" id="prev_premium">—</div>
+      <button class="btn btn-purple" onclick="openTest('premium')">
+        🚀 Abrir test Premium
+      </button>
+    </div>
+
+    <!-- 3: Sin créditos -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-emoji">💸</div>
+        <div>
+          <div class="card-title">Sin créditos</div>
+          <div class="card-subtitle">Tenant con balance 0 → pantalla de aviso.</div>
+          <span class="plan-badge plan-error">SIN SALDO</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label>Tenant ID (debe tener balance=0)</label>
+        <input type="text" id="s3_tenant" value="shoe-store-default" oninput="refreshPreviews()">
+      </div>
+      <div class="info-box">
+        ⚠️ Para este test, ve a <strong>Supabase → credit_accounts</strong> y pon <strong>balance = 0</strong> en el tenant. Recuerda restaurarlo después.
+      </div>
+      <div class="url-preview" id="prev_nocredits">—</div>
+      <button class="btn btn-red" onclick="openTest('nocredits')">
+        🚀 Abrir test Sin créditos
+      </button>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <!-- 4: B2C directo -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-emoji">👤</div>
+        <div>
+          <div class="card-title">B2C Directo</div>
+          <div class="card-subtitle">Sin query params → flujo de login normal.</div>
+          <span class="plan-badge plan-b2c">B2C DIRECTO</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="info-box">
+        Verifica que el flujo B2C normal <strong>no tiene regresiones</strong> después de los cambios de Fase 10. Debe pedir login normalmente.
+      </div>
+      <div class="url-preview" id="prev_b2c">—</div>
+      <button class="btn btn-green" onclick="openTest('b2c')">
+        🚀 Abrir test B2C
+      </button>
+    </div>
+
+    <!-- 5: Premium CORS fail -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-emoji">🚧</div>
+        <div>
+          <div class="card-title">Premium — Fallback CORS</div>
+          <div class="card-subtitle">Imagen que fallará CORS → solo URL preview.</div>
+          <span class="plan-badge plan-premium">PREMIUM · CORS</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="field">
+        <label>URL que fallará CORS</label>
+        <input type="text" id="s5_img" value="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" oninput="refreshPreviews()">
+      </div>
+      <div class="info-box">
+        Unsplash bloquea CORS en fetch directo. Verifica que el wizard muestra la imagen como <strong>"Solo vista previa"</strong> y permite subir manualmente.
+      </div>
+      <div class="url-preview" id="prev_cors">—</div>
+      <button class="btn btn-white" onclick="openTest('cors')">
+        🚀 Abrir test CORS fallback
+      </button>
+    </div>
+
+  </div>
+
+  <!-- WARN -->
+  <div class="warn-box">
+    ⚡ <strong>Recuerda:</strong> Para los tests B2B (Standard, Premium, CORS) el tenant <code>shoe-store-default</code> debe tener <strong>balance ≥ 1</strong> en Supabase. Para el test "Sin créditos" ponlo en 0 y luego restáuralo.
+  </div>
+
+  <!-- CHECKLIST -->
+  <p class="section-title">✅ Criterios de Done — Fase 10</p>
+  <div class="card" style="margin-bottom: 1.5rem;">
+    <div id="checklist" style="display: flex; flex-direction: column; gap: 0.6rem;">
+      <!-- generado por JS -->
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-panel">
+    <h3>📋 Log de tests abiertos</h3>
+    <div id="log"><div class="log-entry" style="color:#475569">— Sin actividad aún —</div></div>
+  </div>
+
+</div>
+
+<script>
+  const TESTS = {
+    standard:  () => buildUrl({ tenant: v('s1_tenant') }),
+    premium:   () => buildUrl({ tenant: v('tenantId'), item: v('s2_item'), item_image: v('s2_img'), customer_email: v('s2_email'), ref: 'simulator' }),
+    nocredits: () => buildUrl({ tenant: v('s3_tenant') }),
+    b2c:       () => `${v('baseUrl').replace(/\/$/, '')}/`,
+    cors:      () => buildUrl({ tenant: v('tenantId'), item: 'Nike Air Max 90', item_image: v('s5_img'), ref: 'cors-test' }),
+  };
+
+  const CHECKLIST_ITEMS = [
+    { id: 'c1', label: '/?tenant= → wizard sin login → cuento → PDF', test: 'Standard' },
+    { id: 'c2', label: '/?item_image= → foto pre-cargada en Step 3', test: 'Premium' },
+    { id: 'c3', label: 'Tenant sin créditos → "Promoción no disponible"', test: 'Sin créditos' },
+    { id: 'c4', label: 'Post-lectura anónimo → CTA "Crear otro" → registro', test: 'Standard' },
+    { id: 'c5', label: 'customer_email pre-rellenado en SignUp', test: 'Premium' },
+    { id: 'c6', label: 'Flujo B2C directo sin regresiones', test: 'B2C directo' },
+    { id: 'c7', label: 'Fallback CORS → "Solo vista previa" en Step 3', test: 'CORS fallback' },
+  ];
+
+  function v(id) {
+    return document.getElementById(id)?.value?.trim() || '';
+  }
+
+  function buildUrl(params) {
+    const base = v('baseUrl').replace(/\/$/, '');
+    const qs = Object.entries(params)
+      .filter(([, val]) => val)
+      .map(([k, val]) => `${k}=${encodeURIComponent(val)}`)
+      .join('&');
+    return `${base}/?${qs}`;
+  }
+
+  function formatUrlPreview(url) {
+    if (!url.includes('?')) return `<span class="base-url">${url}</span>`;
+    const [base, qs] = url.split('?');
+    const parts = qs.split('&').map(p => {
+      const [k, ...rest] = p.split('=');
+      const val = decodeURIComponent(rest.join('='));
+      const shortVal = val.length > 40 ? val.substring(0, 37) + '…' : val;
+      return `<span class="param-key">${k}</span>=<span class="param-value">${shortVal}</span>`;
+    }).join('&<br>');
+    return `<span class="base-url">${base}?</span>${parts}`;
+  }
+
+  function refreshPreviews() {
+    const previews = {
+      prev_standard:  TESTS.standard(),
+      prev_premium:   TESTS.premium(),
+      prev_nocredits: TESTS.nocredits(),
+      prev_b2c:       TESTS.b2c(),
+      prev_cors:      TESTS.cors(),
+    };
+    for (const [id, url] of Object.entries(previews)) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = formatUrlPreview(url);
+    }
+  }
+
+  function openTest(name) {
+    const url = TESTS[name]();
+    window.open(url, '_blank');
+    addLog(name, url);
+  }
+
+  function addLog(name, url) {
+    const log = document.getElementById('log');
+    const placeholder = log.querySelector('[style*="color:#475569"]');
+    if (placeholder) placeholder.remove();
+
+    const now = new Date().toLocaleTimeString('es-ES');
+    const label = {
+      standard:  '🏪 Standard',
+      premium:   '✨ Premium',
+      nocredits: '💸 Sin créditos',
+      b2c:       '👤 B2C Directo',
+      cors:      '🚧 CORS Fallback',
+    }[name] || name;
+
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-label">${label}</span> → <span class="log-url">${url}</span>`;
+    log.insertBefore(entry, log.firstChild);
+  }
+
+  // Checklist
+  function buildChecklist() {
+    const container = document.getElementById('checklist');
+    CHECKLIST_ITEMS.forEach(item => {
+      const row = document.createElement('label');
+      row.style.cssText = 'display:flex;align-items:center;gap:0.75rem;cursor:pointer;padding:0.4rem 0.5rem;border-radius:8px;transition:background 0.15s;';
+      row.onmouseenter = () => row.style.background = '#F8FAFC';
+      row.onmouseleave = () => row.style.background = 'transparent';
+      row.innerHTML = `
+        <input type="checkbox" id="${item.id}" style="width:18px;height:18px;accent-color:#8B5CF6;cursor:pointer;flex-shrink:0;">
+        <span style="font-size:0.85rem;color:#1E293B;flex:1;">${item.label}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#94A3B8;white-space:nowrap;">${item.test}</span>
+      `;
+      row.querySelector('input').addEventListener('change', updateChecklistProgress);
+      container.appendChild(row);
+    });
+
+    // Progress bar
+    const progressWrap = document.createElement('div');
+    progressWrap.style.cssText = 'margin-top:0.75rem;padding-top:0.75rem;border-top:2px dashed #E2E8F0;';
+    progressWrap.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+        <span style="font-family:'Space Mono',monospace;font-size:0.65rem;color:#94A3B8;letter-spacing:0.05em;text-transform:uppercase;">Progreso fase 10</span>
+        <span id="progress-text" style="font-family:'Space Mono',monospace;font-size:0.7rem;font-weight:700;color:#8B5CF6;">0 / ${CHECKLIST_ITEMS.length}</span>
+      </div>
+      <div style="background:#E2E8F0;border-radius:100px;height:8px;overflow:hidden;border:2px solid #CBD5E1;">
+        <div id="progress-bar" style="height:100%;background:#8B5CF6;border-radius:100px;width:0%;transition:width 0.3s;"></div>
+      </div>
+    `;
+    container.appendChild(progressWrap);
+  }
+
+  function updateChecklistProgress() {
+    const total = CHECKLIST_ITEMS.length;
+    const checked = CHECKLIST_ITEMS.filter(i => document.getElementById(i.id)?.checked).length;
+    document.getElementById('progress-bar').style.width = `${(checked / total) * 100}%`;
+    document.getElementById('progress-text').textContent = `${checked} / ${total}`;
+    if (checked === total) {
+      document.getElementById('progress-bar').style.background = '#34D399';
+      document.getElementById('progress-text').style.color = '#059669';
+    } else {
+      document.getElementById('progress-bar').style.background = '#8B5CF6';
+      document.getElementById('progress-text').style.color = '#8B5CF6';
+    }
+  }
+
+  // Init
+  buildChecklist();
+  refreshPreviews();
+</script>
+</body>
+</html>
