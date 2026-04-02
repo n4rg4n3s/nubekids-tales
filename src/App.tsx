@@ -184,6 +184,11 @@ function App() {
           // Verificar si el tenant tiene créditos disponibles
           // (consulta directa para no consumir aún — solo verificar saldo)
           const { supabase } = await import('./lib/supabase');
+          if (!supabase) {
+            setError('Error de configuración: Base de datos no disponible.');
+            setAppState('error');
+            return;
+          }
           const { data: creditAccount } = await supabase
             .from('credit_accounts')
             .select('balance')
