@@ -1,9 +1,9 @@
 # PLANNING.md — NubeKids Platform
 
 > Documento vivo de decisiones arquitectónicas y roadmap.
-> Leer al inicio de cada sesión junto con CLAUDE.md, HANDOFF.md y BUSINESS_TECH_SPEC.md.
+> Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-03-30
+> **Última actualización:** 2026-04-02
 
 ---
 
@@ -139,7 +139,7 @@
 
 ---
 
-### ADR-011: Autenticación con Supabase Auth + Google OAuth ← NUEVO
+### ADR-011: Autenticación con Supabase Auth + Google OAuth ✅ IMPLEMENTADO
 
 **Contexto:** Necesitamos cuentas de usuario para cobrar, gestionar créditos y separar tenants de usuarios B2C.
 
@@ -155,7 +155,7 @@
 
 ---
 
-### ADR-012: Sistema de Créditos Prepago (no suscripción) ← NUEVO
+### ADR-012: Sistema de Créditos Prepago (no suscripción) ✅ IMPLEMENTADO
 
 **Contexto:** Necesitamos monetizar sin crear fricción. Una suscripción mensual tendría alto churn para un producto de uso esporádico.
 
@@ -167,90 +167,73 @@
 
 **Los créditos no caducan.** Se asocian a un `tenant_id` (B2B) o `user_id` (B2C).
 
-**Razón:**
-- Cash flow positivo desde día 1 (prepago)
-- Simple de implementar (tabla de balance + transacciones)
-- No hay lógica de cancelación/prorratas como en suscripciones
-- El usuario decide cuándo comprar más
-
 **Detalle completo:** Ver `BUSINESS_TECH_SPEC.md` § 3.
 
 ---
 
-### ADR-013: Dos Niveles de Integración B2B (Standard / Premium) ← NUEVO
+### ADR-013: Dos Niveles de Integración B2B (Standard / Premium) ✅ IMPLEMENTADO
 
-**Contexto:** Los e-Commerce tienen distintas capacidades técnicas. Unos pueden integrar un widget, otros solo comparten un link.
+**Contexto:** Los e-Commerce tienen distintas capacidades técnicas.
 
 **Decisión:**
 
-| Plan | Integración | Qué hace | Precio |
-|------|-------------|----------|--------|
-| **Standard** | Link con `?tenant=xxx` | El nombre de la tienda se teje en la narrativa del cuento. El usuario sube la foto del producto manualmente. | Menor |
-| **Premium** | Link con `?tenant=xxx&item=yyy&item_image=zzz` | La foto del producto comprado se inyecta automáticamente en el wizard como "objeto mágico". | Mayor |
+| Plan | Integración | Qué incluye el cuento | Precio |
+|------|-------------|----------------------|--------|
+| **Standard** | Link con `?tenant=xxx` | **Guión narrativo** menciona el nombre de tu tienda | Menor |
+| **Premium** | Link con `?tenant=xxx&item=yyy&item_image=zzz` | Guión + **ilustraciones**: el niño lleva puesto el producto comprado en tu tienda en cada imagen | Mayor |
 
-**Razón:**
-- Standard no requiere integración técnica por parte del e-Commerce (solo compartir un link)
-- Premium tiene mayor coste de API (imagen adicional) y mayor valor percibido
-- Ambos usan el mismo sistema de créditos, solo cambia el `plan_level` del tenant
-
-**Campo en tenant:** `plan_level: 'standard' | 'premium'`
-
-**V1:** Ambos niveles se implementan con query params (redirect). El widget embebible (iframe/Web Component) es V2.
+**V1:** Ambos niveles con query params. Widget embebible (iframe/Web Component) es V2.
 
 **Detalle completo:** Ver `BUSINESS_TECH_SPEC.md` § 5.
 
 ---
 
-### ADR-014: Stripe Checkout Sessions (no Stripe Elements) ← NUEVO
-
-**Contexto:** Necesitamos cobrar a tenants B2B y usuarios B2C.
+### ADR-014: Stripe Checkout Sessions (no Stripe Elements) ✅ IMPLEMENTADO
 
 **Decisión:** Stripe Checkout Sessions (hosted). No Stripe Elements (embedded).
 
-**Razón:**
-- Checkout Sessions maneja toda la UI de pago (no hay que construirla)
-- Cumplimiento PCI automático
-- Soporta todos los métodos de pago europeos (tarjeta, SEPA, iDEAL, etc.)
-- Solo necesitamos: crear session → redirect → webhook
-
-**Flujo:**
-1. Frontend llama a `POST /api/stripe/create-checkout` con `packId` + `userId/tenantId`
-2. Backend crea Checkout Session en Stripe con metadata
-3. Frontend redirige a `session.url` (Stripe hosted)
-4. Stripe procesa pago y envía webhook `checkout.session.completed`
-5. Backend añade créditos via RPC `add_credits`
+**Razón:** Checkout Sessions maneja toda la UI de pago. Cumplimiento PCI automático. Soporta todos los métodos de pago europeos.
 
 **Detalle completo:** Ver `BUSINESS_TECH_SPEC.md` § 4.
 
 ---
 
-### ADR-015: Vercel API Routes para Backend V1 ← NUEVO
-
-**Contexto:** Necesitamos endpoints de backend (Stripe webhook, CRUD créditos) pero no queremos montar un servidor separado.
+### ADR-015: Vercel API Routes para Backend V1 ✅ IMPLEMENTADO
 
 **Decisión:** Vercel Serverless Functions (API Routes) en carpeta `/api/`.
-
-**Razón:**
-- Mismo deploy que el frontend (un solo proyecto)
-- TypeScript nativo
-- Escala automáticamente
-- Sin coste adicional en plan Pro
 
 **Estructura:**
 ```
 /api/
-  ├── stripe/
-  │   ├── create-checkout.ts
-  │   └── webhook.ts
-  └── v1/
-      ├── credits/
-      └── sessions/
+  └── stripe/
+      ├── create-checkout.ts
+      └── webhook.ts
 ```
 
-**Variables de entorno del backend** (no VITE_, no se exponen al cliente):
-- `STRIPE_SECRET_KEY`
-- `STRIPE_WEBHOOK_SECRET`
-- `SUPABASE_SERVICE_ROLE_KEY`
+---
+
+### ADR-016: Landings Estáticas en `/public` (sin React) ✅ IMPLEMENTADO
+
+**Contexto:** Necesitamos páginas de marketing (B2B y B2C) independientes del SPA.
+
+**Decisión:** HTML estático con CSS vanilla en `/public/b2b.html` y `/public/b2c.html`.
+
+**Razón:**
+- Carga instantánea — sin bundle de React
+- SEO friendly (HTML semántico directo)
+- Sirven automáticamente desde Vercel sin build step
+- Independientes del estado de la app — no se rompen si el SPA tiene errores
+- Modificables sin tocar TypeScript
+
+**Convenciones de copy:**
+- **Sin mencionar "IA" en ningún punto de contacto con usuario final** — genera desconfianza en padres. Sustituir siempre por: "motor narrativo", "cuentos personalizados", "calibrado por edad y perfil del niño".
+- CTAs apuntan a `/buy-credits` (→ `BuyCredits.tsx`)
+- Sin la palabra "gratis" en CTAs — reencuadre de valor como inversión de negocio
+
+**Design system aplicado:** `nubekids_DD_Design_Document.md`
+- Fonts: Fredoka One (display) + Nunito (body) vía Google Fonts
+- Paleta: cream `#FDFBF7` / purple `#8B5CF6` / yellow `#FBBF24` / sky `#38BDF8` / mint `#34D399` / ink `#1E293B`
+- Tactile buttons: `border: 3px solid #1E293B`, `box-shadow: 4px 4px 0px #1E293B`, hover translate 2px
 
 ---
 
@@ -302,76 +285,82 @@
 - [x] Fallback automático a V1 si Supabase falla
 - [x] Testing end-to-end (cuento real con RAG semántico)
 
-### ⏳ Fase 6 — Bugfix + Estabilización (PENDIENTE — PRÓXIMA)
-- [ ] **FIX CRÍTICO:** Bug de imágenes vacías (regresión del RAG V2)
-- [ ] FIX: Book container demasiado pequeño
-- [ ] FIX: PDF orientación landscape (no portrait)
-- [ ] Crear `src/lib/supabase.ts` (cliente singleton, fix warning "Multiple GoTrueClient")
-- [ ] Limpiar logs debug de ragService.ts
-- [ ] FIX: Warning React en StepHero (setState durante render)
-- [ ] Commit RAG V2 a GitHub
-- [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 11 para diagnóstico del bug de imágenes
+### ✅ Fase 6 — Bugfix + Estabilización (COMPLETADA)
+- [x] FIX CRÍTICO: Bug de imágenes vacías (regresión del RAG V2)
+- [x] FIX: Book container demasiado pequeño
+- [x] FIX: PDF orientación landscape (no portrait)
+- [x] Crear `src/lib/supabase.ts` (cliente singleton, fix warning "Multiple GoTrueClient")
+- [x] Limpiar logs debug de ragService.ts
+- [x] FIX: Warning React en StepHero (setState durante render)
 
-### ⏳ Fase 7 — Autenticación (PENDIENTE)
-- [ ] Crear tablas SQL: `profiles`, tipo enum `user_role`
-- [ ] Crear trigger `on_auth_user_created`
-- [ ] Configurar Google OAuth en Supabase Dashboard
-- [ ] Crear `src/lib/supabase.ts` (si no existe ya de Fase 6)
-- [ ] Crear `src/services/authService.ts`
-- [ ] Crear `src/hooks/useAuth.ts`
-- [ ] Crear componentes: `LoginPage.tsx`, `SignUpPage.tsx`, `AuthCallback.tsx`
-- [ ] Crear `ProtectedRoute.tsx` (wrapper)
-- [ ] Implementar lógica: wizard sin login si viene de tenant B2B, requiere login si es B2C directo
-- [ ] Configurar RLS policies en todas las tablas
-- [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 2
+### ✅ Fase 7 — Autenticación (COMPLETADA)
+- [x] Crear tablas SQL: `profiles`, tipo enum `user_role`
+- [x] Crear trigger `on_auth_user_created`
+- [x] Configurar Google OAuth en Supabase Dashboard
+- [x] Crear `src/services/authService.ts`
+- [x] Crear `src/hooks/useAuth.ts`
+- [x] Crear componentes: `LoginPage.tsx`, `SignUpPage.tsx`, `AuthCallback.tsx`
+- [x] Configurar RLS policies en todas las tablas
+- [ ] Google OAuth funcional en local (pendiente de dominio — no bloqueante)
 
-### ⏳ Fase 8 — Sistema de Créditos (PENDIENTE)
-- [ ] Crear tablas SQL: `credit_accounts`, `credit_transactions`, `credit_packs`
-- [ ] Crear funciones RPC: `consume_credit()`, `add_credits()`
-- [ ] Insertar catálogo de packs (B2B Standard, B2B Premium, B2C)
-- [ ] Crear `src/services/creditService.ts`
-- [ ] Crear `src/hooks/useCredits.ts`
-- [ ] Crear `src/components/credits/CreditBalance.tsx` (badge en header)
-- [ ] Crear `src/components/credits/NoCreditsBanner.tsx`
-- [ ] Integrar en App.tsx: `consumeCredit()` ANTES de iniciar generación
-- [ ] Crear `src/services/sessionService.ts` (resolvePayment: quién paga)
-- [ ] Crear tabla `story_sessions` para tracking
-- [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 3 y § 6
+### ✅ Fase 8 — Sistema de Créditos (COMPLETADA)
+- [x] Crear tablas SQL: `credit_accounts`, `credit_transactions`, `credit_packs`
+- [x] Crear funciones RPC: `consume_credit()`, `add_credits()`
+- [x] Insertar catálogo de packs (B2B Standard, B2B Premium, B2C)
+- [x] Crear `src/services/creditService.ts`
+- [x] Crear `src/hooks/useCredits.ts`
+- [x] Crear `src/components/credits/CreditBalance.tsx` (badge en header)
+- [x] Crear `src/components/credits/NoCreditsBanner.tsx`
+- [x] Integrar en App.tsx: `consumeCredit()` ANTES de iniciar generación
 
-### ⏳ Fase 9 — Stripe + Compra de Créditos (PENDIENTE)
-- [x] Crear productos y prices en Stripe Dashboard (test mode primero)
-- [ ] Actualizar `credit_packs` con `stripe_price_id`
-- [ ] Crear `api/stripe/create-checkout.ts` (Vercel serverless function)
-- [ ] Crear `api/stripe/webhook.ts` (Vercel serverless function)
-- [ ] Crear `src/services/stripeService.ts` (frontend: redirect a checkout)
-- [ ] Crear `src/components/credits/BuyCredits.tsx` (pantalla de compra)
-- [ ] Probar flujo completo con Stripe test mode
-- [ ] Probar webhook local con `stripe listen --forward-to localhost:3000/api/stripe/webhook`
-- [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 4
+### ✅ Fase 9 — Stripe + Compra de Créditos (COMPLETADA)
+- [x] Crear 9 productos y prices en Stripe (modo LIVE desde inicio)
+- [x] Actualizar `credit_packs` con `stripe_price_id`
+- [x] Crear `api/stripe/create-checkout.ts` (Vercel serverless function)
+- [x] Crear `api/stripe/webhook.ts` (Vercel serverless function)
+- [x] Crear `src/services/stripeService.ts` (frontend: redirect a checkout)
+- [x] Crear `src/components/credits/BuyCredits.tsx` (pantalla de compra)
+- [x] Crear `src/components/credits/CreditsSuccess.tsx` (confirmación post-pago)
+- [x] Test end-to-end con Stripe CLI — webhook verificado
+- [x] Deploy en Vercel exitoso
+
+### ✅ Landing Pages B2B + B2C (COMPLETADA — 02 Abril 2026)
+- [x] `public/b2b.html` — Landing B2B orientada a conversión de tiendas online
+  - [x] Hero con gancho de ventas (no tecnológico)
+  - [x] 3 pilares: incentivo compra / upsell checkout / recuperar carritos
+  - [x] Diferenciación clara Standard vs Premium (guión vs ilustraciones)
+  - [x] Tabla rojo/verde: problemas vs soluciones
+  - [x] Banda emocional: vínculo marca-familia
+  - [x] Sección matemática "La cuenta de la vieja"
+  - [x] Precios B2B revisados al alza
+  - [x] Sin ninguna mención a "IA"
+  - [x] CTAs a `/buy-credits`
+- [x] `public/b2c.html` — Landing B2C para padres
+- [ ] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
 
 ### ✅ Fase 10 — Flujo B2B → B2C Completo (COMPLETADA)
-- [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`)
+- [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`) — 3 fallbacks CORS
 - [x] Ampliar query params soportados: `?tenant=&item=&item_image=&customer_email=&ref=`
 - [x] Implementar lógica de sesión anónima (1er cuento gratis via tenant)
-- [x] Implementar flujo "crear otro cuento" → redirect a registro B2C (`PostStoryActions.tsx`)
-- [x] Pre-rellenar email en registro si viene en query param (`initialEmail` en `SignUpPage`)
 - [x] Pantalla "Promoción no disponible" si tenant sin créditos (`promo-unavailable`)
-- [x] Fallback CORS en 3 intentos (fetch → canvas → url-only)
-- [x] Herramienta de testing (`docs/nubekids_b2b2c_simulator.html`)
-- [x] Documentación de integración para tenants (`docs/INTEGRACION_PREMIUM.md`)
-- [x] Deploy en Vercel funcional
+- [x] Implementar flujo "crear otro cuento" → `PostStoryActions.tsx` → registro B2C
+- [x] Pre-rellenar email en registro si viene en query param (`initialEmail` en `SignUpPage`)
+- [x] Pre-rellenar nombre e imagen del producto en Step 3 del wizard
+- [x] Herramienta de testing: `docs/nubekids_b2b2c_simulator.html`
+- [x] Documentación de integración para tenants: `docs/INTEGRACION_PREMIUM.md`
+- [x] Fix fuentes: importar Fredoka + Nunito en `index.css`
+- [x] Deploy en Vercel funcional — TypeScript sin errores
+- [x] **Referencia:** `BUSINESS_TECH_SPEC.md` § 5 y § 6
 
 ### ⏳ Fase 11 — Dominio + Deploy + Legal (PENDIENTE)
 - [ ] Comprar dominio
-- [ ] Deploy frontend + API en Vercel
-- [ ] Configurar DNS
+- [ ] Configurar DNS en Vercel
 - [ ] Configurar Stripe webhook con URL de producción
-- [ ] Activar Stripe live mode
+- [ ] Google OAuth funcional (requiere dominio)
 - [ ] Crear política de privacidad (GDPR, datos de menores)
 - [ ] Crear términos de servicio
 - [ ] Crear aviso legal
 - [ ] Crear política de cookies
-- [ ] Landing page mínima (hero, cómo funciona, pricing, CTA)
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
 ### ⏳ Fase 12 — Dashboard de Tenant (POST-LANZAMIENTO)
@@ -401,17 +390,16 @@
 
 | Item | Prioridad | Estado | Fase |
 |------|-----------|--------|------|
-| **Bug: imágenes vacías tras RAG V2** | CRÍTICA | Pendiente | 6 |
-| Book container demasiado pequeño | Alta | Pendiente | 6 |
-| PDF orientación vertical (debe ser landscape) | Alta | Pendiente | 6 |
-| Warning "Multiple GoTrueClient" Supabase | Alta | Pendiente | 6 |
-| Logs DEBUG en ragService.ts | Media | Pendiente | 6 |
-| Warning React en StepHero (setState durante render) | Baja | Pendiente | 6 |
+| Precios B2B desincronizados (landing vs Stripe vs Supabase) | **ALTA** | ⏳ Pendiente | - |
+| Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 — consume_credit es atómico | 10 |
+| Fuentes Fredoka/Nunito no importadas en index.css | Media | ✅ Resuelto sesión 2026-04-02 | 10 |
+| Google OAuth en GCP + Supabase | Media | ⏳ Cuando haya dominio | 7 |
+| `consumeCredit` sin refund si falla generación | Media | Aceptable V1 | 8 |
+| Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio | 9 |
+| Violations react-pageflip touchstart | Baja | Ignorable (librería externa) | 4 |
 | No hay tests unitarios | Alta | Pendiente | - |
-| Imágenes genéricas (sin foto real del héroe) | Media | Pendiente | - |
-| OCR para 4 PDFs de solo imágenes | Media | Pendiente | - |
-| Protección navegación (beforeunload) | Baja | Pendiente | - |
-| Tags vacíos en rag_chunks | Baja | Semántica pura OK | - |
+| OCR para 4 PDFs de solo imágenes | Media | Pendiente | 5 |
+| Tags vacíos en rag_chunks | Baja | Semántica pura OK | 5 |
 
 ---
 
@@ -419,10 +407,10 @@
 
 | Servicio | Uso | Estado |
 |----------|-----|--------|
-| Supabase | Auth + DB + RAG V2 pgvector | ✅ Integrado (ampliar con Auth) |
+| Supabase | Auth + DB + RAG V2 pgvector | ✅ Integrado |
 | Gemini API | Texto + Imagen + Embeddings | ✅ Integrado |
-| Stripe | Pagos (créditos B2B y B2C) | ⏳ Cuenta creada, pendiente config |
-| Vercel | Deploy frontend + API routes | ⏳ Pendiente |
+| Stripe | Pagos — Checkout Sessions + Webhook | ✅ Live mode |
+| Vercel | Deploy frontend + API routes | ✅ Funcionando |
 | Dominio | nubekids.io / nubekidstales.com | ⏳ Pendiente de compra |
 | Resend | Email transaccional (V2) | 🔮 Futuro |
 
@@ -447,11 +435,8 @@
 
 | Documento | Propósito |
 |-----------|-----------|
-| `CLAUDE.md` | Reglas del proyecto para Claude |
 | `PLANNING.md` | Este documento — ADRs, roadmap |
 | `HANDOFF.md` | Estado actual, bugs, estructura de archivos |
-| `BUSINESS_TECH_SPEC.md` | **NUEVO** — Auth, créditos, Stripe, integración B2B, pseudocódigo |
+| `BUSINESS_TECH_SPEC.md` | Auth, créditos, Stripe, integración B2B, pseudocódigo |
+| `nubekids_DD_Design_Document.md` | Guía de diseño UI/UX — aplicar en landings y componentes |
 | `docs/GUIA_RAG_V2.md` | Guía técnica RAG V2 |
-| `nubekids_PRD_v2.md` | Requisitos de producto (visión original) |
-| `nubekids_PRP_v2.md` | Prompt de implementación (arquitectura original) |
-| `nubekids_DD_Design_Document.md` | Guía de diseño UI/UX |

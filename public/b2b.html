@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NubeKids , Más ventas para tu tienda infantil</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ─── DESIGN TOKENS ─────────────────────────────── */
+        :root {
+            --cream: #FDFBF7;
+            --purple: #8B5CF6;
+            --purple-d: #6D28D9;
+            --yellow: #FBBF24;
+            --yellow-d: #F59E0B;
+            --sky: #38BDF8;
+            --mint: #34D399;
+            --ink: #1E293B;
+            --ink-lite: #334155;
+            --white: #ffffff;
+            --shadow: 4px 4px 0px var(--ink);
+            --shadow-sm: 2px 2px 0px var(--ink);
+            --border: 3px solid var(--ink);
+            --radius: 12px;
+        }
+
+        /* ─── RESET & BASE ──────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .display {
+            font-family: 'Fredoka One', cursive;
+            line-height: 1.15;
+        }
+
+        /* ─── UTILITY ───────────────────────────────────── */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--yellow);
+            border: var(--border);
+            border-radius: 40px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            padding: 4px 14px;
+            margin-bottom: 14px;
+        }
+
+        /* ─── BUTTONS ───────────────────────────────────── */
+        .btn {
+            display: inline-block;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 14px 28px;
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary {
+            background: var(--yellow);
+            color: var(--ink);
+        }
+
+        .btn-secondary {
+            background: var(--purple);
+            color: var(--white);
+        }
+
+        .btn-outline {
+            background: var(--white);
+            color: var(--ink);
+        }
+
+        .btn-mint {
+            background: var(--mint);
+            color: var(--ink);
+        }
+
+        .btn-lg {
+            font-size: 1.3rem;
+            padding: 18px 40px;
+        }
+
+        /* ─── NAV ───────────────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--purple);
+            border-bottom: var(--border);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--yellow);
+        }
+
+        .nav-cta {
+            font-size: 0.95rem;
+            padding: 10px 20px;
+        }
+
+        /* ─── HERO ──────────────────────────────────────── */
+        #hero {
+            background: var(--purple);
+            border-bottom: var(--border);
+            padding: 80px 0 72px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(251, 191, 36, 0.18) 0%, transparent 55%),
+                radial-gradient(circle at 85% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 45%);
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-eyebrow {
+            display: inline-block;
+            background: var(--yellow);
+            border: var(--border);
+            border-radius: 40px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.9rem;
+            padding: 5px 16px;
+            margin-bottom: 20px;
+        }
+
+        .hero-headline {
+            font-size: clamp(2.4rem, 5vw, 3.8rem);
+            color: var(--white);
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .hero-headline .accent {
+            color: var(--yellow);
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 500px;
+        }
+
+        .hero-sub strong {
+            color: var(--yellow);
+            font-weight: 900;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* Hero visual card */
+        .hero-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .hero-stat-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            animation: floatUp 0.6s ease both;
+        }
+
+        .hero-stat-card:nth-child(1) {
+            animation-delay: 0.15s;
+        }
+
+        .hero-stat-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .hero-stat-card:nth-child(3) {
+            animation-delay: 0.45s;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            flex-shrink: 0;
+        }
+
+        .stat-text strong {
+            display: block;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.4rem;
+            color: var(--purple);
+        }
+
+        .stat-text span {
+            font-size: 0.9rem;
+            color: var(--ink-lite);
+            font-weight: 700;
+        }
+
+        /* ─── PAIN STRIP ────────────────────────────────── */
+        #pain {
+            background: var(--ink);
+            color: var(--white);
+            padding: 48px 0;
+            border-bottom: var(--border);
+        }
+
+        #pain h2 {
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            color: var(--yellow);
+            margin-bottom: 12px;
+        }
+
+        #pain p {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            line-height: 1.65;
+            max-width: 780px;
+        }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 36px;
+        }
+
+        .pain-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius);
+            padding: 22px;
+        }
+
+        .pain-item .pill {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .pain-item h3 {
+            font-size: 1.1rem;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .pain-item p {
+            font-size: 0.92rem;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* ─── THREE PILLARS ─────────────────────────────── */
+        #pillars {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 52px;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            margin-bottom: 10px;
+        }
+
+        .section-header p {
+            font-size: 1.05rem;
+            color: var(--ink-lite);
+            font-weight: 600;
+            max-width: 580px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .pillar-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 32px 26px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pillar-card.card-purple {
+            border-top: 6px solid var(--purple);
+        }
+
+        .pillar-card.card-yellow {
+            border-top: 6px solid var(--yellow);
+        }
+
+        .pillar-card.card-sky {
+            border-top: 6px solid var(--sky);
+        }
+
+        .pillar-num {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            color: rgba(30, 41, 59, 0.07);
+        }
+
+        .pillar-emoji {
+            font-size: 2.6rem;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .pillar-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 8px;
+        }
+
+        .pillar-tag {
+            display: inline-block;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 2px solid var(--ink);
+            margin-bottom: 12px;
+        }
+
+        .tag-purple {
+            background: var(--purple);
+            color: var(--white);
+        }
+
+        .tag-yellow {
+            background: var(--yellow);
+            color: var(--ink);
+        }
+
+        .tag-sky {
+            background: var(--sky);
+            color: var(--ink);
+        }
+
+        .pillar-card p {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--ink-lite);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .pillar-highlight {
+            background: var(--cream);
+            border: 2px solid var(--ink);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .pillar-highlight .num {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: var(--purple);
+        }
+
+        /* ─── HOW IT WORKS ──────────────────────────────── */
+        #how {
+            background: var(--ink);
+            padding: 80px 0;
+            border-top: var(--border);
+            border-bottom: var(--border);
+        }
+
+        #how .section-header h2 {
+            color: var(--white);
+        }
+
+        #how .section-header p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        .plan-card {
+            border: var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .plan-card.plan-standard {
+            background: var(--white);
+        }
+
+        .plan-card.plan-premium {
+            background: var(--purple);
+            color: var(--white);
+        }
+
+        .plan-header {
+            padding: 22px 26px 18px;
+            border-bottom: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .plan-standard .plan-header {
+            background: var(--yellow);
+        }
+
+        .plan-premium .plan-header {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        .plan-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .plan-badge {
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.8rem;
+            background: var(--ink);
+            color: var(--yellow);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 2px solid var(--ink);
+        }
+
+        .plan-premium .plan-badge {
+            background: var(--yellow);
+            color: var(--ink);
+        }
+
+        .plan-steps {
+            padding: 24px 26px;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .plan-steps li {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--yellow);
+            border: 2px solid var(--ink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.95rem;
+            color: var(--ink);
+            margin-top: 2px;
+        }
+
+        .plan-premium .step-num {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .step-body {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .step-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            line-height: 1.2;
+        }
+
+        .plan-standard .step-title {
+            color: var(--ink);
+        }
+
+        .plan-premium .step-title {
+            color: var(--yellow);
+        }
+
+        .step-desc {
+            font-size: 0.88rem;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
+        .plan-standard .step-desc {
+            color: var(--ink-lite);
+        }
+
+        .plan-premium .step-desc {
+            color: rgba(255, 255, 255, 0.78);
+        }
+
+        /* plan highlight chip at bottom */
+        .plan-what {
+            margin: 0 26px 26px;
+            border-radius: 10px;
+            border: 2px solid var(--ink);
+            padding: 14px 18px;
+        }
+
+        .plan-standard .plan-what {
+            background: #FEF9C3;
+        }
+
+        .plan-premium .plan-what {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .plan-what-label {
+            font-family: 'Fredoka One', cursive;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 4px;
+        }
+
+        .plan-standard .plan-what-label {
+            color: var(--ink);
+        }
+
+        .plan-premium .plan-what-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .plan-what-text {
+            font-size: 0.93rem;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
+        .plan-standard .plan-what-text {
+            color: var(--ink);
+        }
+
+        .plan-premium .plan-what-text {
+            color: var(--white);
+        }
+
+        /* ─── RESULTS TABLE ─────────────────────────────── */
+        #results {
+            padding: 80px 0;
+        }
+
+        .results-table-wrap {
+            overflow-x: auto;
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            background: var(--white);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: var(--ink);
+        }
+
+        thead th {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            padding: 16px 20px;
+            text-align: left;
+        }
+
+        thead th:first-child {
+            color: #FCA5A5;
+            border-right: 3px solid var(--ink);
+        }
+
+        thead th:last-child {
+            color: #6EE7B7;
+        }
+
+        tbody tr {
+            border-top: 2px solid rgba(30, 41, 59, 0.08);
+        }
+
+        tbody tr:hover td:first-child {
+            background: #FFF1F2;
+        }
+
+        tbody tr:hover td:last-child {
+            background: #F0FDF4;
+        }
+
+        tbody td {
+            padding: 15px 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            vertical-align: middle;
+            line-height: 1.5;
+        }
+
+        tbody td:first-child {
+            border-left: 5px solid #EF4444;
+            background: #FFF5F5;
+            border-right: 3px solid rgba(30, 41, 59, 0.08);
+            color: #7F1D1D;
+        }
+
+        tbody td:last-child {
+            border-left: 5px solid #22C55E;
+            background: #F0FFF4;
+            color: #14532D;
+            font-weight: 800;
+        }
+
+        /* ─── EMOTION BAND ──────────────────────────────── */
+        #emotion {
+            background: var(--purple);
+            border-top: var(--border);
+            border-bottom: var(--border);
+            padding: 52px 0;
+            text-align: center;
+        }
+
+        .emotion-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        #emotion h2 {
+            color: var(--white);
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            margin-bottom: 14px;
+        }
+
+        #emotion h2 .acc {
+            color: var(--yellow);
+        }
+
+        #emotion p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .emotion-icons {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .emotion-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            min-width: 110px;
+        }
+
+        .emotion-icon .ei {
+            font-size: 2rem;
+        }
+
+        .emotion-icon span {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.85);
+            text-align: center;
+        }
+
+        /* ─── MATH PROOF ────────────────────────────────── */
+        #math {
+            background: var(--yellow);
+            border-top: var(--border);
+            border-bottom: var(--border);
+            padding: 60px 0;
+        }
+
+        .math-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        #math h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            margin-bottom: 16px;
+        }
+
+        #math p {
+            font-size: 1.02rem;
+            font-weight: 700;
+            line-height: 1.65;
+            color: var(--ink-lite);
+            margin-bottom: 14px;
+        }
+
+        .math-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+        }
+
+        .math-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 2px dashed rgba(30, 41, 59, 0.15);
+            font-weight: 800;
+        }
+
+        .math-row:last-child {
+            border-bottom: none;
+        }
+
+        .math-row .label {
+            font-size: 0.95rem;
+        }
+
+        .math-row .value {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+        }
+
+        .math-row.highlight .value {
+            color: var(--purple);
+            font-size: 1.6rem;
+        }
+
+        .math-row.highlight {
+            background: var(--cream);
+            margin: 0 -14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+        }
+
+        /* ─── PRICING ───────────────────────────────────── */
+        #pricing {
+            padding: 80px 0;
+            background: var(--cream);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        .pricing-plan {
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            background: var(--white);
+        }
+
+        .pricing-plan.featured {
+            background: var(--purple);
+            color: var(--white);
+            transform: translateY(-8px);
+        }
+
+        .pricing-plan.featured .plan-name {
+            color: var(--white);
+        }
+
+        .plan-top {
+            padding: 28px 28px 22px;
+            border-bottom: var(--border);
+        }
+
+        .plan-name {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .plan-desc {
+            font-size: 0.9rem;
+            font-weight: 700;
+            opacity: 0.7;
+            margin-bottom: 0;
+        }
+
+        .packs {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pack-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border: 2px solid rgba(30, 41, 59, 0.15);
+            border-radius: 8px;
+            background: rgba(30, 41, 59, 0.03);
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .pricing-plan.featured .pack-row {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .pack-row:hover {
+            border-color: var(--purple);
+            background: rgba(139, 92, 246, 0.06);
+        }
+
+        .pricing-plan.featured .pack-row:hover {
+            border-color: var(--yellow);
+            background: rgba(251, 191, 36, 0.15);
+        }
+
+        .pack-label {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .pack-stories {
+            font-size: 0.85rem;
+            font-weight: 800;
+            opacity: 0.65;
+        }
+
+        .pack-price {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: var(--purple);
+        }
+
+        .pricing-plan.featured .pack-price {
+            color: var(--yellow);
+        }
+
+        .pack-unit {
+            font-size: 0.75rem;
+            font-weight: 800;
+            opacity: 0.6;
+        }
+
+        .plan-cta {
+            padding: 0 28px 28px;
+        }
+
+        .plan-cta .btn {
+            width: 100%;
+            text-align: center;
+            display: block;
+        }
+
+        .pricing-note {
+            margin-top: 32px;
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px 28px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .pricing-note .bulb {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .pricing-note p {
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.65;
+            color: var(--ink-lite);
+        }
+
+        .pricing-note p strong {
+            color: var(--ink);
+            font-weight: 900;
+        }
+
+        /* ─── OBJECTIONS ────────────────────────────────── */
+        #objections {
+            background: var(--ink);
+            padding: 80px 0;
+            border-top: var(--border);
+            border-bottom: var(--border);
+        }
+
+        #objections .section-header h2 {
+            color: var(--white);
+        }
+
+        #objections .section-header p {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .obj-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .obj-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .obj-q {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.05rem;
+            color: var(--yellow);
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .obj-a {
+            font-size: 0.93rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.65;
+        }
+
+        /* ─── FOR WHO ────────────────────────────────────── */
+        #forwho {
+            padding: 80px 0;
+        }
+
+        .forwho-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        .forwho-card {
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px;
+        }
+
+        .forwho-card.yes {
+            background: var(--mint);
+        }
+
+        .forwho-card.no {
+            background: var(--white);
+        }
+
+        .forwho-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .forwho-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .forwho-card ul li {
+            font-weight: 700;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        /* ─── CTA FINAL ─────────────────────────────────── */
+        #cta-final {
+            background: var(--purple);
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #cta-final::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(251, 191, 36, 0.22) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            position: relative;
+        }
+
+        #cta-final h2 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            color: var(--white);
+            margin-bottom: 14px;
+        }
+
+        #cta-final h2 .accent {
+            color: var(--yellow);
+        }
+
+        #cta-final .sub {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.82);
+            font-weight: 700;
+            max-width: 560px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-fine {
+            margin-top: 20px;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 700;
+        }
+
+        /* ─── FOOTER ────────────────────────────────────── */
+        footer {
+            background: var(--ink);
+            color: rgba(255, 255, 255, 0.6);
+            border-top: var(--border);
+            padding: 28px 0;
+            text-align: center;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        footer a {
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        /* ─── RESPONSIVE ────────────────────────────────── */
+        @media (max-width: 900px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .pain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pillars-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-plan.featured {
+                transform: none;
+            }
+
+            .math-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .obj-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .forwho-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════════════ -->
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">☁️ Nube<span>Kids</span></a>
+            <a href="/buy-credits" class="btn btn-primary nav-cta">Ver packs de créditos →</a>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════ -->
+    <section id="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div>
+                    <span class="hero-eyebrow">🏪 Para tiendas online de productos infantiles</span>
+                    <h1 class="hero-headline">
+                        Tu competencia<br>vende.<br>
+                        Tú podrías vender<br><span class="accent">el doble.</span>
+                    </h1>
+                    <p class="hero-sub">
+                        Añade un cuento personalizado a cada pedido y convierte a los padres que dudan en clientes que
+                        compran, y a los que ya compraron en clientes que <strong>vuelven</strong>.
+                    </p>
+                    <div class="hero-ctas">
+                        <a href="/buy-credits" class="btn btn-primary btn-lg">Ver packs de créditos →</a>
+                        <a href="#pillars" class="btn btn-outline btn-lg">¿Cómo funciona?</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-stat-card">
+                        <span class="stat-icon">🛒</span>
+                        <div class="stat-text">
+                            <strong>+75%</strong>
+                            <span>abandono de carritos en moda&nbsp;infantil</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat-card">
+                        <span class="stat-icon">💸</span>
+                        <div class="stat-text">
+                            <strong>Cada vez más caro</strong>
+                            <span>conseguir un nuevo cliente via Meta o Google</span>
+                        </div>
+                    </div>
+                    <div class="hero-stat-card">
+                        <span class="stat-icon">🔁</span>
+                        <div class="stat-text">
+                            <strong>Sin recurrencia</strong>
+                            <span>el cliente compra una vez y no vuelve</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     PAIN
+════════════════════════════════════════════════════ -->
+    <section id="pain">
+        <div class="container">
+            <h2>¿Te suena esto?</h2>
+            <p>La mayoría de tiendas online de productos infantiles comparten los mismos tres problemas. No son
+                problemas de producto. Son problemas de qué pasa <em>después</em> de la venta.</p>
+            <div class="pain-grid">
+                <div class="pain-item">
+                    <div class="pill">Problema nº1</div>
+                    <h3>Guerra de precios sin salida</h3>
+                    <p>Amazon, AliExpress, Shein Kids. Venden lo mismo que tú a precio de coste. Si tu único argumento
+                        es el precio, estás en una carrera en la que no puedes ganar.</p>
+                </div>
+                <div class="pain-item">
+                    <div class="pill">Problema nº2</div>
+                    <h3>El cliente compra y desaparece</h3>
+                    <p>Ticket medio alto, tasa de recompra baja. El paquete llega, le gusta… y no vuelven solos. Sin un
+                        vínculo emocional con tu marca, la relación termina en el desempaquetado.</p>
+                </div>
+                <div class="pain-item">
+                    <div class="pill">Problema nº3</div>
+                    <h3>Conseguir un cliente cuesta cada vez más</h3>
+                    <p>Los canales de publicidad se saturan y suben de precio. Pagas más por cada venta y el valor que
+                        ese cliente genera a lo largo del tiempo no crece al mismo ritmo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     THREE PILLARS
+════════════════════════════════════════════════════ -->
+    <section id="pillars">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag">🎯 Tres herramientas. Un solo pack.</span>
+                <h2>Cómo NubeKids mueve tu cifra de ventas</h2>
+                <p>Un cuento personalizado no es un regalo bonito. Es una palanca de conversión con tres puntos de apoyo
+                    distintos en tu proceso de venta.</p>
+            </div>
+            <div class="pillars-grid">
+
+                <!-- CARD 1: Incentivo compra -->
+                <div class="pillar-card card-yellow">
+                    <span class="pillar-num">01</span>
+                    <span class="pillar-emoji">🛍️</span>
+                    <span class="pillar-tag tag-yellow">Incentivo de compra</span>
+                    <h3>Convierte la duda en pedido</h3>
+                    <p>
+                        Un padre está a punto de comprar unas zapatillas para su hijo. Le surge la duda habitual: ¿y si
+                        no le quedan bien? ¿Y si hay algo mejor?
+                        <br><br>
+                        Ofrece un cuento protagonizado por su hijo como regalo con la compra. La duda desaparece. El
+                        pedido se cierra.
+                        <br><br>
+                        <strong>Cada cuento que activas = una venta que ya se ha producido.</strong> No regalas
+                        créditos. Los usas estratégicamente.
+                    </p>
+                    <div class="pillar-highlight">
+                        <div class="num">1 cuento</div>
+                        por pedido confirmado > incentivo de compra directo
+                    </div>
+                </div>
+
+                <!-- CARD 2: Upsell -->
+                <div class="pillar-card card-purple">
+                    <span class="pillar-num">02</span>
+                    <span class="pillar-emoji">⬆️</span>
+                    <span class="pillar-tag tag-purple">Upsell en el checkout</span>
+                    <h3>Multiplica el valor de cada venta</h3>
+                    <p>
+                        En el momento del pago, ofrece un pack de 3 cuentos valorado en 13,90€ (que a ti te cuesta
+                        1,70€ de media).
+                        <br><br>
+                        El cliente ya tiene la tarjeta en la mano. El "sí" marginal a un extra de valor para su hijo es
+                        muy fácil. Y tú consigues más margen con el mismo coste de adquisición.
+                        <br><br>
+                        <strong>Mismo gasto para conseguir al cliente, ticket medio notablemente más alto.</strong>
+                    </p>
+                    <div class="pillar-highlight">
+                        <div class="num">3 cuentos</div>
+                        ofrecidos en checkout , upsell de margen puro
+                    </div>
+                </div>
+
+                <!-- CARD 3: Carritos abandonados -->
+                <div class="pillar-card card-sky">
+                    <span class="pillar-num">03</span>
+                    <span class="pillar-emoji">🛒</span>
+                    <span class="pillar-tag tag-sky">Recupera carritos abandonados</span>
+                    <h3>Reactiva a quien se fue sin comprar</h3>
+                    <p>
+                        El 75% de los carritos en moda infantil se abandonan. La mayoría no es por precio, es por duda,
+                        distracción o falta de un último empujón.
+                        <br><br>
+                        En el email de recuperación, añade un cuento personalizado como incentivo para completar el
+                        pedido.
+                        <br><br>
+                        <strong>Recuperar un 5% de esos carritos ya cambia tus números del mes.</strong>
+                    </p>
+                    <div class="pillar-highlight">
+                        <div class="num">+5% recuperación</div>
+                        de carritos = ingresos que ya tenías perdidos
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════════════════ -->
+    <section id="how">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sin código. Sin reuniones. Sin fricción.</h2>
+                <p>Dos planes según cómo quieras integrar la experiencia. Los dos funcionan hoy mismo.</p>
+            </div>
+            <div class="plans-grid">
+
+                <div class="plan-card plan-standard">
+                    <div class="plan-header">
+                        <h3>Plan Standard</h3>
+                        <span class="plan-badge">Listo en 5 min</span>
+                    </div>
+                    <ul class="plan-steps">
+                        <li>
+                            <span class="step-num">1</span>
+                            <div class="step-body">
+                                <span class="step-title">Recibes tu URL personalizada</span>
+                                <span class="step-desc">La URL lleva el nombre de tu tienda, que aparece integrado en el
+                                    guión narrativo del cuento.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <div class="step-body">
+                                <span class="step-title">La añades a tu email de confirmación</span>
+                                <span class="step-desc">O en la página de "Gracias". Sin desarrolladores. Sin código.
+                                    Copias y pegas.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <div class="step-body">
+                                <span class="step-title">El cuento se genera en 60 segundos</span>
+                                <span class="step-desc">Personalizado por nombre, edad y características del niño.
+                                    Ilustrado. Descargable en PDF.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <div class="step-body">
+                                <span class="step-title">Eso es todo</span>
+                                <span class="step-desc">Sin integraciones, sin reuniones, sin mantenimiento
+                                    técnico.</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="plan-what">
+                        <div class="plan-what-label">Lo que consigue tu cliente</div>
+                        <div class="plan-what-text">Un cuento donde su hijo es el protagonista y el texto menciona tu
+                            tienda como parte de la historia. Memorable. Diferenciador.</div>
+                    </div>
+                </div>
+
+                <div class="plan-card plan-premium">
+                    <div class="plan-header">
+                        <h3>Plan Premium</h3>
+                        <span class="plan-badge">⭐ Recomendado</span>
+                    </div>
+                    <ul class="plan-steps">
+                        <li>
+                            <span class="step-num">1</span>
+                            <div class="step-body">
+                                <span class="step-title">Un pequeño fragmento de código en tu checkout</span>
+                                <span class="step-desc">Una sola vez, en unos 10 minutos. A partir de ahí, todo es
+                                    automático.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">2</span>
+                            <div class="step-body">
+                                <span class="step-title">La foto del producto comprado entra en el cuento</span>
+                                <span class="step-desc">El artículo que acaba de llegar a casa se convierte en el
+                                    "objeto mágico" de la historia.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">3</span>
+                            <div class="step-body">
+                                <span class="step-title">El niño lleva el producto en las ilustraciones</span>
+                                <span class="step-desc">No solo en el texto, en cada imagen del cuento, el protagonista
+                                    lleva puestas las zapatillas, la mochila o el accesorio que compraste en tu
+                                    tienda.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="step-num">4</span>
+                            <div class="step-body">
+                                <span class="step-title">El producto y el recuerdo quedan unidos</span>
+                                <span class="step-desc">Esa familia va a ver tu producto cada vez que lean el cuento.
+                                    Durante meses.</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="plan-what">
+                        <div class="plan-what-label">Lo que consigue tu cliente</div>
+                        <div class="plan-what-text">Un cuento donde su hijo es el protagonista, tu tienda aparece en el
+                            guión y el producto comprado aparece ilustrado página a página. Imposible de olvidar.</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     RESULTS TABLE
+════════════════════════════════════════════════════ -->
+    <section id="results">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag">📊 Lo que cambia en tu negocio</span>
+                <h2>De los problemas que tienes hoy<br>a los resultados de mañana</h2>
+            </div>
+            <div class="results-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>🔴 Problema que tienes hoy</th>
+                            <th>🟢 Lo que NubeKids activa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>🔁 Tasa de recompra baja, los clientes no vuelven solos</td>
+                            <td>Vínculo emocional con tu marca que genera razones reales para volver</td>
+                        </tr>
+                        <tr>
+                            <td>💰 Guerra de precios, te copian y te bajan el margen</td>
+                            <td>Diferenciación que ningún competidor puede copiar a precio</td>
+                        </tr>
+                        <tr>
+                            <td>📣 Cada nueva venta cuesta más en publicidad</td>
+                            <td>Valor percibido muy alto por el cliente, a un coste de 1,58–1,94 € por cuento</td>
+                        </tr>
+                        <tr>
+                            <td>📦 La experiencia del cliente termina cuando llega el paquete</td>
+                            <td>La experiencia empieza cuando el paquete llega, y dura semanas</td>
+                        </tr>
+                        <tr>
+                            <td>📧 Emails de confirmación que nadie abre</td>
+                            <td>Email con un cuento del hijo del cliente = tasa de apertura >60%</td>
+                        </tr>
+                        <tr>
+                            <td>🛒 3 de cada 4 carritos se abandonan sin comprar</td>
+                            <td>Incentivo emocional que convierte la duda en decisión de compra</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     EMOTIONAL CONNECTION BAND
+════════════════════════════════════════════════════ -->
+    <section id="emotion">
+        <div class="container">
+            <div class="emotion-inner">
+                <h2>No vendes un cuento.<br>Vendes un <span class="acc">vínculo emocional.</span></h2>
+                <p>
+                    Un padre que asocia tu tienda con el cuento que su hijo pidió leer cinco noches seguidas
+                    no compara tu precio con el de nadie. Vuelve contigo porque su familia tiene un recuerdo
+                    real ligado a tu marca. Eso no lo construye un descuento. Lo construye una historia.
+                </p>
+                <div class="emotion-icons">
+                    <div class="emotion-icon"><span class="ei">📖</span><span>El niño protagoniza la historia</span>
+                    </div>
+                    <div class="emotion-icon"><span class="ei">❤️</span><span>La familia asocia tu marca con ese
+                            recuerdo</span></div>
+                    <div class="emotion-icon"><span class="ei">🔁</span><span>El cliente vuelve porque le importa lo que
+                            siente</span></div>
+                    <div class="emotion-icon"><span class="ei">🛡️</span><span>Inmune a la guerra de precios</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+════════════════════════════════════════════════════ -->
+    <section id="math">
+        <div class="container">
+            <div class="math-inner">
+                <div>
+                    <span class="tag">🧮 La cuenta de la vieja</span>
+                    <h2>Si antes vendías 4 al día, ahora vendes 7.</h2>
+                    <p>
+                        No necesitas datos complicados para ver si NubeKids te funciona.
+                        Si empiezas a usar los cuentos como incentivo y tus ventas suben, la herramienta está
+                        trabajando.
+                    </p>
+                    <p>
+                        Y en el upsell del checkout, la matemática es aún más clara: <strong>por el mismo coste de
+                            conseguir al cliente, consigues un margen extra sobre cada venta.</strong>
+                        Eso se llama eficiencia, no gasto.
+                    </p>
+                    <p>
+                        Cada crédito que consumes de tu pack es porque has cerrado una venta.
+                        <strong>No es un regalo. Es una inversión medible.</strong>
+                    </p>
+                </div>
+                <div class="math-card">
+                    <div class="math-row">
+                        <span class="label">Ticket medio de tu tienda</span>
+                        <span class="value" style="color:var(--ink-lite)">60 €</span>
+                    </div>
+                    <div class="math-row">
+                        <span class="label">Coste de un cuento (pack Growth)</span>
+                        <span class="value" style="color:var(--ink-lite)">1,7 €</span>
+                    </div>
+                    <div class="math-row">
+                        <span class="label">Si recuperas 10 carritos al mes</span>
+                        <span class="value" style="color:var(--ink-lite)">600 € extra</span>
+                    </div>
+                    <div class="math-row">
+                        <span class="label">Si consigues 10 upsells al mes</span>
+                        <span class="value" style="color:var(--ink-lite)">+50 € margen</span>
+                    </div>
+                    <div class="math-row highlight">
+                        <span class="label">Pack Growth completo (200 cuentos)</span>
+                        <span class="value">340 €</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     PRICING
+════════════════════════════════════════════════════ -->
+    <section id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag">💰 Packs de créditos</span>
+                <h2>Sin contratos. Sin permanencias. Pagas lo que usas.</h2>
+                <p>Cada crédito = un cuento entregado a un cliente real. Los créditos no caducan.</p>
+            </div>
+            <div class="pricing-grid">
+
+                <div class="pricing-plan">
+                    <div class="plan-top">
+                        <div class="plan-name">Plan Standard</div>
+                        <div class="plan-desc">Sin integración técnica , URL personalizada en tu email</div>
+                    </div>
+                    <div class="packs">
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">🌱 Starter</span>
+                            <span class="pack-stories">50 cuentos</span>
+                            <span class="pack-price">97 €</span>
+                            <span class="pack-unit">1,94 €/c</span>
+                        </a>
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">🚀 Growth</span>
+                            <span class="pack-stories">200 cuentos</span>
+                            <span class="pack-price">340 €</span>
+                            <span class="pack-unit">1,70 €/c</span>
+                        </a>
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">⚡ Scale</span>
+                            <span class="pack-stories">500 cuentos</span>
+                            <span class="pack-price">790 €</span>
+                            <span class="pack-unit">1,58 €/c</span>
+                        </a>
+                    </div>
+                    <div class="plan-cta">
+                        <a href="/buy-credits" class="btn btn-secondary">Elegir pack Standard →</a>
+                    </div>
+                </div>
+
+                <div class="pricing-plan featured">
+                    <div class="plan-top">
+                        <div class="plan-name">Plan Premium ⭐</div>
+                        <div class="plan-desc">Con foto real del producto , el objeto mágico del cuento es su compra
+                        </div>
+                    </div>
+                    <div class="packs">
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">🌱 Starter</span>
+                            <span class="pack-stories">50 cuentos</span>
+                            <span class="pack-price">145 €</span>
+                            <span class="pack-unit">2,90 €/c</span>
+                        </a>
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">🚀 Growth</span>
+                            <span class="pack-stories">200 cuentos</span>
+                            <span class="pack-price">490 €</span>
+                            <span class="pack-unit">2,45 €/c</span>
+                        </a>
+                        <a href="/buy-credits" class="pack-row">
+                            <span class="pack-label">⚡ Scale</span>
+                            <span class="pack-stories">500 cuentos</span>
+                            <span class="pack-price">990 €</span>
+                            <span class="pack-unit">1,98 €/c</span>
+                        </a>
+                    </div>
+                    <div class="plan-cta">
+                        <a href="/buy-credits" class="btn btn-primary">Elegir pack Premium →</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pricing-note">
+                <span class="bulb">💡</span>
+                <p>
+                    <strong>La lógica es sencilla:</strong> cada crédito que consumes es porque has realizado una venta
+                    o estás incentivando una. Si tu ticket medio es 60 € y el pack Growth te cuesta 340 €, necesitas que
+                    esos 200 cuentos generen <strong>menos de 4 ventas adicionales</strong> para que salga rentable. El
+                    resto es beneficio puro.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     OBJECTIONS
+════════════════════════════════════════════════════ -->
+    <section id="objections">
+        <div class="container">
+            <div class="section-header">
+                <h2>Preguntas habituales</h2>
+                <p>Las respuestas directas que te ahorran una reunión.</p>
+            </div>
+            <div class="obj-grid">
+                <div class="obj-card">
+                    <div class="obj-q">💬 "No tengo tiempo para integraciones técnicas"</div>
+                    <div class="obj-a">El Plan Standard es literalmente copiar y pegar una URL en tu plantilla de email.
+                        Sin código. Sin soporte de IT. En menos de 5 minutos estás operativo.</div>
+                </div>
+                <div class="obj-card">
+                    <div class="obj-q">💬 "¿Los cuentos son de calidad real o son genéricos?"</div>
+                    <div class="obj-a">No son plantillas con el nombre del niño pegado encima. El motor narrativo está
+                        entrenado con principios de psicología infantil y pedagogía. Cada cuento tiene un arco narrativo
+                        calibrado por edad (3–4, 5–6 o 7–10 años), un objetivo de desarrollo y el contexto emocional del
+                        protagonista.</div>
+                </div>
+                <div class="obj-card">
+                    <div class="obj-q">💬 "¿Y si el cuento no le gusta a la familia?"</div>
+                    <div class="obj-a">Garantía de satisfacción en los primeros 50 cuentos. Si no ves el impacto, te
+                        devolvemos el importe íntegro. Sin preguntas.</div>
+                </div>
+                <div class="obj-card">
+                    <div class="obj-q">💬 "¿Qué pasa con la privacidad de las fotos de los niños?"</div>
+                    <div class="obj-a">Las fotos nunca salen del navegador del usuario final. No se almacenan en ningún
+                        servidor. Cumplimiento total con el RGPD para menores de edad.</div>
+                </div>
+                <div class="obj-card">
+                    <div class="obj-q">💬 "¿Puedo probarlo sin un compromiso grande?"</div>
+                    <div class="obj-a">El pack Starter existe exactamente para eso. 50 cuentos, 97 €, sin contrato, sin
+                        permanencia. Si funciona, amplías. Si no, no has arriesgado nada relevante.</div>
+                </div>
+                <div class="obj-card">
+                    <div class="obj-q">💬 "¿Mis clientes van a valorar esto o lo van a ignorar?"</div>
+                    <div class="obj-a">Un email con "Tu pedido ha sido enviado" tiene una tasa de apertura del 20%. Un
+                        email con "El cuento de [nombre del niño] está listo" supera el 60%. El cuento es para el hijo
+                        del cliente , eso cambia todo.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     FOR WHO
+════════════════════════════════════════════════════ -->
+    <section id="forwho">
+        <div class="container">
+            <div class="section-header">
+                <h2>¿Es NubeKids para tu tienda?</h2>
+            </div>
+            <div class="forwho-grid">
+                <div class="forwho-card yes">
+                    <h3>✅ Sí, encaja si…</h3>
+                    <ul>
+                        <li>✅ Vendes ropa, calzado, accesorios o juguetes para niños de 2 a 10 años</li>
+                        <li>✅ Tu precio medio de venta supera los 35–40 €</li>
+                        <li>✅ Quieres diferenciar tu marca sin bajar precios</li>
+                        <li>✅ Tienes dificultades para que los clientes repitan la compra</li>
+                        <li>✅ Te interesa mejorar el porcentaje de carritos que se recuperan</li>
+                    </ul>
+                </div>
+                <div class="forwho-card no">
+                    <h3>❌ No encaja si…</h3>
+                    <ul>
+                        <li>❌ Tu modelo es puramente de volumen a bajo precio</li>
+                        <li>❌ Tus productos no están orientados al segmento infantil (2–10 años)</li>
+                        <li>❌ Buscas una herramienta que no requiera ningún seguimiento de métricas</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     CTA FINAL
+════════════════════════════════════════════════════ -->
+    <section id="cta-final">
+        <div class="container cta-inner">
+            <h2>Tu competencia manda<br><span class="accent">el mismo email de siempre.</span></h2>
+            <p class="sub">
+                Tú puedes ser la tienda que esa familia recuerda. La que asocian con el cuento que su hijo pidió que le
+                leyeran cinco noches seguidas.
+            </p>
+            <div class="cta-buttons">
+                <a href="/buy-credits" class="btn btn-primary btn-lg">Empezar con el pack Starter →</a>
+                <a href="/cdn-cgi/l/email-protection#40282f2c21002e3522252b2924336e232f2d"
+                    class="btn btn-outline btn-lg">Pedir una demo en vivo</a>
+            </div>
+            <p class="cta-fine">Sin contratos · Sin permanencias · Los créditos no caducan</p>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════ -->
+    <footer>
+        <div class="container">
+            <p>☁️ <strong style="color:var(--yellow)">NubeKids</strong> · Cuentos personalizados para tiendas online ·
+                <a href="/buy-credits">Ver packs</a> · <a href="/cdn-cgi/l/email-protection#a6cec9cac7e
