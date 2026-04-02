@@ -13,6 +13,8 @@ interface SignUpPageProps {
   onSwitchToLogin: () => void;
   error: string | null;
   loading?: boolean;
+  /** Email pre-rellenado desde query param customer_email (flujo B2B → B2C) */
+  initialEmail?: string;
 }
 
 export default function SignUpPage({
@@ -21,9 +23,10 @@ export default function SignUpPage({
   onSwitchToLogin,
   error,
   loading = false,
+  initialEmail,
 }: SignUpPageProps) {
   const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(initialEmail || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
@@ -151,6 +154,22 @@ export default function SignUpPage({
             </p>
           </div>
 
+          {/* Banner de conversión B2B → B2C */}
+          {initialEmail && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-5 px-4 py-3 rounded-lg text-sm"
+              style={{
+                backgroundColor: `${colors.primary}15`,
+                border: `2px solid ${colors.primary}40`,
+                color: INK_BLACK,
+              }}
+            >
+              🎁 Hemos pre-rellenado tu email. Solo necesitas elegir una contraseña.
+            </motion.div>
+          )}
+
           {/* Error */}
           {displayError && (
             <div
@@ -195,7 +214,12 @@ export default function SignUpPage({
                 required
                 disabled={isDisabled}
                 className="w-full px-4 py-3 rounded-lg text-base outline-none transition-all disabled:opacity-60"
-                style={{ border: `3px solid ${INK_BLACK}`, color: INK_BLACK }}
+                style={{
+                  border: `3px solid ${INK_BLACK}`,
+                  color: INK_BLACK,
+                  // Destacar visualmente si viene pre-rellenado
+                  backgroundColor: initialEmail ? `${colors.primary}08` : 'white',
+                }}
               />
             </div>
 
@@ -243,19 +267,16 @@ export default function SignUpPage({
                 boxShadow: `4px 4px 0px ${INK_BLACK}`,
               }}
               onMouseDown={(e) => {
-                const target = e.currentTarget;
-                target.style.transform = 'translate(2px, 2px)';
-                target.style.boxShadow = `2px 2px 0px ${INK_BLACK}`;
+                e.currentTarget.style.transform = 'translate(2px, 2px)';
+                e.currentTarget.style.boxShadow = `2px 2px 0px ${INK_BLACK}`;
               }}
               onMouseUp={(e) => {
-                const target = e.currentTarget;
-                target.style.transform = '';
-                target.style.boxShadow = `4px 4px 0px ${INK_BLACK}`;
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.boxShadow = `4px 4px 0px ${INK_BLACK}`;
               }}
               onMouseLeave={(e) => {
-                const target = e.currentTarget;
-                target.style.transform = '';
-                target.style.boxShadow = `4px 4px 0px ${INK_BLACK}`;
+                e.currentTarget.style.transform = '';
+                e.currentTarget.style.boxShadow = `4px 4px 0px ${INK_BLACK}`;
               }}
             >
               {isSubmitting ? 'Creando cuenta...' : 'Crear cuenta'}

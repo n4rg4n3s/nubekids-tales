@@ -23,7 +23,7 @@ export interface SetupData {
   heroPhoto: string | null;
   heroDescription: string | null;
   pedagogy: PedagogyData;
-  itemImage: string | null;       // Ahora puede ser null (opcional)
+  itemImage: string | null;
   itemDescription: string;
   ageGroup: AgeGroup;
   genre: Genre;
@@ -32,13 +32,24 @@ export interface SetupData {
 
 interface SetupProps {
   tenantConfig: TenantConfig;
+  /** Nombre/descripción del producto (plan Standard o token antiguo) */
   initialItemModel?: string;
+  /** Base64 puro de la imagen del producto (plan Premium — cargada por itemImageLoader) */
+  initialItemImage?: string;
+  /** URL de la imagen cuando no se pudo convertir a base64 (fallback CORS) */
+  initialItemImageUrl?: string;
   onComplete: (data: SetupData) => void;
 }
 
 const STEPS = ['El Protagonista', 'El Viaje Interior', 'El Objeto Mágico', 'La Historia'];
 
-export default function Setup({ tenantConfig, onComplete }: SetupProps) {
+export default function Setup({
+  tenantConfig,
+  initialItemModel,
+  initialItemImage,
+  initialItemImageUrl,
+  onComplete,
+}: SetupProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
   // Estado de cada paso
@@ -70,15 +81,20 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
     customValue: '',
   });
 
+  // Inicializar con datos pre-rellenados del B2B (o vacío si no hay)
   const [itemData, setItemData] = useState<ItemData>({
-    image: null,
-    description: '',
+    // Si hay base64 del producto, construir la data URL completa para el wizard
+    image: initialItemImage
+      ? `data:image/jpeg;base64,${initialItemImage}`
+      : null,
+    // Si hay nombre del producto (Standard o token antiguo), pre-rellenar descripción
+    description: initialItemModel || '',
   });
 
   // Inferir ageGroup del heroData.ageRange
-  const inferredAgeGroup: AgeGroup = heroData.ageRange 
+  const inferredAgeGroup: AgeGroup = heroData.ageRange
     ? mapAgeRangeToAgeGroup(heroData.ageRange)
-    : 'little'; // default
+    : 'little';
 
   const [storyData, setStoryData] = useState<StoryData>({
     ageGroup: inferredAgeGroup,
@@ -89,24 +105,16 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
   // Validación por paso
   const canContinue = (): boolean => {
     switch (currentStep) {
-      case 0: // Protagonista
-        // Nombre obligatorio
+      case 0:
         if (!heroData.name.trim()) return false;
-        // Si modo foto, debe haber foto
         if (heroData.inputMode === 'photo' && !heroData.photo) return false;
         return true;
-      
-      case 1: // Pedagogía - siempre válido (es opcional)
+      case 1:
         return true;
-      
-      case 2: // Objeto mágico - AHORA OPCIONAL
-        // Siempre válido, el objeto es opcional
+      case 2:
         return true;
-      
-      case 3: // Historia
-        // El genre y language tienen valores por defecto, siempre válido
+      case 3:
         return true;
-      
       default:
         return false;
     }
@@ -131,8 +139,8 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
       heroName: heroData.name.trim(),
       heroInputMode: heroData.inputMode,
       heroPhoto: heroData.photo,
-      heroDescription: heroData.inputMode === 'description' 
-        ? formatHeroDescription(heroData) 
+      heroDescription: heroData.inputMode === 'description'
+        ? formatHeroDescription(heroData)
         : null,
       pedagogy: pedagogyData,
       itemImage: itemData.image,
@@ -145,7 +153,9 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
     onComplete(setupData);
   };
 
-  // Renderizar el paso actual
+  // ¿Los datos del objeto vienen pre-rellenados de B2B?
+  const isPreloadedFromB2B = !!(initialItemImage || initialItemImageUrl || initialItemModel);
+
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -153,12 +163,20 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
       case 1:
         return <StepPedagogy data={pedagogyData} onChange={setPedagogyData} />;
       case 2:
-        return <StepItem data={itemData} onChange={setItemData} tenantConfig={tenantConfig} />;
+        return (
+          <StepItem
+            data={itemData}
+            onChange={setItemData}
+            tenantConfig={tenantConfig}
+            isPreloadedFromB2B={isPreloadedFromB2B}
+            prefilledItemImageUrl={initialItemImageUrl}
+          />
+        );
       case 3:
         return (
-          <StepStory 
-            data={storyData} 
-            onChange={setStoryData} 
+          <StepStory
+            data={storyData}
+            onChange={setStoryData}
             tenantConfig={tenantConfig}
             inferredAgeGroup={inferredAgeGroup}
           />
@@ -174,19 +192,18 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-2xl mx-auto p-6 min-h-screen flex flex-col justify-center"
     >
-      {/* Card principal con rotación sutil */}
-      <div 
+      <div
         className="bg-white rounded-2xl border-4 border-[#1E293B] p-6"
-        style={{ 
+        style={{
           boxShadow: '8px 8px 0px #1E293B',
           transform: 'rotate(0.5deg)'
         }}
       >
         {/* Header */}
         <div className="text-center mb-6">
-          <h1 
+          <h1
             className="text-2xl md:text-3xl font-black"
-            style={{ 
+            style={{
               fontFamily: "'Fredoka', sans-serif",
               color: tenantConfig.brandColors.primary
             }}
@@ -199,7 +216,7 @@ export default function Setup({ tenantConfig, onComplete }: SetupProps) {
         </div>
 
         {/* Progress bar */}
-        <WizardProgress 
+        <WizardProgress
           currentStep={currentStep}
           totalSteps={STEPS.length}
           steps={STEPS}

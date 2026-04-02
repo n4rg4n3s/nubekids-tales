@@ -76,18 +76,18 @@ export interface TenantConfig {
   tenantId: string;
   tenantName: string;
   verticalId: VerticalId;
-  
+
   // Configuración del objeto mágico
   itemLabel: string;              // "zapatos" | "prenda" | "accesorio"
   itemLabelSingular: string;      // "Los Sneakers Mágicos" | "La Prenda Mágica"
   itemPlaceholderText: string;
   allowUserEditItem: boolean;
-  
+
   // Integración de checkout
   integrationLevel: IntegrationLevel;
   storeName?: string;             // Para plan standard - se menciona en el cuento
   injectItemFromCheckout: boolean; // true en premium
-  
+
   // Branding
   baseSystemPrompt: string;
   brandColors: {
@@ -96,7 +96,7 @@ export interface TenantConfig {
     background: string;
   };
   brandLogo?: string;
-  
+
   // Features
   activeLanguages: Language[];
   activeGenres: Genre[];
@@ -226,4 +226,49 @@ export interface UserProfile {
   displayName: string | null;
   avatarUrl: string | null;
   tenantId: string | null;
+}
+
+// ============================================
+// FASE 10 — FLUJO B2B → B2C
+// ============================================
+
+/**
+ * Query params que llegan desde el link del e-Commerce.
+ * Ejemplo: /?tenant=zapatos-lopez-001&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
+ */
+export interface B2BSessionParams {
+  tenant: string;
+  item?: string;
+  item_image?: string;
+  customer_email?: string;
+  ref?: string;
+}
+
+/**
+ * Estado de sesión anónima B2B que persiste durante todo el flujo.
+ * Se construye una vez al montar App.tsx y no cambia.
+ */
+export interface B2BSession {
+  tenantId: string;
+  tenantConfig: TenantConfig;
+  itemName?: string;
+  itemImageBase64?: string;   // Descargada y convertida — se envía a Gemini
+  itemImageUrl?: string;      // URL original — fallback si no se pudo convertir a base64
+  customerEmail?: string;
+  ref?: string;
+  storyGenerated: boolean;    // true después de generar el primer (y único) cuento
+}
+
+/**
+ * Resultado de resolvePayment(): quién paga el crédito del cuento.
+ * 'tenant'        → sesión anónima B2B, se consume crédito del tenant
+ * 'user'          → usuario B2C logueado con saldo
+ * 'needs_credits' → nadie puede pagar (tenant sin saldo, user sin saldo, o sin login)
+ */
+export type PaymentSource = 'tenant' | 'user' | 'needs_credits';
+
+export interface PaymentDecision {
+  source: PaymentSource;
+  tenantId?: string;  // presente si source === 'tenant'
+  userId?: string;    // presente si source === 'user'
 }

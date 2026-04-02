@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { validateToken, getTokenFromUrl } from './services/tokenService';
 import type { TenantData, TokenData } from './services/tokenService';
-import type { TenantConfig, AgentBrief, ComicFace } from './types';
+import type { TenantConfig, AgentBrief, ComicFace, B2BSession } from './types';
 import Setup from './components/Setup';
 import type { SetupData } from './components/Setup';
 import Book from './components/Book';
@@ -32,6 +32,11 @@ import type { OrchestratorResult } from './services/agents';
 // Servicio de generación de imágenes
 import { generateStoryImage } from './services/imageGenerationService';
 
+// ── FASE 10: Flujo B2B → B2C ────────────────────────────────────────────────
+import { parseB2BParams, clearQueryParams } from './services/queryParamsService';
+import { loadItemImage } from './utils/itemImageLoader';
+import PostStoryActions from './components/PostStoryActions';
+
 // Mock / Dev
 import { DEV_CONFIG, isDevMockMode } from './dev';
 import { getMockImages } from './dev';
@@ -40,11 +45,13 @@ import { getMockImages } from './dev';
 type AppState =
   | 'loading'
   | 'auth'
-  | 'auth-callback'   // Procesando vuelta de Google OAuth
+  | 'auth-callback'     // Procesando vuelta de Google OAuth
   | 'setup'
   | 'orchestrating'
   | 'generating'
   | 'reading'
+  | 'post-story'        // Fase 10: CTA post-lectura (crear otro, registrarse)
+  | 'promo-unavailable' // Fase 10: tenant B2B sin créditos disponibles
   | 'error'
   | 'no-credits'
   | 'credits-success';
@@ -74,12 +81,15 @@ function App() {
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const [isAnonymousSession, setIsAnonymousSession] = useState(false);
 
-  // Datos del tenant (desde Supabase si hay token)
+  // Datos del tenant (desde Supabase si hay token antiguo)
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   // Config completa del tenant (desde tenantLoader)
   const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(null);
+
+  // ── FASE 10: Sesión B2B anónima via ?tenant= ─────────────────────────────
+  const [b2bSession, setB2BSession] = useState<B2BSession | null>(null);
 
   // Datos del setup completado
   const [setupData, setSetupData] = useState<SetupData | null>(null);
@@ -91,8 +101,6 @@ function App() {
   // Páginas generadas para el Book
   const [pages, setPages] = useState<ComicFace[]>([]);
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0, message: '' });
-
-  // API Key de Gemini — se lee de VITE_GEMINI_API_KEY (inyectada en build time)
 
   // ============================================
   // PROTECCIÓN DE NAVEGACIÓN
@@ -113,8 +121,6 @@ function App() {
   // ============================================
   // FIX OAUTH: Cuando estamos en 'auth-callback' y
   // AuthContext termina de procesar el token, avanzar a 'setup'.
-  // Esto cubre el flujo: hash procesado → onAuthStateChange(SIGNED_IN)
-  // → auth.loading = false → auth.isAuthenticated = true → setup
   // ============================================
   useEffect(() => {
     if (appState === 'auth-callback' && !auth.loading && auth.isAuthenticated) {
@@ -132,7 +138,6 @@ function App() {
 
     async function initialize() {
       try {
-        // Log del modo actual
         if (isDevMockMode()) {
           console.log('🎭 MODO DESARROLLO — Datos mock activos — Sin llamadas a Gemini');
         } else {
@@ -140,28 +145,17 @@ function App() {
         }
 
         // ── FIX: Detectar vuelta del flujo OAuth ─────────────────────────────
-        // Supabase redirige con el token en el HASH (#access_token=...)
-        // cuando Site URL es la raíz. El pathname puede ser '/' o '/auth/callback'
-        // dependiendo de cómo esté configurado redirectTo en authService.ts.
-        //
-        // Cubrimos ambos casos:
-        //   1. Llega a /auth/callback (configuración antigua)
-        //   2. Llega a / con #access_token en el hash (configuración nueva)
         const hasOAuthHash = window.location.hash.includes('access_token');
         const isCallbackPath = window.location.pathname === '/auth/callback';
 
         if (hasOAuthHash || isCallbackPath) {
           console.log('[Auth] Detectado callback OAuth, limpiando URL...');
-          // Limpiar el hash/path para no exponer el token en la barra del navegador
           window.history.replaceState({}, '', '/');
 
           if (auth.isAuthenticated) {
-            // AuthContext ya procesó el hash antes de que llegáramos aquí
             console.log('[Auth] Usuario ya autenticado, avanzando a setup');
             setAppState('setup');
           } else {
-            // AuthContext aún está procesando — el useEffect de arriba
-            // disparará la transición a 'setup' cuando termine
             console.log('[Auth] Esperando a que AuthContext procese el token...');
             setAppState('auth-callback');
           }
@@ -176,7 +170,85 @@ function App() {
           return;
         }
 
-        // ── Modo B2B con token ────────────────────────────────────────────────
+        // ── FASE 10: Modo B2B anónimo via ?tenant= ───────────────────────────
+        const b2bParams = parseB2BParams();
+
+        if (b2bParams) {
+          console.log('🏪 [B2B] Detectado link de tenant:', b2bParams.tenant);
+          clearQueryParams();
+
+          const config = loadTenantConfig(b2bParams.tenant);
+          setTenantConfig(config);
+          setIsAnonymousSession(true);
+
+          // Verificar si el tenant tiene créditos disponibles
+          // (consulta directa para no consumir aún — solo verificar saldo)
+          const { supabase } = await import('./lib/supabase');
+          const { data: creditAccount } = await supabase
+            .from('credit_accounts')
+            .select('balance')
+            .eq('tenant_id', b2bParams.tenant)
+            .maybeSingle();
+
+          const tenantBalance = creditAccount?.balance ?? 0;
+
+          if (tenantBalance <= 0) {
+            console.warn('[B2B] Tenant sin créditos:', b2bParams.tenant);
+            setAppState('promo-unavailable');
+            return;
+          }
+
+          console.log('[B2B] Tenant con saldo:', tenantBalance, 'créditos');
+
+          // Cargar imagen del producto si es plan Premium
+          let itemImageBase64: string | undefined;
+          let itemImageUrl: string | undefined;
+
+          if (b2bParams.item_image) {
+            console.log('[B2B] Descargando imagen del producto...');
+            const imageResult = await loadItemImage(b2bParams.item_image);
+
+            if (imageResult.base64) {
+              itemImageBase64 = imageResult.base64;
+              console.log('[B2B] ✅ Imagen cargada via', imageResult.loadMethod);
+            } else if (imageResult.loadMethod === 'url-only') {
+              itemImageUrl = imageResult.url;
+              console.warn('[B2B] ⚠️ Solo URL disponible — el wizard mostrará la imagen pero no se enviará a Gemini');
+            } else {
+              console.warn('[B2B] ❌ No se pudo cargar la imagen del producto');
+            }
+          }
+
+          // Construir sesión B2B
+          const session: B2BSession = {
+            tenantId: b2bParams.tenant,
+            tenantConfig: config,
+            itemName: b2bParams.item,
+            itemImageBase64,
+            itemImageUrl,
+            customerEmail: b2bParams.customer_email,
+            ref: b2bParams.ref,
+            storyGenerated: false,
+          };
+
+          setB2BSession(session);
+
+          // Inicializar Gemini
+          const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+          if (geminiKey) {
+            agentDeps.initialize(geminiKey);
+            console.log('🔑 Gemini API inicializada');
+          } else if (!isDevMockMode()) {
+            setError('Error de configuración: API Key no disponible.');
+            setAppState('error');
+            return;
+          }
+
+          setAppState('setup');
+          return;
+        }
+
+        // ── Modo B2B con token (sistema antiguo — backward compat) ───────────
         const tokenCode = getTokenFromUrl();
 
         if (tokenCode) {
@@ -200,7 +272,6 @@ function App() {
           const config = loadTenantConfig(tenantId);
           setTenantConfig(config);
 
-          // Requiere login para B2C
           if (!auth.isAuthenticated) {
             setAppState('auth');
             return;
@@ -327,11 +398,13 @@ function App() {
       return;
     }
 
+    // ── Resolver fuente de crédito ────────────────────────────────────────
+    // Prioridad: sesión B2B anónima (Fase 10) > token antiguo > usuario B2C
+    const creditTenantId = b2bSession?.tenantId ?? tenantData?.tenantId;
+    const creditUserId = auth.user?.id;
+
     // Verificar y consumir 1 crédito ANTES de generar
-    const creditConsumed = await consumeCredit(
-      tenantData?.tenantId,
-      auth.user?.id
-    );
+    const creditConsumed = await consumeCredit(creditTenantId, creditUserId);
     if (!creditConsumed) {
       setAppState('no-credits');
       return;
@@ -361,6 +434,11 @@ function App() {
 
       const generatedPages = await generateImages(orchestratorResult.agentBrief, data);
 
+      // Marcar cuento generado en sesión B2B
+      if (b2bSession) {
+        setB2BSession(prev => prev ? { ...prev, storyGenerated: true } : null);
+      }
+
       console.log('✅ Generación completada');
       setPages(generatedPages);
       setAppState('reading');
@@ -370,10 +448,19 @@ function App() {
       setError(err instanceof Error ? err.message : 'Error desconocido');
       setAppState('error');
     }
-  }, [tenantConfig, buildSessionContext, generateImages]);
+  }, [tenantConfig, b2bSession, tenantData, auth.user, buildSessionContext, generateImages]);
 
-  // Reset para volver al inicio
+  // Reset / "volver al inicio"
+  // En sesión B2B anónima tras generar → ir a post-story (CTA de conversión)
+  // En cualquier otro caso → reset completo
   const handleReset = useCallback(() => {
+    if (b2bSession?.storyGenerated) {
+      // El usuario B2B terminó su cuento gratuito → mostrar CTA
+      setAppState('post-story');
+      return;
+    }
+
+    // Reset normal
     setSetupData(null);
     setAgentBrief(null);
     setPages([]);
@@ -381,7 +468,7 @@ function App() {
     setGenerationProgress({ current: 0, total: 0, message: '' });
     agentDeps.cleanup();
     setAppState('setup');
-  }, []);
+  }, [b2bSession]);
 
   // ============================================
   // RENDER: Loading con protección
@@ -397,12 +484,10 @@ function App() {
         style={{ backgroundColor: tenantConfig.brandColors.background }}
       >
         <div className="text-center p-8 max-w-md">
-          {/* Animación principal */}
           <div className="text-7xl mb-6 animate-bounce">
             {isOrchestrating ? '🎭' : '✨'}
           </div>
 
-          {/* Título principal */}
           <h2
             className="text-2xl font-display font-bold mb-2"
             style={{ color: tenantConfig.brandColors.primary }}
@@ -413,12 +498,10 @@ function App() {
             }
           </h2>
 
-          {/* Mensaje tranquilizador */}
           <p className="text-[#1E293B]/80 mb-6 font-body">
             No cierres esta página, te avisaremos cuando esté listo 🌟
           </p>
 
-          {/* Progreso */}
           {!isOrchestrating && generationProgress.total > 0 && (
             <div className="mb-6">
               <div
@@ -439,7 +522,6 @@ function App() {
             </div>
           )}
 
-          {/* Pasos animados */}
           <div className="space-y-2">
             {messages.map((msg, idx) => (
               <p
@@ -456,7 +538,6 @@ function App() {
             ))}
           </div>
 
-          {/* Aviso de seguridad */}
           <div
             className="mt-8 px-4 py-3 rounded-lg border-2"
             style={{
@@ -520,6 +601,37 @@ function App() {
     );
   }
 
+  // ── Promoción no disponible (tenant B2B sin créditos) ────────────────────────
+  if (appState === 'promo-unavailable') {
+    return (
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-4">
+        <div className="text-center p-8 bg-white rounded-2xl border-4 border-[#1E293B] shadow-[6px_6px_0px_#1E293B] max-w-md">
+          <div className="text-5xl mb-4">🎁</div>
+          <h2 className="text-2xl font-bold text-[#1E293B] mb-3">
+            Promoción no disponible
+          </h2>
+          <p className="text-[#1E293B]/70 mb-6">
+            Esta promoción especial ya no está disponible en este momento.
+            ¡Pero puedes crear el cuento mágico de tu peque por tu cuenta!
+          </p>
+          <button
+            onClick={() => {
+              // Limpiar sesión B2B y entrar como B2C directo
+              setB2BSession(null);
+              setIsAnonymousSession(false);
+              const config = loadTenantConfig(undefined);
+              setTenantConfig(config);
+              setAppState('auth');
+            }}
+            className="w-full px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B] hover:shadow-[1px_1px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+          >
+            Crear mi cuento — desde 4,99€
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ── Auth gate (B2C sin login) ────────────────────────────────────────────────
   if (appState === 'auth' && tenantConfig) {
     return (
@@ -539,15 +651,14 @@ function App() {
             onSignUp={auth.signUp}
             onSwitchToLogin={() => setAuthView('login')}
             error={auth.error}
+            initialEmail={b2bSession?.customerEmail}
           />
         )}
       </>
     );
   }
 
-  // ── OAuth callback (spinner mientras AuthContext procesa el token) ───────────
-  // NOTA: No pasamos onComplete — el useEffect de arriba maneja la transición
-  // cuando auth.isAuthenticated cambia a true.
+  // ── OAuth callback ───────────────────────────────────────────────────────────
   if (appState === 'auth-callback') {
     return <AuthCallback />;
   }
@@ -557,32 +668,36 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        {/* User menu para usuarios autenticados o sesiones anónimas B2B */}
         {(auth.isAuthenticated || isAnonymousSession) && (
           <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
             <CreditBalance
-              tenantId={tenantData?.tenantId}
+              tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
               userId={auth.user?.id}
             />
             <span className="text-xs font-medium" style={{ color: '#1E293B99' }}>
               {auth.profile?.displayName || auth.user?.email}
             </span>
-            <button
-              onClick={auth.signOut}
-              className="px-3 py-1 text-xs font-bold rounded-lg transition-all"
-              style={{
-                backgroundColor: 'white',
-                border: '2px solid #1E293B',
-                color: '#1E293B',
-              }}
-            >
-              Salir
-            </button>
+            {/* No mostramos botón "Salir" en sesiones anónimas B2B */}
+            {auth.isAuthenticated && (
+              <button
+                onClick={auth.signOut}
+                className="px-3 py-1 text-xs font-bold rounded-lg transition-all"
+                style={{
+                  backgroundColor: 'white',
+                  border: '2px solid #1E293B',
+                  color: '#1E293B',
+                }}
+              >
+                Salir
+              </button>
+            )}
           </div>
         )}
         <Setup
           tenantConfig={tenantConfig}
-          initialItemModel={tokenData?.itemName || ''}
+          initialItemModel={b2bSession?.itemName ?? tokenData?.itemName ?? ''}
+          initialItemImage={b2bSession?.itemImageBase64}
+          initialItemImageUrl={b2bSession?.itemImageUrl}
           onComplete={handleStartAdventure}
         />
       </>
@@ -624,11 +739,32 @@ function App() {
     );
   }
 
+  // ── Post-story (Fase 10: CTA de conversión B2B → B2C) ───────────────────────
+  if (appState === 'post-story' && tenantConfig && setupData) {
+    return (
+      <>
+        {renderDevBanner()}
+        <PostStoryActions
+          heroName={setupData.heroName}
+          tenantConfig={tenantConfig}
+          customerEmail={b2bSession?.customerEmail}
+          onCreateAnother={() => {
+            setAuthView('signup');
+            setAppState('auth');
+          }}
+          onBackToStory={() => setAppState('reading')}
+        />
+      </>
+    );
+  }
+
   // ── Sin créditos ─────────────────────────────────────────────────────────────
   if (appState === 'no-credits' && tenantConfig) {
-    const channel = tenantData
-      ? (tenantData.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
-      : 'b2c';
+    const channel = b2bSession
+      ? (b2bSession.tenantConfig.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
+      : tenantData
+        ? (tenantData.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
+        : 'b2c';
 
     return (
       <>
@@ -636,7 +772,7 @@ function App() {
         <BuyCredits
           channel={channel}
           userId={auth.user?.id}
-          tenantId={tenantData?.tenantId}
+          tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
           onClose={() => setAppState('setup')}
         />
       </>
