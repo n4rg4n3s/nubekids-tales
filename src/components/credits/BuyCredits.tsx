@@ -80,7 +80,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                     >
                         ✨
                     </div>
-                    <p style={{ color: '#1E293B', fontFamily: 'Nunito, sans-serif', opacity: 0.5 }}>
+                    <p style={{ color: '#1E293B', fontFamily: "'DM Sans', sans-serif", opacity: 0.5 }}>
                         Preparando la magia...
                     </p>
                 </div>
@@ -101,7 +101,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                     <h1
                         className="text-4xl mb-3"
                         style={{
-                            fontFamily: 'Fredoka One, cursive',
+                            fontFamily: "'Fredoka', sans-serif",
                             color: '#1E293B',
                             letterSpacing: '0.01em',
                         }}
@@ -112,7 +112,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                     </h1>
                     <p
                         style={{
-                            fontFamily: 'Nunito, sans-serif',
+                            fontFamily: "'DM Sans', sans-serif",
                             color: '#1E293B',
                             opacity: 0.55,
                             fontSize: '1rem',
@@ -131,7 +131,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                         style={{
                             border: '2px solid #1E293B',
                             backgroundColor: '#fff0f0',
-                            fontFamily: 'Nunito, sans-serif',
+                            fontFamily: "'DM Sans', sans-serif",
                             color: '#1E293B',
                             boxShadow: '3px 3px 0px #1E293B',
                         }}
@@ -166,7 +166,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                             backgroundColor: '#FBBF24',
                                             border: '2px solid #1E293B',
                                             boxShadow: '2px 2px 0px #1E293B',
-                                            fontFamily: 'Fredoka One, cursive',
+                                            fontFamily: "'Fredoka', sans-serif",
                                             color: '#1E293B',
                                             letterSpacing: '0.02em',
                                         }}
@@ -179,7 +179,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                 <h3
                                     className="text-xl mb-1"
                                     style={{
-                                        fontFamily: 'Fredoka One, cursive',
+                                        fontFamily: "'Fredoka', sans-serif",
                                         color: isFeatured ? '#ffffff' : '#1E293B',
                                     }}
                                 >
@@ -191,7 +191,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                     <span
                                         className="text-4xl font-extrabold"
                                         style={{
-                                            fontFamily: 'Fredoka One, cursive',
+                                            fontFamily: "'Fredoka', sans-serif",
                                             color: isFeatured ? '#FBBF24' : '#8B5CF6',
                                         }}
                                     >
@@ -200,7 +200,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                     <span
                                         className="ml-1 text-base"
                                         style={{
-                                            fontFamily: 'Nunito, sans-serif',
+                                            fontFamily: "'DM Sans', sans-serif",
                                             color: isFeatured ? 'rgba(255,255,255,0.7)' : 'rgba(30,41,59,0.5)',
                                         }}
                                     >
@@ -212,7 +212,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                 <p
                                     className="text-xs mb-4"
                                     style={{
-                                        fontFamily: 'Nunito, sans-serif',
+                                        fontFamily: "'DM Sans', sans-serif",
                                         color: isFeatured ? 'rgba(255,255,255,0.6)' : 'rgba(30,41,59,0.4)',
                                     }}
                                 >
@@ -224,7 +224,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                     <p
                                         className="text-xs mb-6 flex-grow leading-relaxed"
                                         style={{
-                                            fontFamily: 'Nunito, sans-serif',
+                                            fontFamily: "'DM Sans', sans-serif",
                                             color: isFeatured ? 'rgba(255,255,255,0.75)' : 'rgba(30,41,59,0.55)',
                                         }}
                                     >
@@ -236,7 +236,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                 <p
                                     className="text-2xl font-bold mb-4"
                                     style={{
-                                        fontFamily: 'Fredoka One, cursive',
+                                        fontFamily: "'Fredoka', sans-serif",
                                         color: isFeatured ? '#ffffff' : '#1E293B',
                                     }}
                                 >
@@ -249,7 +249,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                                     disabled={!!paying}
                                     className="w-full py-3 rounded-xl font-bold text-sm transition-all duration-100"
                                     style={{
-                                        fontFamily: 'Fredoka One, cursive',
+                                        fontFamily: "'Fredoka', sans-serif",
                                         fontSize: '1rem',
                                         letterSpacing: '0.03em',
                                         backgroundColor: isFeatured ? '#FBBF24' : '#1E293B',
@@ -295,7 +295,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                 <div
                     className="mt-10 flex flex-wrap justify-center gap-6 text-xs"
                     style={{
-                        fontFamily: 'Nunito, sans-serif',
+                        fontFamily: "'DM Sans', sans-serif",
                         color: '#1E293B',
                         opacity: 0.4,
                     }}
@@ -311,7 +311,7 @@ export default function BuyCredits({ channel, userId, tenantId, onClose }: BuyCr
                         <button
                             onClick={onClose}
                             style={{
-                                fontFamily: 'Nunito, sans-serif',
+                                fontFamily: "'DM Sans', sans-serif",
                                 fontSize: '0.85rem',
                                 color: '#1E293B',
                                 opacity: 0.4,
