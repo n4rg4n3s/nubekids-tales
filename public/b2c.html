@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NubeKids Tales — Cuentos Personalizados para tu Peque</title>
     <meta name="description"
         content="Crea en 60 segundos un cuento donde tu hijo es el protagonista y aprende a gestionar sus emociones. Sin anuncios. Sin suscripción. Pedagógicamente diseñado.">
@@ -106,7 +106,7 @@
         }
 
         .section-pad {
-            padding: 5.5rem 1.75rem;
+            padding: 5.5rem 0;
         }
 
         .section-header {
@@ -756,7 +756,7 @@
             background: var(--night);
             position: relative;
             overflow: hidden;
-            padding: 5.5rem 1.75rem;
+            padding: 5.5rem 0;
         }
 
         .preview-section::before {
@@ -1245,7 +1245,7 @@
             background: var(--night);
             position: relative;
             overflow: hidden;
-            padding: 7rem 1.75rem;
+            padding: 7rem 0;
             text-align: center;
         }
 
@@ -1856,7 +1856,7 @@
                     <div style="margin-bottom:1.25rem;">
                         <p class="sel-label">¿Cómo describimos al protagonista?</p>
                         <div style="display:flex; gap:.65rem;">
-                            <button type="button" class="mode-btn on" id="btnDesc" onclick="demoMode('desc')">Describir 
+                            <button type="button" class="mode-btn on" id="btnDesc" onclick="demoMode('desc')">Describir
                                 rasgos</button>
                             <button type="button" class="mode-btn" id="btnPhoto" onclick="demoMode('photo')">Subir
                                 foto</button>
@@ -2384,7 +2384,8 @@
                         cambiarlo por otra cosa era imposible."</p>
                     <div class="testi-label after">Después de 2 semanas</div>
                     <p class="testi-text">"Ahora él mismo pide 'el cuento de NubeKids' antes de dormir. Y lo mejor:
-                        <strong>me explica qué aprendió el protagonista</strong>. Eso no me lo esperaba."</p>
+                        <strong>me explica qué aprendió el protagonista</strong>. Eso no me lo esperaba."
+                    </p>
                     <div class="testi-author">
                         <div class="testi-avatar">👩</div>
                         <div>
@@ -2422,7 +2423,8 @@
                     <div class="testi-label after">Ahora</div>
                     <p class="testi-text">"En 2 minutos tengo un cuento que aborda exactamente lo que pasó ese día.
                         <strong>El ritual de las noches es el mejor momento del día para los dos.</strong> Eso antes era
-                        impensable."</p>
+                        impensable."
+                    </p>
                     <div class="testi-author">
                         <div class="testi-avatar">👨</div>
                         <div>
@@ -2726,19 +2728,19 @@
         mkStars('finalStars', 70);
 
         /* ─── AGE TABS ───────────────────────────────── */
-        function showAge(i, btn) {
+        window.showAge = function (i, btn) {
             document.querySelectorAll('.scenario').forEach((el, j) => el.classList.toggle('on', j === i));
             document.querySelectorAll('.age-tab').forEach(b => b.classList.remove('on'));
             btn.classList.add('on');
-        }
+        };
 
         /* ─── FAQ ────────────────────────────────────── */
-        function toggleFaq(btn) {
+        window.toggleFaq = function (btn) {
             const item = btn.closest('.faq-item');
             const wasOpen = item.classList.contains('open');
             document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
             if (!wasOpen) item.classList.add('open');
-        }
+        };
 
         /* ─── WIZARD DEMO ──────────────────────────────── */
         function _updateDots(step) {
@@ -2796,6 +2798,11 @@
             card.classList.add('on');
         };
 
+        window.selectLang = function (btn) {
+            document.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('on'));
+            btn.classList.add('on');
+        };
+
         /* ─── DRAG SCROLL ────────────────────────────── */
         (function () {
             const el = document.querySelector('.comp-scroll');
@@ -2815,8 +2822,4 @@
                 el.scrollLeft = scrollLeft - (x - startX) * 1.5;
             });
         })();
-
-        document.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('on'));
-        btn.classList.add('on');
-};
     </script>
