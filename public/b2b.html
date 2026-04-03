@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NubeKids , Más ventas para tu tienda infantil</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;600;700;800;900&display=swap"
         rel="stylesheet" />
 
     <style>
@@ -53,7 +53,7 @@
         h3,
         h4,
         .display {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             line-height: 1.15;
         }
 
@@ -69,7 +69,7 @@
             background: var(--yellow);
             border: var(--border);
             border-radius: 40px;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.85rem;
             letter-spacing: 0.04em;
             padding: 4px 14px;
@@ -79,7 +79,7 @@
         /* ─── BUTTONS ───────────────────────────────────── */
         .btn {
             display: inline-block;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.1rem;
             text-decoration: none;
             padding: 14px 28px;
@@ -140,7 +140,7 @@
         }
 
         .logo {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.6rem;
             color: var(--white);
             text-decoration: none;
@@ -190,7 +190,7 @@
             background: var(--yellow);
             border: var(--border);
             border-radius: 40px;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.9rem;
             padding: 5px 16px;
             margin-bottom: 20px;
@@ -277,7 +277,7 @@
 
         .stat-text strong {
             display: block;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.4rem;
             color: var(--purple);
         }
@@ -328,7 +328,7 @@
             display: inline-block;
             background: var(--yellow);
             color: var(--ink);
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.8rem;
             padding: 3px 10px;
             border-radius: 20px;
@@ -408,7 +408,7 @@
             position: absolute;
             top: 12px;
             right: 18px;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 3rem;
             color: rgba(30, 41, 59, 0.07);
         }
@@ -426,7 +426,7 @@
 
         .pillar-tag {
             display: inline-block;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.78rem;
             padding: 3px 10px;
             border-radius: 20px;
@@ -468,7 +468,7 @@
         }
 
         .pillar-highlight .num {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.3rem;
             color: var(--purple);
         }
@@ -531,7 +531,7 @@
         }
 
         .plan-badge {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.8rem;
             background: var(--ink);
             color: var(--yellow);
@@ -569,7 +569,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.95rem;
             color: var(--ink);
             margin-top: 2px;
@@ -588,7 +588,7 @@
         }
 
         .step-title {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
             line-height: 1.2;
         }
@@ -633,7 +633,7 @@
         }
 
         .plan-what-label {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 0.78rem;
             letter-spacing: 0.06em;
             text-transform: uppercase;
@@ -686,7 +686,7 @@
         }
 
         thead th {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
             padding: 16px 20px;
             text-align: left;
@@ -770,7 +770,7 @@
         .emotion-icons {
             display: flex;
             justify-content: center;
-            gap: 28px;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
@@ -778,23 +778,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            gap: 8px;
+            background: var(--yellow);
+            border: 3px solid var(--ink);
             border-radius: var(--radius);
-            padding: 14px 18px;
-            min-width: 110px;
+            box-shadow: 4px 4px 0px var(--ink);
+            padding: 18px 20px;
+            min-width: 130px;
+            max-width: 160px;
+            transition: transform .13s ease, box-shadow .13s ease;
+            cursor: default;
+        }
+
+        .emotion-icon:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--ink);
         }
 
         .emotion-icon .ei {
             font-size: 2rem;
+            line-height: 1;
         }
 
-        .emotion-icon span {
-            font-size: 0.8rem;
+        .emotion-icon span:last-child {
+            font-size: 0.82rem;
             font-weight: 800;
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--ink);
             text-align: center;
+            line-height: 1.35;
         }
 
         /* ─── MATH PROOF ────────────────────────────────── */
@@ -851,7 +862,7 @@
         }
 
         .math-row .value {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.3rem;
         }
 
@@ -903,7 +914,7 @@
         }
 
         .plan-name {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.6rem;
             margin-bottom: 4px;
         }
@@ -952,7 +963,7 @@
         }
 
         .pack-label {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1rem;
             flex: 1;
         }
@@ -964,7 +975,7 @@
         }
 
         .pack-price {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.3rem;
             color: var(--purple);
         }
@@ -1048,7 +1059,7 @@
         }
 
         .obj-q {
-            font-family: 'Fredoka One', cursive;
+            font-family: 'Fredoka', sans-serif;
             font-size: 1.05rem;
             color: var(--yellow);
             margin-bottom: 10px;
@@ -1238,7 +1249,7 @@
 ════════════════════════════════════════════════════ -->
     <nav>
         <div class="nav-inner">
-            <a href="/" class="logo">☁️ Nube<span>Kids</span></a>
+            <a href="/b2c.html" class="logo">Nube<span>Kids</span></a>
             <a href="/buy-credits" class="btn btn-primary nav-cta">Ver packs de créditos →</a>
         </div>
     </nav>
@@ -1250,7 +1261,7 @@
         <div class="container">
             <div class="hero-grid">
                 <div>
-                    <span class="hero-eyebrow">🏪 Para tiendas online de productos infantiles</span>
+                    <span class="hero-eyebrow">Para tiendas online de productos infantiles</span>
                     <h1 class="hero-headline">
                         Tu competencia<br>vende.<br>
                         Tú podrías vender<br><span class="accent">el doble.</span>
@@ -1266,21 +1277,21 @@
                 </div>
                 <div class="hero-visual">
                     <div class="hero-stat-card">
-                        <span class="stat-icon">🛒</span>
+                        <span class="stat-icon"></span>
                         <div class="stat-text">
                             <strong>+75%</strong>
                             <span>abandono de carritos en moda&nbsp;infantil</span>
                         </div>
                     </div>
                     <div class="hero-stat-card">
-                        <span class="stat-icon">💸</span>
+                        <span class="stat-icon"></span>
                         <div class="stat-text">
                             <strong>Cada vez más caro</strong>
                             <span>conseguir un nuevo cliente via Meta o Google</span>
                         </div>
                     </div>
                     <div class="hero-stat-card">
-                        <span class="stat-icon">🔁</span>
+                        <span class="stat-icon"></span>
                         <div class="stat-text">
                             <strong>Sin recurrencia</strong>
                             <span>el cliente compra una vez y no vuelve</span>
@@ -1328,7 +1339,7 @@
     <section id="pillars">
         <div class="container">
             <div class="section-header">
-                <span class="tag">🎯 Tres herramientas. Un solo pack.</span>
+                <span class="tag">Tres herramientas. Un solo pack.</span>
                 <h2>Cómo NubeKids mueve tu cifra de ventas</h2>
                 <p>Un cuento personalizado no es un regalo bonito. Es una palanca de conversión con tres puntos de apoyo
                     distintos en tu proceso de venta.</p>
@@ -1338,7 +1349,7 @@
                 <!-- CARD 1: Incentivo compra -->
                 <div class="pillar-card card-yellow">
                     <span class="pillar-num">01</span>
-                    <span class="pillar-emoji">🛍️</span>
+                    <span class="pillar-emoji"></span>
                     <span class="pillar-tag tag-yellow">Incentivo de compra</span>
                     <h3>Convierte la duda en pedido</h3>
                     <p>
@@ -1360,12 +1371,12 @@
                 <!-- CARD 2: Upsell -->
                 <div class="pillar-card card-purple">
                     <span class="pillar-num">02</span>
-                    <span class="pillar-emoji">⬆️</span>
+                    <span class="pillar-emoji"></span>
                     <span class="pillar-tag tag-purple">Upsell en el checkout</span>
                     <h3>Multiplica el valor de cada venta</h3>
                     <p>
-                        En el momento del pago, ofrece un pack de 3 cuentos valorado en 13,90€ (que a ti te cuesta
-                        1,70€ de media).
+                        En el momento del pago, ofreces un pack de 3 cuentos valorado en 13,90€ (que a ti te cuesta
+                        5,10€ de media).
                         <br><br>
                         El cliente ya tiene la tarjeta en la mano. El "sí" marginal a un extra de valor para su hijo es
                         muy fácil. Y tú consigues más margen con el mismo coste de adquisición.
@@ -1463,7 +1474,7 @@
                 <div class="plan-card plan-premium">
                     <div class="plan-header">
                         <h3>Plan Premium</h3>
-                        <span class="plan-badge">⭐ Recomendado</span>
+                        <span class="plan-badge">Recomendado</span>
                     </div>
                     <ul class="plan-steps">
                         <li>
@@ -1477,8 +1488,8 @@
                         <li>
                             <span class="step-num">2</span>
                             <div class="step-body">
-                                <span class="step-title">La foto del producto comprado entra en el cuento</span>
-                                <span class="step-desc">El artículo que acaba de llegar a casa se convierte en el
+                                <span class="step-title">La foto de tu producto entra en el cuento</span>
+                                <span class="step-desc">El artículo que llegará a casa se convierte en el
                                     "objeto mágico" de la historia.</span>
                             </div>
                         </li>
@@ -1502,7 +1513,8 @@
                     </ul>
                     <div class="plan-what">
                         <div class="plan-what-label">Lo que consigue tu cliente</div>
-                        <div class="plan-what-text">Un cuento donde su hijo es el protagonista, tu tienda aparece en el
+                        <div class="plan-what-text">Un cuento donde su hijo es el protagonista, el nombre de tu tienda
+                            aparece en el
                             guión y el producto comprado aparece ilustrado página a página. Imposible de olvidar.</div>
                     </div>
                 </div>
@@ -1517,7 +1529,7 @@
     <section id="results">
         <div class="container">
             <div class="section-header">
-                <span class="tag">📊 Lo que cambia en tu negocio</span>
+                <span class="tag">Lo que cambia en tu negocio</span>
                 <h2>De los problemas que tienes hoy<br>a los resultados de mañana</h2>
             </div>
             <div class="results-table-wrap">
@@ -1530,28 +1542,28 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>🔁 Tasa de recompra baja, los clientes no vuelven solos</td>
-                            <td>Vínculo emocional con tu marca que genera razones reales para volver</td>
+                            <td>🔴Tasa de recompra baja, los clientes no vuelven solos</td>
+                            <td>🟢Vínculo emocional con tu marca que genera razones reales para volver</td>
                         </tr>
                         <tr>
-                            <td>💰 Guerra de precios, te copian y te bajan el margen</td>
-                            <td>Diferenciación que ningún competidor puede copiar a precio</td>
+                            <td>🔴Guerra de precios, te copian y te bajan el margen</td>
+                            <td>🟢Diferenciación que ningún competidor puede copiar a precio</td>
                         </tr>
                         <tr>
-                            <td>📣 Cada nueva venta cuesta más en publicidad</td>
-                            <td>Valor percibido muy alto por el cliente, a un coste de 1,58–1,94 € por cuento</td>
+                            <td>🔴Cada nueva venta cuesta más en publicidad</td>
+                            <td>🟢Valor percibido muy alto por el cliente, a un coste de 1,58–1,94 € por cuento</td>
                         </tr>
                         <tr>
-                            <td>📦 La experiencia del cliente termina cuando llega el paquete</td>
-                            <td>La experiencia empieza cuando el paquete llega, y dura semanas</td>
+                            <td>🔴La experiencia del cliente termina cuando llega el paquete</td>
+                            <td>🟢La experiencia empieza cuando el paquete llega, y dura semanas</td>
                         </tr>
                         <tr>
-                            <td>📧 Emails de confirmación que nadie abre</td>
-                            <td>Email con un cuento del hijo del cliente = tasa de apertura >60%</td>
+                            <td>🔴Emails de confirmación que nadie abre</td>
+                            <td>🟢Email con un cuento del hijo del cliente = tasa de apertura >60%</td>
                         </tr>
                         <tr>
-                            <td>🛒 3 de cada 4 carritos se abandonan sin comprar</td>
-                            <td>Incentivo emocional que convierte la duda en decisión de compra</td>
+                            <td>🔴3 de cada 4 carritos se abandonan sin comprar</td>
+                            <td>🟢Incentivo emocional que convierte la duda en decisión de compra</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1572,14 +1584,10 @@
                     real ligado a tu marca. Eso no lo construye un descuento. Lo construye una historia.
                 </p>
                 <div class="emotion-icons">
-                    <div class="emotion-icon"><span class="ei">📖</span><span>El niño protagoniza la historia</span>
-                    </div>
-                    <div class="emotion-icon"><span class="ei">❤️</span><span>La familia asocia tu marca con ese
-                            recuerdo</span></div>
-                    <div class="emotion-icon"><span class="ei">🔁</span><span>El cliente vuelve porque le importa lo que
-                            siente</span></div>
-                    <div class="emotion-icon"><span class="ei">🛡️</span><span>Inmune a la guerra de precios</span>
-                    </div>
+                    <div class="emotion-icon"><span class="ei">⭐</span><span>El niño protagoniza la historia</span></div>
+                    <div class="emotion-icon"><span class="ei">💜</span><span>La familia asocia tu marca con ese recuerdo</span></div>
+                    <div class="emotion-icon"><span class="ei">🔁</span><span>El cliente vuelve porque le importa lo que siente</span></div>
+                    <div class="emotion-icon"><span class="ei">🛡️</span><span>Inmune a la guerra de precios</span></div>
                 </div>
             </div>
         </div>
@@ -1591,7 +1599,7 @@
         <div class="container">
             <div class="math-inner">
                 <div>
-                    <span class="tag">🧮 La cuenta de la vieja</span>
+                    <span class="tag">La cuenta de la vieja</span>
                     <h2>Si antes vendías 4 al día, ahora vendes 7.</h2>
                     <p>
                         No necesitas datos complicados para ver si NubeKids te funciona.
@@ -1640,7 +1648,7 @@
     <section id="pricing">
         <div class="container">
             <div class="section-header">
-                <span class="tag">💰 Packs de créditos</span>
+                <span class="tag">Packs de créditos</span>
                 <h2>Sin contratos. Sin permanencias. Pagas lo que usas.</h2>
                 <p>Cada crédito = un cuento entregado a un cliente real. Los créditos no caducan.</p>
             </div>
@@ -1653,19 +1661,19 @@
                     </div>
                     <div class="packs">
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">🌱 Starter</span>
+                            <span class="pack-label">Starter</span>
                             <span class="pack-stories">50 cuentos</span>
                             <span class="pack-price">97 €</span>
                             <span class="pack-unit">1,94 €/c</span>
                         </a>
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">🚀 Growth</span>
+                            <span class="pack-label">Growth</span>
                             <span class="pack-stories">200 cuentos</span>
                             <span class="pack-price">340 €</span>
                             <span class="pack-unit">1,70 €/c</span>
                         </a>
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">⚡ Scale</span>
+                            <span class="pack-label">Scale</span>
                             <span class="pack-stories">500 cuentos</span>
                             <span class="pack-price">790 €</span>
                             <span class="pack-unit">1,58 €/c</span>
@@ -1678,25 +1686,25 @@
 
                 <div class="pricing-plan featured">
                     <div class="plan-top">
-                        <div class="plan-name">Plan Premium ⭐</div>
+                        <div class="plan-name">Plan Premium </div>
                         <div class="plan-desc">Con foto real del producto , el objeto mágico del cuento es su compra
                         </div>
                     </div>
                     <div class="packs">
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">🌱 Starter</span>
+                            <span class="pack-label">Starter</span>
                             <span class="pack-stories">50 cuentos</span>
                             <span class="pack-price">145 €</span>
                             <span class="pack-unit">2,90 €/c</span>
                         </a>
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">🚀 Growth</span>
+                            <span class="pack-label">Growth</span>
                             <span class="pack-stories">200 cuentos</span>
                             <span class="pack-price">490 €</span>
                             <span class="pack-unit">2,45 €/c</span>
                         </a>
                         <a href="/buy-credits" class="pack-row">
-                            <span class="pack-label">⚡ Scale</span>
+                            <span class="pack-label">Scale</span>
                             <span class="pack-stories">500 cuentos</span>
                             <span class="pack-price">990 €</span>
                             <span class="pack-unit">1,98 €/c</span>
@@ -1712,9 +1720,10 @@
             <div class="pricing-note">
                 <span class="bulb">💡</span>
                 <p>
-                    <strong>La lógica es sencilla:</strong> cada crédito que consumes es porque has realizado una venta
-                    o estás incentivando una. Si tu ticket medio es 60 € y el pack Growth te cuesta 340 €, necesitas que
-                    esos 200 cuentos generen <strong>menos de 4 ventas adicionales</strong> para que salga rentable. El
+                    <strong>La lógica es sencilla:</strong> cada crédito que consumes es porque has realizado una venta.
+                    Si tu ticket medio
+                    es 60 € y el pack Growth te cuesta 340 €, necesitas que esos 200 cuentos generen <strong>menos de 10
+                        ventas adicionales</strong> para que salga rentable. El
                     resto es beneficio puro.
                 </p>
             </div>
@@ -1732,34 +1741,34 @@
             </div>
             <div class="obj-grid">
                 <div class="obj-card">
-                    <div class="obj-q">💬 "No tengo tiempo para integraciones técnicas"</div>
+                    <div class="obj-q">"No tengo tiempo para integraciones técnicas"</div>
                     <div class="obj-a">El Plan Standard es literalmente copiar y pegar una URL en tu plantilla de email.
                         Sin código. Sin soporte de IT. En menos de 5 minutos estás operativo.</div>
                 </div>
                 <div class="obj-card">
-                    <div class="obj-q">💬 "¿Los cuentos son de calidad real o son genéricos?"</div>
+                    <div class="obj-q">"¿Los cuentos son de calidad real o son genéricos?"</div>
                     <div class="obj-a">No son plantillas con el nombre del niño pegado encima. El motor narrativo está
                         entrenado con principios de psicología infantil y pedagogía. Cada cuento tiene un arco narrativo
                         calibrado por edad (3–4, 5–6 o 7–10 años), un objetivo de desarrollo y el contexto emocional del
                         protagonista.</div>
                 </div>
                 <div class="obj-card">
-                    <div class="obj-q">💬 "¿Y si el cuento no le gusta a la familia?"</div>
-                    <div class="obj-a">Garantía de satisfacción en los primeros 50 cuentos. Si no ves el impacto, te
+                    <div class="obj-q">"¿Y si el cuento no le gusta a la familia?"</div>
+                    <div class="obj-a">Garantía de satisfacción en los primeros 5 cuentos. Si no ves el impacto, te
                         devolvemos el importe íntegro. Sin preguntas.</div>
                 </div>
                 <div class="obj-card">
-                    <div class="obj-q">💬 "¿Qué pasa con la privacidad de las fotos de los niños?"</div>
+                    <div class="obj-q">"¿Qué pasa con la privacidad de las fotos de los niños?"</div>
                     <div class="obj-a">Las fotos nunca salen del navegador del usuario final. No se almacenan en ningún
                         servidor. Cumplimiento total con el RGPD para menores de edad.</div>
                 </div>
                 <div class="obj-card">
-                    <div class="obj-q">💬 "¿Puedo probarlo sin un compromiso grande?"</div>
+                    <div class="obj-q">"¿Puedo probarlo sin un compromiso grande?"</div>
                     <div class="obj-a">El pack Starter existe exactamente para eso. 50 cuentos, 97 €, sin contrato, sin
                         permanencia. Si funciona, amplías. Si no, no has arriesgado nada relevante.</div>
                 </div>
                 <div class="obj-card">
-                    <div class="obj-q">💬 "¿Mis clientes van a valorar esto o lo van a ignorar?"</div>
+                    <div class="obj-q">"¿Mis clientes van a valorar esto o lo van a ignorar?"</div>
                     <div class="obj-a">Un email con "Tu pedido ha sido enviado" tiene una tasa de apertura del 20%. Un
                         email con "El cuento de [nombre del niño] está listo" supera el 60%. El cuento es para el hijo
                         del cliente , eso cambia todo.</div>
@@ -1811,7 +1820,7 @@
             </p>
             <div class="cta-buttons">
                 <a href="/buy-credits" class="btn btn-primary btn-lg">Empezar con el pack Starter →</a>
-                <a href="/cdn-cgi/l/email-protection#40282f2c21002e3522252b2924336e232f2d"
+                <a href="mailto:hola@nubekids.io"
                     class="btn btn-outline btn-lg">Pedir una demo en vivo</a>
             </div>
             <p class="cta-fine">Sin contratos · Sin permanencias · Los créditos no caducan</p>
@@ -1824,4 +1833,9 @@
     <footer>
         <div class="container">
             <p>☁️ <strong style="color:var(--yellow)">NubeKids</strong> · Cuentos personalizados para tiendas online ·
-                <a href="/buy-credits">Ver packs</a> · <a href="/cdn-cgi/l/email-protection#a6cec9cac7e
+                <a href="/buy-credits">Ver packs</a> · <a href="mailto:hola@nubekids.io">Contactar</a></p>
+        </div>
+    </footer>
+
+</body>
+</html>

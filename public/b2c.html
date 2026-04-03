@@ -1,49 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NubeKids Tales — Cuentos Personalizados con IA para tu Peque</title>
-    <meta name="description" content="Crea en 60 segundos un cuento donde tu hijo es el protagonista y aprende a gestionar sus emociones. Sin anuncios. Sin suscripción. Pedagógicamente diseñado.">
+    <title>NubeKids Tales — Cuentos Personalizados para tu Peque</title>
+    <meta name="description"
+        content="Crea en 60 segundos un cuento donde tu hijo es el protagonista y aprende a gestionar sus emociones. Sin anuncios. Sin suscripción. Pedagógicamente diseñado.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
 
     <style>
         /* ─── RESET & BASE ─────────────────────────────── */
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
 
         :root {
-            --bg-cream:          #FDFBF7;
-            --brand-purple:      #8B5CF6;
-            --brand-purple-mid:  #7C3AED;
+            --bg-cream: #FDFBF7;
+            --brand-purple: #8B5CF6;
+            --brand-purple-mid: #7C3AED;
             --brand-purple-dark: #6D28D9;
-            --brand-purple-lt:   #EDE9FE;
-            --brand-purple-xl:   #F5F3FF;
-            --accent-yellow:     #FBBF24;
-            --accent-yellow-dk:  #D97706;
-            --accent-yellow-lt:  #FEF3C7;
-            --ui-green:          #10B981;
-            --ui-green-dk:       #065F46;
-            --ui-green-lt:       #D1FAE5;
-            --coral:             #FB7185;
-            --coral-lt:          #FFF1F2;
-            --night:             #0D1117;
-            --night-2:           #161B22;
-            --night-3:           #1E2733;
-            --text-black:        #1E293B;
-            --text-mid:          #475569;
-            --text-soft:         #94A3B8;
-            --border:            #1E293B;
-            --shadow-sm:         2px 2px 0px #1E293B;
-            --shadow-md:         4px 4px 0px #1E293B;
-            --shadow-lg:         6px 6px 0px #1E293B;
-            --shadow-xl:         8px 8px 0px #1E293B;
-            --font-display:      'Fredoka', sans-serif;
-            --font-body:         'DM Sans', sans-serif;
-            --r:                 1060px;
+            --brand-purple-lt: #EDE9FE;
+            --brand-purple-xl: #F5F3FF;
+            --accent-yellow: #FBBF24;
+            --accent-yellow-dk: #D97706;
+            --accent-yellow-lt: #FEF3C7;
+            --ui-green: #10B981;
+            --ui-green-dk: #065F46;
+            --ui-green-lt: #D1FAE5;
+            --coral: #FB7185;
+            --coral-lt: #FFF1F2;
+            --night: #0D1117;
+            --night-2: #161B22;
+            --night-3: #1E2733;
+            --text-black: #1E293B;
+            --text-mid: #475569;
+            --text-soft: #94A3B8;
+            --border: #1E293B;
+            --shadow-sm: 2px 2px 0px #1E293B;
+            --shadow-md: 4px 4px 0px #1E293B;
+            --shadow-lg: 6px 6px 0px #1E293B;
+            --shadow-xl: 8px 8px 0px #1E293B;
+            --font-display: 'Fredoka', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --r: 1060px;
         }
 
         body {
@@ -55,10 +68,29 @@
         }
 
         /* ─── TYPOGRAPHY ─────────────────────────────────── */
-        h1 { font-family: var(--font-display); font-size: clamp(2.1rem, 5.5vw, 3.9rem); line-height: 1.1; }
-        h2 { font-family: var(--font-display); font-size: clamp(1.7rem, 4vw, 2.8rem); line-height: 1.15; }
-        h3 { font-family: var(--font-display); font-size: clamp(1.15rem, 2.5vw, 1.55rem); line-height: 1.25; }
-        p  { font-size: 1.05rem; line-height: 1.75; color: var(--text-mid); }
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.1rem, 5.5vw, 3.9rem);
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: clamp(1.7rem, 4vw, 2.8rem);
+            line-height: 1.15;
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+            line-height: 1.25;
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--text-mid);
+        }
 
         .lead {
             font-size: clamp(1.05rem, 2vw, 1.22rem);
@@ -67,11 +99,30 @@
         }
 
         /* ─── LAYOUT ──────────────────────────────────────── */
-        .wrap  { max-width: var(--r); margin: 0 auto; padding: 0 1.75rem; }
-        .section-pad { padding: 5.5rem 1.75rem; }
-        .section-header { text-align: center; margin-bottom: 3.5rem; }
-        .section-header h2 { color: var(--text-black); margin-bottom: 0.75rem; }
-        .section-header p  { max-width: 600px; margin: 0 auto; }
+        .wrap {
+            max-width: var(--r);
+            margin: 0 auto;
+            padding: 0 1.75rem;
+        }
+
+        .section-pad {
+            padding: 5.5rem 1.75rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .section-header h2 {
+            color: var(--text-black);
+            margin-bottom: 0.75rem;
+        }
+
+        .section-header p {
+            max-width: 600px;
+            margin: 0 auto;
+        }
 
         /* ─── EYEBROW ─────────────────────────────────────── */
         .eyebrow {
@@ -87,8 +138,18 @@
             color: var(--brand-purple-dark);
             margin-bottom: 1.2rem;
         }
-        .eyebrow-yellow { background: var(--accent-yellow); color: var(--text-black); border: 2px solid var(--border); }
-        .eyebrow-dark   { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.2); }
+
+        .eyebrow-yellow {
+            background: var(--accent-yellow);
+            color: var(--text-black);
+            border: 2px solid var(--border);
+        }
+
+        .eyebrow-dark {
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
         /* ─── BUTTONS ─────────────────────────────────────── */
         .btn {
@@ -111,30 +172,103 @@
             white-space: nowrap;
             outline: none;
         }
-        .btn:hover  { transform: translate(2px, 2px); box-shadow: var(--shadow-sm); }
-        .btn:active { transform: translate(3px, 3px); box-shadow: none; }
-        .btn-lg     { font-size: 1.3rem; padding: 1.2rem 2.5rem; border-radius: 16px; }
-        .btn-sm     { font-size: 0.95rem; padding: 0.75rem 1.35rem; border-radius: 10px; box-shadow: var(--shadow-sm); }
-        .btn-green  { background: var(--ui-green); color: white; border-color: var(--ui-green-dk); box-shadow: 4px 4px 0 var(--ui-green-dk); }
-        .btn-green:hover { box-shadow: 2px 2px 0 var(--ui-green-dk); }
-        .btn-ghost  { background: transparent; border-color: rgba(255,255,255,0.45); color: white; box-shadow: none; }
-        .btn-ghost:hover { background: rgba(255,255,255,0.08); transform: none; box-shadow: none; }
-        .btn-purple { background: var(--brand-purple); color: white; border-color: var(--brand-purple-dark); box-shadow: 4px 4px 0 var(--brand-purple-dark); }
-        .btn-purple:hover { box-shadow: 2px 2px 0 var(--brand-purple-dark); }
+
+        .btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
+
+        .btn-lg {
+            font-size: 1.3rem;
+            padding: 1.2rem 2.5rem;
+            border-radius: 16px;
+        }
+
+        .btn-sm {
+            font-size: 0.95rem;
+            padding: 0.75rem 1.35rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-green {
+            background: var(--ui-green);
+            color: white;
+            border-color: var(--ui-green-dk);
+            box-shadow: 4px 4px 0 var(--ui-green-dk);
+        }
+
+        .btn-green:hover {
+            box-shadow: 2px 2px 0 var(--ui-green-dk);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.45);
+            color: white;
+            box-shadow: none;
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-purple {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
+            box-shadow: 4px 4px 0 var(--brand-purple-dark);
+        }
+
+        .btn-purple:hover {
+            box-shadow: 2px 2px 0 var(--brand-purple-dark);
+        }
 
         /* ─── NAV ─────────────────────────────────────────── */
         nav {
-            position: sticky; top: 0; z-index: 200;
+            position: sticky;
+            top: 0;
+            z-index: 200;
             background: var(--bg-cream);
             border-bottom: 3px solid var(--border);
             padding: 0.9rem 1.75rem;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 1rem;
         }
-        .nav-logo { font-family: var(--font-display); font-size: 1.45rem; color: var(--brand-purple); text-decoration: none; }
-        .nav-right { display: flex; align-items: center; gap: 0.75rem; }
-        .nav-note  { font-size: 0.88rem; color: var(--text-soft); font-weight: 600; }
-        @media (max-width: 560px) { .nav-note { display: none; } }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.45rem;
+            color: var(--brand-purple);
+            text-decoration: none;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-note {
+            font-size: 0.88rem;
+            color: var(--text-soft);
+            font-weight: 600;
+        }
+
+        @media (max-width: 560px) {
+            .nav-note {
+                display: none;
+            }
+        }
 
         /* ─── HERO ────────────────────────────────────────── */
         .hero {
@@ -143,50 +277,102 @@
             overflow: hidden;
             padding: 5rem 1.75rem 6.5rem;
         }
+
         .hero::before {
             content: '';
-            position: absolute; inset: 0; pointer-events: none;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
             background:
-                radial-gradient(ellipse 60% 60% at 15% 60%, rgba(139,92,246,.28) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 40% at 85% 15%, rgba(251,191,36,.12) 0%, transparent 60%),
-                radial-gradient(ellipse 40% 40% at 50% 90%, rgba(139,92,246,.15) 0%, transparent 70%);
+                radial-gradient(ellipse 60% 60% at 15% 60%, rgba(139, 92, 246, .28) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 85% 15%, rgba(251, 191, 36, .12) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 50% 90%, rgba(139, 92, 246, .15) 0%, transparent 70%);
         }
-        .stars-canvas { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+        .stars-canvas {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
         .star {
             position: absolute;
             border-radius: 50%;
             background: white;
             animation: twinkle var(--dur, 3s) ease-in-out infinite var(--dl, 0s);
         }
+
         @keyframes twinkle {
-            0%, 100% { opacity: .15; transform: scale(1); }
-            50%       { opacity: 1;   transform: scale(1.6); }
+
+            0%,
+            100% {
+                opacity: .15;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.6);
+            }
         }
 
         .hero-inner {
-            position: relative; z-index: 1;
-            max-width: var(--r); margin: 0 auto; text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: var(--r);
+            margin: 0 auto;
+            text-align: center;
         }
+
         .hero-book {
-            display: block; width: 190px; height: 135px;
+            display: block;
+            width: 190px;
+            height: 135px;
             margin: 0 auto 2.5rem;
             animation: float 4.5s ease-in-out infinite;
         }
-        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 
-        .hero h1 { color: white; margin-bottom: 1.5rem; }
-        .hero h1 .hl { color: var(--accent-yellow); }
-        .hero .lead { color: rgba(255,255,255,.78); max-width: 680px; margin: 0 auto 2.5rem; }
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-14px);
+            }
+        }
+
+        .hero h1 {
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 .hl {
+            color: var(--accent-yellow);
+        }
+
+        .hero .lead {
+            color: rgba(255, 255, 255, .78);
+            max-width: 680px;
+            margin: 0 auto 2.5rem;
+        }
 
         .trust-row {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .65rem;
             margin-top: 2.5rem;
         }
+
         .trust-pill {
-            background: rgba(255,255,255,.1);
-            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .2);
             backdrop-filter: blur(8px);
-            color: rgba(255,255,255,.9);
+            color: rgba(255, 255, 255, .9);
             padding: .4rem 1rem;
             border-radius: 999px;
             font-size: .84rem;
@@ -194,50 +380,103 @@
         }
 
         /* ─── PAIN SECTION ────────────────────────────────── */
-        .pain-section { background: var(--bg-cream); }
-        .pain-intro { text-align: center; max-width: 680px; margin: 0 auto 3rem; }
-        .pain-intro h2 { color: var(--text-black); margin-bottom: .75rem; }
+        .pain-section {
+            background: var(--bg-cream);
+        }
+
+        .pain-intro {
+            text-align: center;
+            max-width: 680px;
+            margin: 0 auto 3rem;
+        }
+
+        .pain-intro h2 {
+            color: var(--text-black);
+            margin-bottom: .75rem;
+        }
 
         .age-tabs {
-            display: flex; gap: .6rem; justify-content: center;
-            flex-wrap: wrap; margin-bottom: 2rem;
+            display: flex;
+            gap: .6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
         }
+
         .age-tab {
-            font-family: var(--font-display); font-size: .95rem; font-weight: 700;
-            padding: .55rem 1.25rem; border-radius: 999px;
-            border: 2.5px solid var(--border); background: white; cursor: pointer;
+            font-family: var(--font-display);
+            font-size: .95rem;
+            font-weight: 700;
+            padding: .55rem 1.25rem;
+            border-radius: 999px;
+            border: 2.5px solid var(--border);
+            background: white;
+            cursor: pointer;
             transition: all .18s;
         }
-        .age-tab:hover, .age-tab.on {
-            background: var(--brand-purple); color: white; border-color: var(--brand-purple-dark);
+
+        .age-tab:hover,
+        .age-tab.on {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
         }
 
         .scenario {
             display: none;
-            max-width: 700px; margin: 0 auto;
-            background: var(--coral-lt); border: 3px solid var(--coral);
-            border-radius: 24px; padding: 2.5rem 2.25rem;
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--coral-lt);
+            border: 3px solid var(--coral);
+            border-radius: 24px;
+            padding: 2.5rem 2.25rem;
             position: relative;
         }
-        .scenario.on { display: block; }
+
+        .scenario.on {
+            display: block;
+        }
+
         .scenario-badge {
-            position: absolute; top: -14px; left: 1.75rem;
-            background: var(--coral); color: white;
-            font-family: var(--font-display); font-size: .82rem;
-            padding: .25rem .8rem; border-radius: 999px;
+            position: absolute;
+            top: -14px;
+            left: 1.75rem;
+            background: var(--coral);
+            color: white;
+            font-family: var(--font-display);
+            font-size: .82rem;
+            padding: .25rem .8rem;
+            border-radius: 999px;
             border: 2px solid var(--border);
         }
+
         .scenario-quote {
-            font-family: var(--font-display); font-size: 1.22rem;
-            color: var(--text-black); font-style: italic;
-            line-height: 1.6; margin-bottom: 1rem;
+            font-family: var(--font-display);
+            font-size: 1.22rem;
+            color: var(--text-black);
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 1rem;
         }
-        .scenario p { font-size: .98rem; }
+
+        .scenario p {
+            font-size: .98rem;
+        }
+
         .scenario-bridge {
-            background: var(--ui-green-lt); border: 2px solid var(--ui-green);
-            border-radius: 12px; padding: 1.1rem 1.4rem; margin-top: 1.5rem;
+            background: var(--ui-green-lt);
+            border: 2px solid var(--ui-green);
+            border-radius: 12px;
+            padding: 1.1rem 1.4rem;
+            margin-top: 1.5rem;
         }
-        .scenario-bridge p { color: var(--text-black); font-weight: 600; margin: 0; font-size: .98rem; }
+
+        .scenario-bridge p {
+            color: var(--text-black);
+            font-weight: 600;
+            margin: 0;
+            font-size: .98rem;
+        }
 
         /* ─── WIZARD ──────────────────────────────────────── */
         .wizard-section {
@@ -245,1097 +484,2339 @@
             border-top: 4px solid var(--border);
             border-bottom: 4px solid var(--border);
         }
-        .wizard-wrap { max-width: 780px; margin: 0 auto; }
-        .wizard-header { text-align: center; margin-bottom: 2.75rem; }
-        .wizard-header h2 { color: var(--text-black); margin-bottom: .6rem; }
+
+        .wizard-wrap {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 2.75rem;
+        }
+
+        .wizard-header h2 {
+            color: var(--text-black);
+            margin-bottom: .6rem;
+        }
 
         .wizard-box {
-            background: white; border: 4px solid var(--border);
-            border-radius: 24px; box-shadow: var(--shadow-xl); overflow: hidden;
+            background: white;
+            border: 4px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
         }
+
         .wizard-top {
-            background: var(--text-black); padding: .9rem 1.75rem;
-            display: flex; align-items: center; gap: .6rem;
+            background: var(--text-black);
+            padding: .9rem 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
         }
+
         .pdot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: rgba(255,255,255,.25); transition: all .25s;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+            transition: all .25s;
             flex-shrink: 0;
         }
-        .pdot.done   { background: var(--accent-yellow); }
-        .pdot.current { background: white; width: 13px; height: 13px; }
-        .plabel { color: rgba(255,255,255,.65); font-size: .85rem; margin-left: auto; }
 
-        .wstep { display: none; padding: 2.25rem; }
-        .wstep.on { display: block; }
-        .wstep h3 { color: var(--text-black); margin-bottom: .4rem; }
-        .wstep .hint { font-size: .93rem; color: var(--text-soft); margin-bottom: 1.5rem; line-height: 1.5; }
+        .pdot.done {
+            background: var(--accent-yellow);
+        }
+
+        .pdot.current {
+            background: white;
+            width: 13px;
+            height: 13px;
+        }
+
+        .plabel {
+            color: rgba(255, 255, 255, .65);
+            font-size: .85rem;
+            margin-left: auto;
+        }
+
+        .wstep {
+            display: none;
+            padding: 2.25rem;
+        }
+
+        .wstep.on {
+            display: block;
+        }
+
+        .wstep h3 {
+            color: var(--text-black);
+            margin-bottom: .4rem;
+        }
+
+        .wstep .hint {
+            font-size: .93rem;
+            color: var(--text-soft);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
 
         .win {
-            width: 100%; font-family: var(--font-body); font-size: 1.18rem; font-weight: 600;
-            padding: .9rem 1.4rem; border: 3px solid var(--border); border-radius: 12px;
-            outline: none; background: var(--bg-cream); transition: border-color .2s;
+            width: 100%;
+            font-family: var(--font-body);
+            font-size: 1.18rem;
+            font-weight: 600;
+            padding: .9rem 1.4rem;
+            border: 3px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            background: var(--bg-cream);
+            transition: border-color .2s;
         }
-        .win:focus { border-color: var(--brand-purple); }
 
-        .pills { display: flex; flex-wrap: wrap; gap: .65rem; }
+        .win:focus {
+            border-color: var(--brand-purple);
+        }
+
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .65rem;
+        }
+
         .pill {
-            font-family: var(--font-display); font-size: .98rem; font-weight: 700;
-            padding: .55rem 1.15rem; border: 2.5px solid var(--border);
-            border-radius: 999px; background: var(--bg-cream);
-            cursor: pointer; user-select: none; transition: all .15s;
+            font-family: var(--font-display);
+            font-size: .98rem;
+            font-weight: 700;
+            padding: .55rem 1.15rem;
+            border: 2.5px solid var(--border);
+            border-radius: 999px;
+            background: var(--bg-cream);
+            cursor: pointer;
+            user-select: none;
+            transition: all .15s;
         }
-        .pill:hover  { background: var(--brand-purple-lt); border-color: var(--brand-purple); }
-        .pill.on     { background: var(--brand-purple); color: white; border-color: var(--brand-purple-dark); box-shadow: 2px 2px 0 var(--brand-purple-dark); }
-        .pill.age    { font-size: 1.05rem; padding: .65rem 1.5rem; }
 
-        .wnav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
-        .wbtn {
-            font-family: var(--font-display); font-size: 1.08rem; font-weight: 700;
-            padding: .85rem 1.75rem; border-radius: 12px; border: 3px solid var(--border);
-            background: var(--accent-yellow); cursor: pointer;
-            box-shadow: var(--shadow-md); transition: transform .14s, box-shadow .14s; outline: none;
+        .pill:hover {
+            background: var(--brand-purple-lt);
+            border-color: var(--brand-purple);
         }
-        .wbtn:hover  { transform: translate(2px, 2px); box-shadow: var(--shadow-sm); }
-        .wbtn.back   { background: transparent; color: var(--text-soft); border-color: transparent; box-shadow: none; font-size: .95rem; }
-        .wbtn.back:hover { background: var(--bg-cream); transform: none; box-shadow: none; }
+
+        .pill.on {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
+            box-shadow: 2px 2px 0 var(--brand-purple-dark);
+        }
+
+        .pill.age {
+            font-size: 1.05rem;
+            padding: .65rem 1.5rem;
+        }
+
+        .wnav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .wbtn {
+            font-family: var(--font-display);
+            font-size: 1.08rem;
+            font-weight: 700;
+            padding: .85rem 1.75rem;
+            border-radius: 12px;
+            border: 3px solid var(--border);
+            background: var(--accent-yellow);
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: transform .14s, box-shadow .14s;
+            outline: none;
+        }
+
+        .wbtn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .wbtn.back {
+            background: transparent;
+            color: var(--text-soft);
+            border-color: transparent;
+            box-shadow: none;
+            font-size: .95rem;
+        }
+
+        .wbtn.back:hover {
+            background: var(--bg-cream);
+            transform: none;
+            box-shadow: none;
+        }
 
         .story-preview {
             background: linear-gradient(135deg, var(--brand-purple-lt), var(--accent-yellow-lt));
-            border: 3px solid var(--brand-purple); border-radius: 16px;
-            padding: 2rem 1.75rem; text-align: center; margin-bottom: 1.5rem;
+            border: 3px solid var(--brand-purple);
+            border-radius: 16px;
+            padding: 2rem 1.75rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
-        .story-preview .sp-icon { font-size: 2rem; margin-bottom: .75rem; }
+
+        .story-preview .sp-icon {
+            font-size: 2rem;
+            margin-bottom: .75rem;
+        }
+
         .story-preview .sp-title {
-            font-family: var(--font-display); font-size: 1.4rem;
-            color: var(--brand-purple-dark); margin-bottom: .5rem;
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--brand-purple-dark);
+            margin-bottom: .5rem;
         }
-        .story-preview .sp-sub { font-size: .96rem; color: var(--text-mid); }
+
+        .story-preview .sp-sub {
+            font-size: .96rem;
+            color: var(--text-mid);
+        }
+
         .skip-btn {
-            background: none; border: none; color: var(--text-soft); font-size: .9rem;
-            text-decoration: underline; cursor: pointer; display: block;
-            text-align: center; margin-top: .6rem; outline: none;
+            background: none;
+            border: none;
+            color: var(--text-soft);
+            font-size: .9rem;
+            text-decoration: underline;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+            margin-top: .6rem;
+            outline: none;
         }
-        .skip-btn:hover { color: var(--brand-purple); }
+
+        .skip-btn:hover {
+            color: var(--brand-purple);
+        }
 
         /* ─── HOW IT WORKS ────────────────────────────────── */
-        .how-section { background: var(--bg-cream); }
+        .how-section {
+            background: var(--bg-cream);
+        }
+
         .steps-row {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
             position: relative;
         }
+
         .steps-row::before {
             content: '';
-            position: absolute; top: 56px;
-            left: calc(16.67% + 1.2rem); right: calc(16.67% + 1.2rem); height: 3px;
+            position: absolute;
+            top: 56px;
+            left: calc(16.67% + 1.2rem);
+            right: calc(16.67% + 1.2rem);
+            height: 3px;
             background: repeating-linear-gradient(90deg, var(--brand-purple) 0, var(--brand-purple) 10px, transparent 10px, transparent 22px);
         }
+
         .step-card {
-            background: white; border: 3px solid var(--border); border-radius: 20px;
-            padding: 2rem; text-align: center; box-shadow: var(--shadow-md);
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
         }
+
         .step-icon {
-            width: 68px; height: 68px; border-radius: 50%;
-            background: var(--brand-purple-lt); border: 3px solid var(--brand-purple);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.7rem; margin: 0 auto 1.3rem;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--brand-purple-lt);
+            border: 3px solid var(--brand-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            margin: 0 auto 1.3rem;
         }
-        .step-card h3 { color: var(--text-black); margin-bottom: .5rem; }
-        .step-card p  { font-size: .98rem; }
+
+        .step-card h3 {
+            color: var(--text-black);
+            margin-bottom: .5rem;
+        }
+
+        .step-card p {
+            font-size: .98rem;
+        }
 
         /* ─── BOOK PREVIEW ────────────────────────────────── */
         .preview-section {
-            background: var(--night); position: relative; overflow: hidden;
+            background: var(--night);
+            position: relative;
+            overflow: hidden;
             padding: 5.5rem 1.75rem;
         }
+
         .preview-section::before {
             content: '';
-            position: absolute; inset: 0; pointer-events: none;
-            background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(139,92,246,.18) 0%, transparent 70%);
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(139, 92, 246, .18) 0%, transparent 70%);
         }
-        .preview-header { text-align: center; margin-bottom: 3rem; position: relative; z-index: 1; }
-        .preview-header h2 { color: white; margin-bottom: .6rem; }
-        .preview-header p  { color: rgba(255,255,255,.7); }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .preview-header h2 {
+            color: white;
+            margin-bottom: .6rem;
+        }
+
+        .preview-header p {
+            color: rgba(255, 255, 255, .7);
+        }
 
         .book-spread {
-            position: relative; z-index: 1;
-            max-width: 820px; margin: 0 auto;
-            background: white; border: 4px solid var(--border); border-radius: 8px;
-            box-shadow: var(--shadow-xl), 0 50px 100px rgba(0,0,0,.55);
-            display: grid; grid-template-columns: 1fr 1fr; min-height: 280px;
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+            background: white;
+            border: 4px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--shadow-xl), 0 50px 100px rgba(0, 0, 0, .55);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 280px;
             overflow: hidden;
         }
+
         .book-left {
-            padding: 2.5rem; border-right: 3px solid var(--border);
+            padding: 2.5rem;
+            border-right: 3px solid var(--border);
             background: linear-gradient(140deg, #FFFBF4 0%, white 100%);
         }
+
         .book-left h4 {
-            font-family: var(--font-display); font-size: 1.1rem;
-            color: var(--brand-purple); margin-bottom: 1.25rem;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--brand-purple);
+            margin-bottom: 1.25rem;
         }
-        .book-left p { font-size: .93rem; line-height: 1.95; color: var(--text-black); }
-        .book-left em { color: var(--brand-purple); font-family: var(--font-display); font-size: 1rem; }
+
+        .book-left p {
+            font-size: .93rem;
+            line-height: 1.95;
+            color: var(--text-black);
+        }
+
+        .book-left em {
+            color: var(--brand-purple);
+            font-family: var(--font-display);
+            font-size: 1rem;
+        }
+
         .book-right {
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: linear-gradient(140deg, var(--brand-purple-lt) 0%, #EEF2FF 100%);
             padding: 1.5rem;
         }
-        .book-right svg { width: 100%; max-width: 280px; }
+
+        .book-right svg {
+            width: 100%;
+            max-width: 280px;
+        }
 
         /* ─── TESTIMONIALS ────────────────────────────────── */
-        .testi-section { background: var(--bg-cream); }
-        .testi-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+        .testi-section {
+            background: var(--bg-cream);
         }
+
+        .testi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
         .testi-card {
-            background: white; border: 3px solid var(--border); border-radius: 20px;
-            padding: 1.75rem; display: flex; flex-direction: column;
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 20px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
             box-shadow: var(--shadow-md);
         }
-        .testi-stars  { color: var(--accent-yellow); font-size: 1.1rem; margin-bottom: 1rem; letter-spacing: 2px; }
-        .testi-label  { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .25rem; }
-        .testi-label.before { color: var(--coral); }
-        .testi-label.after  { color: var(--ui-green); margin-top: 1rem; }
-        .testi-text   { font-size: .98rem; color: var(--text-black); font-weight: 500; line-height: 1.65; flex: 1; }
-        .testi-author { display: flex; align-items: center; gap: .75rem; margin-top: 1.4rem; padding-top: 1rem; border-top: 2px dashed #E2E8F0; }
-        .testi-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--border); background: var(--brand-purple-lt); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-        .testi-name   { font-weight: 700; font-size: .9rem; color: var(--text-black); }
-        .testi-detail { font-size: .8rem; color: var(--text-soft); }
+
+        .testi-stars {
+            color: var(--accent-yellow);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .testi-label {
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: .25rem;
+        }
+
+        .testi-label.before {
+            color: var(--coral);
+        }
+
+        .testi-label.after {
+            color: var(--ui-green);
+            margin-top: 1rem;
+        }
+
+        .testi-text {
+            font-size: .98rem;
+            color: var(--text-black);
+            font-weight: 500;
+            line-height: 1.65;
+            flex: 1;
+        }
+
+        .testi-author {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-top: 1.4rem;
+            padding-top: 1rem;
+            border-top: 2px dashed #E2E8F0;
+        }
+
+        .testi-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--brand-purple-lt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .testi-name {
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--text-black);
+        }
+
+        .testi-detail {
+            font-size: .8rem;
+            color: var(--text-soft);
+        }
 
         /* ─── COMPARISON ──────────────────────────────────── */
-        .comp-section { background: var(--accent-yellow-lt); border-top: 4px solid var(--border); border-bottom: 4px solid var(--border); }
-        .comp-table { background: white; border: 4px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-xl); }
+        .comp-section {
+            background: var(--accent-yellow-lt);
+            border-top: 4px solid var(--border);
+            border-bottom: 4px solid var(--border);
+        }
+
+        .comp-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .comp-scroll.dragging {
+            cursor: grabbing;
+        }
+
+        .comp-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .comp-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .comp-table {
+            background: white;
+            border: 4px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            min-width: 560px;
+        }
+
         .comp-head {
-            display: grid; grid-template-columns: 1.6fr 1fr 1fr;
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr;
             background: var(--text-black);
         }
-        .comp-head-cell { padding: 1.1rem 1.4rem; color: rgba(255,255,255,.7); font-family: var(--font-display); font-size: .95rem; }
-        .comp-head-cell:first-child { color: rgba(255,255,255,.4); font-size: .85rem; }
-        .comp-head-cell:last-child { color: var(--accent-yellow); }
-        .comp-head-cell:not(:last-child) { border-right: 2px solid rgba(255,255,255,.07); }
-        .comp-row { display: grid; grid-template-columns: 1.6fr 1fr 1fr; border-bottom: 2px solid #F1F5F9; }
-        .comp-row:last-child { border-bottom: none; }
-        .comp-cell { padding: 1.05rem 1.4rem; font-size: .94rem; font-weight: 500; }
-        .comp-cell:not(:last-child) { border-right: 2px solid #F1F5F9; }
-        .comp-cell.feat  { color: var(--text-black); font-weight: 700; }
-        .comp-cell.bad   { color: var(--coral); }
-        .comp-cell.good  { color: var(--ui-green); background: #F0FDF4; }
+
+        .comp-head-cell {
+            padding: 1.1rem 1.4rem;
+            color: rgba(255, 255, 255, .7);
+            font-family: var(--font-display);
+            font-size: .95rem;
+        }
+
+        .comp-head-cell:first-child {
+            color: rgba(255, 255, 255, .4);
+            font-size: .85rem;
+        }
+
+        .comp-head-cell:last-child {
+            color: var(--accent-yellow);
+        }
+
+        .comp-head-cell:not(:last-child) {
+            border-right: 2px solid rgba(255, 255, 255, .07);
+        }
+
+        .comp-row {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr;
+            border-bottom: 2px solid #F1F5F9;
+        }
+
+        .comp-row:last-child {
+            border-bottom: none;
+        }
+
+        .comp-cell {
+            padding: 1.05rem 1.4rem;
+            font-size: .94rem;
+            font-weight: 500;
+        }
+
+        .comp-cell:not(:last-child) {
+            border-right: 2px solid #F1F5F9;
+        }
+
+        .comp-cell.feat {
+            color: var(--text-black);
+            font-weight: 700;
+        }
+
+        .comp-cell.bad {
+            color: var(--coral);
+        }
+
+        .comp-cell.good {
+            color: var(--ui-green);
+            background: #F0FDF4;
+        }
 
         /* ─── TRUST CARDS ─────────────────────────────────── */
-        .trust-section { background: var(--bg-cream); }
-        .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
-        .trust-card { background: white; border: 3px solid var(--border); border-radius: 20px; padding: 2rem; box-shadow: var(--shadow-md); }
-        .trust-icon { font-size: 2.2rem; margin-bottom: 1rem; }
-        .trust-card h3 { color: var(--text-black); margin-bottom: .5rem; }
-        .trust-card p  { font-size: .97rem; }
+        .trust-section {
+            background: var(--bg-cream);
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.75rem;
+        }
+
+        .trust-card {
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .trust-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .trust-card h3 {
+            color: var(--text-black);
+            margin-bottom: .5rem;
+        }
+
+        .trust-card p {
+            font-size: .97rem;
+        }
 
         /* ─── PRICING ─────────────────────────────────────── */
-        .pricing-section { background: var(--bg-cream); }
-        .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; }
+        .pricing-section {
+            background: var(--bg-cream);
+        }
+
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+
         .price-card {
-            background: white; border: 3px solid var(--border); border-radius: 20px;
-            padding: 2rem; display: flex; flex-direction: column; gap: 1.1rem;
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
             transition: transform .2s;
         }
-        .price-card:hover { transform: translateY(-4px); }
+
+        .price-card:hover {
+            transform: translateY(-4px);
+        }
+
         .price-card.hot {
             background: var(--text-black);
             transform: scale(1.04);
             box-shadow: 0 0 0 4px var(--accent-yellow), var(--shadow-xl);
         }
-        .price-card.hot:hover { transform: scale(1.04) translateY(-3px); }
-        .price-label { font-family: var(--font-display); font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-        .price-amount { font-family: var(--font-display); font-size: 3rem; color: var(--brand-purple); line-height: 1; }
-        .price-amount span { font-size: 1.1rem; font-weight: 400; }
-        .price-card.hot .price-amount { color: var(--accent-yellow); }
-        .price-card.hot h3, .price-card.hot .price-desc { color: rgba(255,255,255,.85); }
-        .price-card.hot h3 { color: white; }
-        .price-desc { font-size: .93rem; color: var(--text-mid); }
-        .price-feats { list-style: none; flex: 1; display: flex; flex-direction: column; gap: .55rem; }
-        .price-feat { font-size: .92rem; display: flex; gap: .45rem; align-items: flex-start; color: var(--text-mid); }
-        .price-feat strong { color: var(--text-black); }
-        .price-card.hot .price-feat        { color: rgba(255,255,255,.65); }
-        .price-card.hot .price-feat strong { color: rgba(255,255,255,.9); }
+
+        .price-card.hot:hover {
+            transform: scale(1.04) translateY(-3px);
+        }
+
+        .price-label {
+            font-family: var(--font-display);
+            font-size: .82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .price-amount {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            color: var(--brand-purple);
+            line-height: 1;
+        }
+
+        .price-amount span {
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .price-card.hot .price-amount {
+            color: var(--accent-yellow);
+        }
+
+        .price-card.hot h3,
+        .price-card.hot .price-desc {
+            color: rgba(255, 255, 255, .85);
+        }
+
+        .price-card.hot h3 {
+            color: white;
+        }
+
+        .price-desc {
+            font-size: .93rem;
+            color: var(--text-mid);
+        }
+
+        .price-feats {
+            list-style: none;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: .55rem;
+        }
+
+        .price-feat {
+            font-size: .92rem;
+            display: flex;
+            gap: .45rem;
+            align-items: flex-start;
+            color: var(--text-mid);
+        }
+
+        .price-feat strong {
+            color: var(--text-black);
+        }
+
+        .price-card.hot .price-feat {
+            color: rgba(255, 255, 255, .65);
+        }
+
+        .price-card.hot .price-feat strong {
+            color: rgba(255, 255, 255, .9);
+        }
+
         .savings-badge {
-            display: inline-block; background: var(--accent-yellow); color: var(--text-black);
-            font-family: var(--font-display); font-size: .75rem; font-weight: 700;
-            padding: .15rem .5rem; border-radius: 999px; border: 2px solid var(--border); margin-left: .4rem;
+            display: inline-block;
+            background: var(--accent-yellow);
+            color: var(--text-black);
+            font-family: var(--font-display);
+            font-size: .75rem;
+            font-weight: 700;
+            padding: .15rem .5rem;
+            border-radius: 999px;
+            border: 2px solid var(--border);
+            margin-left: .4rem;
         }
 
         /* ─── FAQ ─────────────────────────────────────────── */
-        .faq-section { background: var(--brand-purple-lt); border-top: 4px solid var(--border); }
-        .faq-list { max-width: 740px; margin: 0 auto; display: flex; flex-direction: column; gap: .9rem; }
-        .faq-item { background: white; border: 3px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
-        .faq-q {
-            width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-            padding: 1.2rem 1.5rem; background: none; border: none; cursor: pointer;
-            font-family: var(--font-display); font-size: 1.08rem; font-weight: 700;
-            color: var(--text-black); text-align: left; outline: none;
+        .faq-section {
+            background: var(--brand-purple-lt);
+            border-top: 4px solid var(--border);
         }
+
+        .faq-list {
+            max-width: 740px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: .9rem;
+        }
+
+        .faq-item {
+            background: white;
+            border: 3px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .faq-q {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.2rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--text-black);
+            text-align: left;
+            outline: none;
+        }
+
         .faq-icon {
-            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
-            background: var(--brand-purple-lt); border: 2px solid var(--brand-purple);
-            display: flex; align-items: center; justify-content: center;
-            font-size: .95rem; color: var(--brand-purple);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--brand-purple-lt);
+            border: 2px solid var(--brand-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .95rem;
+            color: var(--brand-purple);
             transition: transform .2s, background .2s;
         }
-        .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--brand-purple); color: white; }
-        .faq-a { display: none; padding: 0 1.5rem 1.4rem; font-size: .97rem; color: var(--text-mid); line-height: 1.75; }
-        .faq-item.open .faq-a { display: block; }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+            background: var(--brand-purple);
+            color: white;
+        }
+
+        .faq-a {
+            display: none;
+            padding: 0 1.5rem 1.4rem;
+            font-size: .97rem;
+            color: var(--text-mid);
+            line-height: 1.75;
+        }
+
+        .faq-item.open .faq-a {
+            display: block;
+        }
 
         /* ─── FINAL CTA ───────────────────────────────────── */
         .final-cta {
-            background: var(--night); position: relative; overflow: hidden;
-            padding: 7rem 1.75rem; text-align: center;
+            background: var(--night);
+            position: relative;
+            overflow: hidden;
+            padding: 7rem 1.75rem;
+            text-align: center;
         }
+
         .final-cta::before {
             content: '';
-            position: absolute; inset: 0; pointer-events: none;
-            background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(139,92,246,.28) 0%, transparent 70%);
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(139, 92, 246, .28) 0%, transparent 70%);
         }
-        .final-cta-inner { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
-        .final-cta h2 { color: white; font-size: clamp(1.9rem, 5vw, 3.1rem); margin-bottom: 1.4rem; }
-        .final-cta h2 .hl { color: var(--accent-yellow); }
-        .final-cta .lead { color: rgba(255,255,255,.72); margin-bottom: 2.75rem; }
-        .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .final-note { font-size: .84rem; color: rgba(255,255,255,.38); margin-top: 2rem; }
+
+        .final-cta-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .final-cta h2 {
+            color: white;
+            font-size: clamp(1.9rem, 5vw, 3.1rem);
+            margin-bottom: 1.4rem;
+        }
+
+        .final-cta h2 .hl {
+            color: var(--accent-yellow);
+        }
+
+        .final-cta .lead {
+            color: rgba(255, 255, 255, .72);
+            margin-bottom: 2.75rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .final-note {
+            font-size: .84rem;
+            color: rgba(255, 255, 255, .38);
+            margin-top: 2rem;
+        }
 
         /* ─── FOOTER ──────────────────────────────────────── */
-        footer { background: var(--night-2); padding: 2rem 1.75rem; text-align: center; border-top: 3px solid var(--night-3); }
-        footer p { color: rgba(255,255,255,.38); font-size: .86rem; margin: 0; }
-        footer p + p { margin-top: .4rem; }
-        footer a { color: rgba(255,255,255,.55); text-decoration: none; }
-        footer a:hover { color: white; }
+        footer {
+            background: var(--night-2);
+            padding: 2rem 1.75rem;
+            text-align: center;
+            border-top: 3px solid var(--night-3);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, .38);
+            font-size: .86rem;
+            margin: 0;
+        }
+
+        footer p+p {
+            margin-top: .4rem;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, .55);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: white;
+        }
 
         /* ─── RESPONSIVE ──────────────────────────────────── */
         @media (max-width: 900px) {
-            .steps-row { grid-template-columns: 1fr; }
-            .steps-row::before { display: none; }
-            .testi-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
-            .trust-grid { grid-template-columns: 1fr; }
-            .price-grid { grid-template-columns: 1fr; max-width: 440px; margin: 0 auto; }
-            .price-card.hot { transform: none; }
-            .price-card.hot:hover { transform: translateY(-3px); }
-            .comp-head, .comp-row { grid-template-columns: 1fr 1fr; }
-            .comp-cell.feat { display: none; }
+            .steps-row {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-row::before {
+                display: none;
+            }
+
+            .testi-grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .trust-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-grid {
+                grid-template-columns: 1fr;
+                max-width: 440px;
+                margin: 0 auto;
+            }
+
+            .price-card.hot {
+                transform: none;
+            }
+
+            .price-card.hot:hover {
+                transform: translateY(-3px);
+            }
+
+            .comp-head,
+            .comp-row {
+                grid-template-columns: 1.6fr 1fr 1fr;
+            }
         }
+
         @media (max-width: 640px) {
-            .book-spread { grid-template-columns: 1fr; }
-            .book-left { border-right: none; border-bottom: 3px solid var(--border); }
-            .wstep { padding: 1.5rem; }
-            .wizard-box { border-radius: 16px; }
+            .book-spread {
+                grid-template-columns: 1fr;
+            }
+
+            .book-left {
+                border-right: none;
+                border-bottom: 3px solid var(--border);
+            }
+
+            .wstep {
+                padding: 1.5rem;
+            }
+
+            .wizard-box {
+                border-radius: 16px;
+            }
         }
+
         @media (max-width: 480px) {
-            .trust-row .trust-pill { font-size: .78rem; padding: .35rem .75rem; }
+            .trust-row .trust-pill {
+                font-size: .78rem;
+                padding: .35rem .75rem;
+            }
+        }
+
+        /* ─── DEMO WIZARD ─────────────────────────────────── */
+        .demo-note {
+            text-align: center;
+            font-size: .87rem;
+            color: var(--brand-purple-dark);
+            background: var(--brand-purple-lt);
+            border: 2px solid var(--brand-purple);
+            border-radius: 10px;
+            padding: .65rem 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .sel-label {
+            display: block;
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--text-mid);
+            margin-bottom: .3rem;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .win-sm {
+            width: 100%;
+            font-family: var(--font-body);
+            font-size: .97rem;
+            font-weight: 500;
+            padding: .65rem 1rem;
+            border: 3px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            background: var(--bg-cream);
+            transition: border-color .2s;
+        }
+
+        .win-sm:focus {
+            border-color: var(--brand-purple);
+        }
+
+        .mode-btn {
+            flex: 1;
+            font-family: var(--font-display);
+            font-size: .93rem;
+            font-weight: 700;
+            padding: .7rem 1rem;
+            border-radius: 12px;
+            border: 3px solid rgba(30, 41, 59, .3);
+            background: white;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .mode-btn.on {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
+            box-shadow: 3px 3px 0 var(--brand-purple-dark);
+        }
+
+        .upload-zone {
+            width: 100%;
+            height: 150px;
+            border: 4px dashed rgba(30, 41, 59, .25);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #F8FAFC;
+            cursor: pointer;
+            transition: all .18s;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--brand-purple);
+            background: var(--brand-purple-xl);
+        }
+
+        .demo-toggle-wrap {
+            padding: 1.1rem 1.4rem;
+            background: var(--brand-purple-xl);
+            border-radius: 14px;
+            border: 3px solid rgba(139, 92, 246, .25);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: .75rem;
+        }
+
+        .toggle-knob {
+            width: 52px;
+            height: 30px;
+            border-radius: 999px;
+            background: rgba(30, 41, 59, .2);
+            border: 2px solid rgba(30, 41, 59, .3);
+            position: relative;
+            cursor: pointer;
+            transition: background .25s;
+        }
+
+        .toggle-knob.on {
+            background: var(--brand-purple);
+            border-color: var(--brand-purple-dark);
+        }
+
+        .toggle-dot {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+            transition: left .25s;
+        }
+
+        .toggle-knob.on .toggle-dot {
+            left: 25px;
+        }
+
+        .accord-item {
+            border: 3px solid rgba(30, 41, 59, .18);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: .5rem;
+        }
+
+        .accord-head {
+            width: 100%;
+            padding: .9rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: .97rem;
+            font-weight: 700;
+            color: var(--text-black);
+            text-align: left;
+            gap: .75rem;
+        }
+
+        .accord-head:hover {
+            background: #F8FAFC;
+        }
+
+        .accord-arrow {
+            color: rgba(30, 41, 59, .45);
+            transition: transform .2s;
+            font-size: .75rem;
+        }
+
+        .accord-item.open .accord-arrow {
+            transform: rotate(180deg);
+        }
+
+        .accord-body {
+            display: none;
+            padding: .9rem 1.25rem;
+            background: #F8FAFC;
+            border-top: 2px solid rgba(30, 41, 59, .1);
+        }
+
+        .accord-item.open .accord-body {
+            display: block;
+        }
+
+        .demo-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        .demo-pill {
+            font-family: var(--font-display);
+            font-size: .88rem;
+            font-weight: 700;
+            padding: .4rem .95rem;
+            border: 2px solid rgba(30, 41, 59, .2);
+            border-radius: 999px;
+            background: white;
+            cursor: pointer;
+            user-select: none;
+            transition: all .14s;
+        }
+
+        .demo-pill:hover {
+            background: var(--brand-purple-lt);
+            border-color: var(--brand-purple);
+        }
+
+        .demo-pill.on {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
+            box-shadow: 2px 2px 0 var(--brand-purple-dark);
+        }
+
+        .genre-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: .75rem;
+        }
+
+        @media (min-width:600px) {
+            .genre-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .genre-card {
+            border: 3px solid rgba(30, 41, 59, .18);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all .15s;
+        }
+
+        .genre-card:hover {
+            border-color: var(--brand-purple);
+        }
+
+        .genre-card.on {
+            border-color: var(--brand-purple);
+            box-shadow: 4px 4px 0 var(--border);
+        }
+
+        .genre-card.on .genre-check {
+            display: flex;
+        }
+
+        .genre-thumb {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .genre-check {
+            display: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            color: var(--brand-purple);
+            font-weight: 700;
+        }
+
+        .genre-info {
+            padding: .6rem .9rem;
+            background: white;
+            border-top: 2px solid rgba(30, 41, 59, .1);
+        }
+
+        .genre-name {
+            font-family: var(--font-display);
+            font-size: .95rem;
+            color: var(--text-black);
+            margin: 0;
+        }
+
+        .genre-desc {
+            font-size: .78rem;
+            color: var(--text-soft);
+            margin: .1rem 0 0;
+        }
+
+        .lang-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .6rem;
+        }
+
+        .lang-pill {
+            font-family: var(--font-display);
+            font-size: .93rem;
+            font-weight: 700;
+            padding: .5rem 1.1rem;
+            border: 3px solid rgba(30, 41, 59, .2);
+            border-radius: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all .14s;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .lang-pill:hover {
+            border-color: var(--brand-purple);
+        }
+
+        .lang-pill.on {
+            background: var(--brand-purple);
+            color: white;
+            border-color: var(--brand-purple-dark);
+            box-shadow: 3px 3px 0 var(--border);
+        }
+
+        .lang-code {
+            font-size: .75rem;
+            font-family: monospace;
+            background: rgba(255, 255, 255, .2);
+            padding: .1rem .35rem;
+            border-radius: 4px;
+        }
+
+        .lang-pill:not(.on) .lang-code {
+            background: rgba(30, 41, 59, .08);
         }
     </style>
 </head>
+
 <body>
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      NAV
 ══════════════════════════════════════════════ -->
-<nav>
-    <a href="#" class="nav-logo">☁️ NubeKids</a>
-    <div class="nav-right">
-        <span class="nav-note">Sin suscripción · Desde 4,97€</span>
-        <a href="#wizard" class="btn btn-sm">Crear cuento ✨</a>
-    </div>
-</nav>
+    <nav>
+        <a href="#" class="nav-logo">☁️ NubeKids</a>
+        <div class="nav-right">
+            <span class="nav-note">Sin suscripción · Desde 4,97€</span>
+            <a href="#wizard" class="btn btn-sm">Crear cuento ✨</a>
+        </div>
+    </nav>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      HERO
 ══════════════════════════════════════════════ -->
-<section class="hero">
-    <div class="stars-canvas" id="heroStars"></div>
-    <div class="hero-inner">
+    <section class="hero">
+        <div class="stars-canvas" id="heroStars"></div>
+        <div class="hero-inner">
 
-        <span class="eyebrow eyebrow-dark">Cuentos personalizados con IA ética · Desde 3 años</span>
+            <span class="eyebrow eyebrow-dark">Cuentos personalizados · Desde 3 años</span>
+            <h1 style="margin-top:3rem;">El cuento donde <span class="hl">[su nombre]</span> es<br>el protagonista que
+                necesita.</h1>
+            <p class="lead">
+                Crea en 60 segundos una historia personalizada que trabaja los retos emocionales reales de esta noche.
+                Su nombre. Su reto. Su historia. Sin anuncios, sin suscripción y con pedagogía de verdad.
+            </p>
 
-        <!-- Book Illustration -->
-        <svg class="hero-book" viewBox="0 0 190 135" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <filter id="bshadow"><feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,.5)"/></filter>
-            <g filter="url(#bshadow)">
-                <!-- Left page -->
-                <rect x="4" y="7" width="88" height="116" rx="3 0 0 3" fill="#FFF9F0" stroke="#1E293B" stroke-width="2"/>
-                <!-- Right page -->
-                <rect x="92" y="7" width="88" height="116" rx="0 3 3 0" fill="#EEF2FF" stroke="#1E293B" stroke-width="2"/>
-                <!-- Spine -->
-                <rect x="88" y="7" width="8" height="116" fill="#8B5CF6" stroke="#1E293B" stroke-width="2"/>
-            </g>
-            <!-- Left page lines -->
-            <rect x="16" y="25" width="62" height="3.5" rx="2" fill="#DDD6FE"/>
-            <rect x="16" y="36" width="48" height="3" rx="2" fill="#E2E8F0"/>
-            <rect x="16" y="46" width="65" height="3" rx="2" fill="#E2E8F0"/>
-            <rect x="16" y="56" width="40" height="3" rx="2" fill="#E2E8F0"/>
-            <rect x="16" y="66" width="57" height="3" rx="2" fill="#E2E8F0"/>
-            <!-- Hero child figure -->
-            <circle cx="46" cy="103" r="9" fill="#FBBF24" stroke="#1E293B" stroke-width="2.5"/>
-            <path d="M37 103 Q46 92 55 103" fill="#1E293B"/>
-            <path d="M37 112 L34 128 L58 128 L55 112Z" fill="#DDD6FE" stroke="#1E293B" stroke-width="2"/>
-            <path d="M37 116 Q46 112 55 116 L53 128 Q46 122 39 128Z" fill="#8B5CF6" opacity=".75"/>
-            <!-- Stars on right page -->
-            <text x="108" y="42" font-size="20">⭐</text>
-            <text x="140" y="65" font-size="15">✨</text>
-            <text x="103" y="85" font-size="12">🌟</text>
-            <text x="132" y="100" font-size="10">⭐</text>
-        </svg>
+            <a href="#wizard" class="btn btn-lg">Crear su historia ahora ✨</a>
 
-        <h1>El cuento donde <span class="hl">[su nombre]</span> es<br>el protagonista que necesita.</h1>
-        <p class="lead">
-            Crea en 60 segundos una historia personalizada que trabaja los retos emocionales reales de esta noche.
-            Su nombre. Su reto. Su historia. Sin anuncios, sin suscripción y con pedagogía de verdad.
-        </p>
-
-        <a href="#wizard" class="btn btn-lg">Crear su historia ahora ✨</a>
-
-        <div class="trust-row">
-            <span class="trust-pill">🎓 Validado por pedagogos</span>
-            <span class="trust-pill">🔒 100% Privado</span>
-            <span class="trust-pill">📵 Cero anuncios</span>
-            <span class="trust-pill">⚡ 60 segundos</span>
-            <span class="trust-pill">✅ +2.400 historias creadas</span>
+            <div class="trust-row">
+                <span class="trust-pill">🎓 Validado por pedagogos</span>
+                <span class="trust-pill">🔒 100% Privado</span>
+                <span class="trust-pill">📵 Cero anuncios</span>
+                <span class="trust-pill">⚡ 60 segundos</span>
+                <span class="trust-pill">✅ +2.400 historias creadas</span>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      PAIN: Scenarios by age
 ══════════════════════════════════════════════ -->
-<section class="pain-section section-pad">
-    <div class="wrap">
-        <div class="pain-intro">
-            <span class="eyebrow">Los padres nos cuentan</span>
-            <h2>Sabemos cómo se sienten esos días.</h2>
-            <p class="lead">Selecciona la edad de tu peque. Reconocerás esta escena.</p>
-        </div>
+    <section class="pain-section section-pad">
+        <div class="wrap">
+            <div class="pain-intro">
+                <span class="eyebrow">Los padres nos cuentan</span>
+                <h2>Sabemos cómo se sienten esos días.</h2>
+                <p class="lead">Selecciona la edad de tu peque. Reconocerás esta escena.</p>
+            </div>
 
-        <div class="age-tabs">
-            <button class="age-tab on" onclick="showAge(0, this)">3–4 años</button>
-            <button class="age-tab"    onclick="showAge(1, this)">5–6 años</button>
-            <button class="age-tab"    onclick="showAge(2, this)">7–10 años</button>
-        </div>
+            <div class="age-tabs">
+                <button class="age-tab on" onclick="showAge(0, this)">3–4 años</button>
+                <button class="age-tab" onclick="showAge(1, this)">5–6 años</button>
+                <button class="age-tab" onclick="showAge(2, this)">7–10 años</button>
+            </div>
 
-        <!-- Scenario 0 -->
-        <div class="scenario on" id="sc0">
-            <span class="scenario-badge">3–4 años · El caos de la autorregulación</span>
-            <p class="scenario-quote">"Son las 7 de la tarde. Lleva 40 minutos llorando por los calcetines. Me siento en niveles de 'lucha o huida'. Me aterra perder los estribos... y aun así no sé cómo ayudarle."</p>
-            <p>Las rabietas a esta edad no son caprichos. Son un cerebro que todavía no sabe ponerle nombre a lo que siente. Y tú tampoco tuviste un manual para esto —porque nadie te lo dio.</p>
-            <div class="scenario-bridge">
-                <p>💡 NubeKids crea esta noche una historia donde <strong>él o ella aprende a respirar y nombrar sus emociones</strong> siendo el héroe de su propio cuento — sin que parezca una lección.</p>
+            <!-- Scenario 0 -->
+            <div class="scenario on" id="sc0">
+                <span class="scenario-badge">3–4 años · El caos de la autorregulación</span>
+                <p class="scenario-quote">"Son las 7 de la tarde. Lleva 40 minutos llorando por los calcetines. Me
+                    siento en niveles de 'lucha o huida'. Me aterra perder los estribos... y aun así no sé cómo
+                    ayudarle."</p>
+                <p>Las rabietas a esta edad no son caprichos. Son un cerebro que todavía no sabe ponerle nombre a lo que
+                    siente. Y tú tampoco tuviste un manual para esto —porque nadie te lo dio.</p>
+                <div class="scenario-bridge">
+                    <p>💡 NubeKids crea esta noche una historia donde <strong>él o ella aprende a respirar y nombrar sus
+                            emociones</strong> siendo el héroe de su propio cuento — sin que parezca una lección.</p>
+                </div>
+            </div>
+
+            <!-- Scenario 1 -->
+            <div class="scenario" id="sc1">
+                <span class="scenario-badge">5–6 años · La batalla de la lectura</span>
+                <p class="scenario-quote">"Es como sacar dientes. Se desconecta al minuto. Nada le engancha. Me aterra
+                    que se quede atrás en el colegio y que su curiosidad se apague antes de empezar."</p>
+                <p>Un niño que no quiere leer libros de otros no tiene ningún problema. Un niño que todavía no ha
+                    encontrado <em>su</em> historia, esa donde él es el protagonista... eso sí tiene solución.</p>
+                <div class="scenario-bridge">
+                    <p>💡 NubeKids crea una historia donde <strong>el protagonista se llama exactamente como tu hijo o
+                            hija</strong> — y de repente la lectura tiene otro sabor completamente diferente.</p>
+                </div>
+            </div>
+
+            <!-- Scenario 2 -->
+            <div class="scenario" id="sc2">
+                <span class="scenario-badge">7–10 años · El miedo al fracaso</span>
+                <p class="scenario-quote">"Es brillante. Pero cuando se equivoca en algo, se bloquea completamente. Me
+                    aterra que aprenda a rendirse y que pierda esa curiosidad que tiene antes incluso de haberla usado."
+                </p>
+                <p>Un niño que no aprende a gestionar el error se vuelve rígido. La historia correcta, en el momento
+                    correcto, puede cambiar esa narrativa interna para siempre.</p>
+                <div class="scenario-bridge">
+                    <p>💡 NubeKids crea historias calibradas para su nivel cognitivo que <strong>convierten el fracaso
+                            en el primer paso del superhéroe</strong> — porque así lo vivirá él.</p>
+                </div>
             </div>
         </div>
-
-        <!-- Scenario 1 -->
-        <div class="scenario" id="sc1">
-            <span class="scenario-badge">5–6 años · La batalla de la lectura</span>
-            <p class="scenario-quote">"Es como sacar dientes. Se desconecta al minuto. Nada le engancha. Me aterra que se quede atrás en el colegio y que su curiosidad se apague antes de empezar."</p>
-            <p>Un niño que no quiere leer libros de otros no tiene ningún problema. Un niño que todavía no ha encontrado <em>su</em> historia, esa donde él es el protagonista... eso sí tiene solución.</p>
-            <div class="scenario-bridge">
-                <p>💡 NubeKids crea una historia donde <strong>el protagonista se llama exactamente como tu hijo o hija</strong> — y de repente la lectura tiene otro sabor completamente diferente.</p>
-            </div>
-        </div>
-
-        <!-- Scenario 2 -->
-        <div class="scenario" id="sc2">
-            <span class="scenario-badge">7–10 años · El miedo al fracaso</span>
-            <p class="scenario-quote">"Es brillante. Pero cuando se equivoca en algo, se bloquea completamente. Me aterra que aprenda a rendirse y que pierda esa curiosidad que tiene antes incluso de haberla usado."</p>
-            <p>Un niño que no aprende a gestionar el error se vuelve rígido. La historia correcta, en el momento correcto, puede cambiar esa narrativa interna para siempre.</p>
-            <div class="scenario-bridge">
-                <p>💡 NubeKids crea historias calibradas para su nivel cognitivo que <strong>convierten el fracaso en el primer paso del superhéroe</strong> — porque así lo vivirá él.</p>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
-     WIZARD — The conversion engine
+    <!-- ══════════════════════════════════════════════
+     WIZARD — Simulador real del proceso
 ══════════════════════════════════════════════ -->
-<section class="wizard-section section-pad" id="wizard">
-    <div class="wrap wizard-wrap">
-        <div class="wizard-header">
-            <span class="eyebrow">Empieza ahora · Sin registro previo</span>
-            <h2>Diseña su historia en 60 segundos</h2>
-            <p class="lead">Cuatro preguntas. Una historia única, irrepetible y completamente suya.</p>
-        </div>
-
-        <div class="wizard-box">
-            <!-- Progress bar -->
-            <div class="wizard-top" id="wTop">
-                <div class="pdot current" id="pd0"></div>
-                <div class="pdot" id="pd1"></div>
-                <div class="pdot" id="pd2"></div>
-                <div class="pdot" id="pd3"></div>
-                <span class="plabel" id="pLabel">Paso 1 de 4</span>
+    <section class="wizard-section section-pad" id="wizard">
+        <div class="wrap wizard-wrap">
+            <div class="wizard-header">
+                <span class="eyebrow">Simulador interactivo · Sin registro previo</span>
+                <h2>Así funciona el proceso de creación</h2>
+                <p class="lead">Explora cada paso tal y como aparece en la app real. Cuatro preguntas. Una historia
+                    única, irrepetible y completamente suya.</p>
             </div>
 
-            <!-- STEP 1: Name + Age -->
-            <div class="wstep on" id="ws1">
-                <h3>¿Cómo se llama tu peque?</h3>
-                <p class="hint">Su nombre aparecerá en el cuento. Será el protagonista de cada página.</p>
-                <input class="win" type="text" id="wName" placeholder="Escribe su nombre..." maxlength="30" autocomplete="off">
+            <div class="demo-note">
+                🔍 <strong>Demo interactiva</strong> — Navega entre los pasos para descubrir todas las opciones. No
+                requiere registro ni compromiso.
+            </div>
 
-                <div style="margin-top: 1.75rem;">
-                    <h3 style="margin-bottom: .5rem;">¿Cuántos años tiene?</h3>
-                    <div class="pills" id="agePills">
-                        <span class="pill age" data-age="tiny"   onclick="pickAge(this)">3–4 años</span>
-                        <span class="pill age" data-age="little" onclick="pickAge(this)">5–6 años</span>
-                        <span class="pill age" data-age="reader" onclick="pickAge(this)">7–10 años</span>
+            <div class="wizard-box">
+                <!-- Progress bar -->
+                <div class="wizard-top" id="wTop">
+                    <div class="pdot current" id="pd0"></div>
+                    <div class="pdot" id="pd1"></div>
+                    <div class="pdot" id="pd2"></div>
+                    <div class="pdot" id="pd3"></div>
+                    <span class="plabel" id="pLabel">Paso 1 de 4</span>
+                </div>
+
+                <!-- ── STEP 1: El Protagonista ──────────────────── -->
+                <div class="wstep on" id="ws1">
+                    <h3>El Protagonista</h3>
+                    <p class="hint">El niño o la niña que vivirá la aventura. Su nombre aparecerá en cada página del
+                        cuento.</p>
+
+                    <div style="margin-bottom:1.4rem;">
+                        <label class="sel-label">Nombre del protagonista <span style="color:#E11D48;">*
+                                Obligatorio</span></label>
+                        <input class="win" type="text" placeholder="Ej: Lucía, Pablo, Martín..." maxlength="30"
+                            autocomplete="off">
+                    </div>
+
+                    <div style="margin-bottom:1.25rem;">
+                        <p class="sel-label">¿Cómo describimos al protagonista?</p>
+                        <div style="display:flex; gap:.65rem;">
+                            <button type="button" class="mode-btn on" id="btnDesc" onclick="demoMode('desc')">📝
+                                Describir rasgos</button>
+                            <button type="button" class="mode-btn" id="btnPhoto" onclick="demoMode('photo')">📷 Subir
+                                foto</button>
+                        </div>
+                    </div>
+
+                    <!-- Description mode -->
+                    <div id="demoDescMode">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-bottom:.75rem;">
+                            <div>
+                                <label class="sel-label">Protagonista</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>Niña</option>
+                                    <option>Niño</option>
+                                    <option>Prefiero no decir</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="sel-label">Edad</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>3-4 años</option>
+                                    <option>5-6 años</option>
+                                    <option>7-8 años</option>
+                                    <option>9-10 años</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="sel-label">Color pelo</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>Rubio</option>
+                                    <option>Castaño</option>
+                                    <option>Moreno</option>
+                                    <option>Pelirrojo</option>
+                                    <option>Negro</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="sel-label">Tipo pelo</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>Liso</option>
+                                    <option>Rizado</option>
+                                    <option>Ondulado</option>
+                                    <option>Muy corto</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="sel-label">Color ojos</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>Marrones</option>
+                                    <option>Azules</option>
+                                    <option>Verdes</option>
+                                    <option>Negros</option>
+                                    <option>Miel</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="sel-label">Tono piel</label>
+                                <select class="win-sm">
+                                    <option value="">Seleccionar...</option>
+                                    <option>Muy clara</option>
+                                    <option>Clara</option>
+                                    <option>Media</option>
+                                    <option>Oscura</option>
+                                    <option>Muy oscura</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="sel-label">Rasgos especiales <span
+                                    style="font-weight:400; text-transform:none;">(opcional)</span></label>
+                            <textarea class="win-sm" rows="2"
+                                placeholder="Ej: Lleva gafas, tiene pecas, tiene un lunar..."
+                                style="resize:none;"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Photo mode -->
+                    <div id="demoPhotoMode" style="display:none;">
+                        <div class="upload-zone">
+                            <p style="font-size:2rem; margin:0;">📷</p>
+                            <p style="font-weight:600; color:var(--text-mid); margin:.25rem 0 0;">Sube una foto</p>
+                            <p style="font-size:.82rem; color:var(--text-soft); margin:.15rem 0 0;">JPG, PNG o WebP</p>
+                        </div>
+                        <p style="font-size:.8rem; color:var(--text-soft); text-align:center; margin-top:.5rem;">🔒 La
+                            foto solo se usa para generar ilustraciones y no se almacena.</p>
+                    </div>
+
+                    <div class="wnav">
+                        <span></span>
+                        <button class="wbtn" onclick="demoGoto(2)">Siguiente →</button>
                     </div>
                 </div>
 
-                <div class="wnav">
-                    <span></span>
-                    <button class="wbtn" onclick="gotoStep(2)">Siguiente →</button>
+                <!-- ── STEP 2: El Viaje Interior ────────────────── -->
+                <div class="wstep" id="ws2">
+                    <h3>El Viaje Interior</h3>
+                    <p class="hint">Personaliza el mensaje pedagógico del cuento. Completamente opcional — si no activas
+                        nada, la historia será una aventura divertida e inspiradora.</p>
+
+                    <div class="demo-toggle-wrap">
+                        <div>
+                            <p style="font-weight:700; color:var(--text-black); margin:0 0 .2rem;">¿Quieres personalizar
+                                el mensaje del cuento?</p>
+                            <p style="font-size:.86rem; color:var(--text-soft); margin:0;">Podemos adaptar la historia
+                                para trabajar algo específico</p>
+                        </div>
+                        <div class="toggle-knob" id="pedToggle" onclick="togglePed()">
+                            <div class="toggle-dot"></div>
+                        </div>
+                    </div>
+
+                    <div id="pedSections" style="display:none;">
+                        <!-- Section 1 -->
+                        <div class="accord-item">
+                            <button type="button" class="accord-head" onclick="toggleAccord(this)">
+                                <span>¿Hay algo que quieras trabajar con el cuento?</span>
+                                <span class="accord-arrow">▼</span>
+                            </button>
+                            <div class="accord-body">
+                                <p style="font-size:.8rem; color:var(--text-soft); margin:0 0 .75rem;">Selecciona si
+                                    aplica</p>
+                                <div class="demo-pills">
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🌋 Gestionar
+                                        emociones</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🤝 Compartir</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🌙 Miedos
+                                        nocturnos</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">👶 Celos de
+                                        hermanos</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🏫 Adaptación
+                                        escolar</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🙈 Timidez</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">💔 Ansiedad
+                                        separación</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🥦 Comer mejor</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Section 2 -->
+                        <div class="accord-item">
+                            <button type="button" class="accord-head" onclick="toggleAccord(this)">
+                                <span>¿Qué habilidades quieres potenciar?</span>
+                                <span class="accord-arrow">▼</span>
+                            </button>
+                            <div class="accord-body">
+                                <p style="font-size:.8rem; color:var(--text-soft); margin:0 0 .75rem;">El cuento las
+                                    reforzará sutilmente</p>
+                                <div class="demo-pills">
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">📚 Amor por la
+                                        lectura</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">⭐ Autonomía</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🎨 Creatividad</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🧩 Resolver
+                                        problemas</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🎯
+                                        Concentración</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🐢 Paciencia</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Section 3 -->
+                        <div class="accord-item">
+                            <button type="button" class="accord-head" onclick="toggleAccord(this)">
+                                <span>¿Está viviendo alguna situación especial?</span>
+                                <span class="accord-arrow">▼</span>
+                            </button>
+                            <div class="accord-body">
+                                <p style="font-size:.8rem; color:var(--text-soft); margin:0 0 .75rem;">El cuento puede
+                                    ayudar a procesarla</p>
+                                <div class="demo-pills">
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">👶 Nuevo
+                                        hermano</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">📦 Mudanza</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🌈 Pérdida</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">💛 Separación
+                                        padres</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🏥 Enfermedad</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🐕 Nueva
+                                        mascota</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Section 4 -->
+                        <div class="accord-item">
+                            <button type="button" class="accord-head" onclick="toggleAccord(this)">
+                                <span>¿Cuál es su gran pasión o sueño?</span>
+                                <span class="accord-arrow">▼</span>
+                            </button>
+                            <div class="accord-body">
+                                <p style="font-size:.8rem; color:var(--text-soft); margin:0 0 .75rem;">Lo integraremos
+                                    en la aventura</p>
+                                <div class="demo-pills">
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">⚽ Fútbol</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">💃 Baile</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🚀 Ciencia</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🖌️ Arte</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🦁 Animales</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🎵 Música</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">👨‍🍳 Cocina</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🏃 Deportes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Section 5 -->
+                        <div class="accord-item">
+                            <button type="button" class="accord-head" onclick="toggleAccord(this)">
+                                <span>¿Qué valores quieres transmitir?</span>
+                                <span class="accord-arrow">▼</span>
+                            </button>
+                            <div class="accord-body">
+                                <p style="font-size:.8rem; color:var(--text-soft); margin:0 0 .75rem;">El mensaje
+                                    central del cuento</p>
+                                <div class="demo-pills">
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">❤️ Empatía</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">💪
+                                        Perseverancia</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">✨ Honestidad</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🌍 Respeto</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🦁 Valentía</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🙏 Gratitud</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">🤜🤛 Trabajo en
+                                        equipo</span>
+                                    <span class="demo-pill" onclick="this.classList.toggle('on')">💖 Amor propio</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:1rem;">
+                            <label class="sel-label">¿Algo más que debamos saber? <span
+                                    style="font-weight:400; text-transform:none;">(opcional)</span></label>
+                            <textarea class="win-sm" rows="3"
+                                placeholder="Ej: Le encantan los dinosaurios, tiene una amiga imaginaria llamada Luna..."
+                                style="resize:none;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="wnav">
+                        <button class="wbtn back" onclick="demoGoto(1)">← Volver</button>
+                        <button class="wbtn" onclick="demoGoto(3)">Siguiente →</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- STEP 2: Emotional challenge -->
-            <div class="wstep" id="ws2">
-                <h3>¿Qué reto quieres trabajar esta noche?</h3>
-                <p class="hint">Elige el que más resuene con vuestro momento actual. Puedes cambiarlo en cada historia.</p>
-                <div class="pills" id="challengePills"></div>
-                <div class="wnav">
-                    <button class="wbtn back" onclick="gotoStep(1)">← Volver</button>
-                    <button class="wbtn" onclick="gotoStep(3)">Siguiente →</button>
-                </div>
-            </div>
+                <!-- ── STEP 3: El Objeto Mágico ──────────────────── -->
+                <div class="wstep" id="ws3">
+                    <h3>El Objeto Mágico <span
+                            style="font-family:var(--font-body); font-size:.86rem; font-weight:400; color:var(--text-soft);">(opcional)</span>
+                    </h3>
+                    <p class="hint">Un objeto que tendrá poderes especiales en la historia. Puede ser cualquier cosa que
+                        le importe: su peluche favorito, sus zapatillas, una piedra del parque…</p>
 
-            <!-- STEP 3: Magic object (optional) -->
-            <div class="wstep" id="ws3">
-                <h3>¿Tiene un objeto especial? <span style="font-family:var(--font-body); font-size:.88rem; color:var(--text-soft); font-weight:400;">(opcional)</span></h3>
-                <p class="hint">Puede ser su peluche favorito, sus zapatillas, una piedra mágica del parque, su manta de siempre... cualquier cosa que le importe. Si no tienes nada en mente, la IA inventará uno perfecto para él o ella.</p>
-                <input class="win" type="text" id="wObject" placeholder="Ej: su dinosaurio verde, sus botas de lluvia..." maxlength="60" autocomplete="off">
-                <button class="skip-btn" onclick="skipObj()">Prefiero que la IA invente el objeto mágico →</button>
-                <div class="wnav">
-                    <button class="wbtn back" onclick="gotoStep(2)">← Volver</button>
-                    <button class="wbtn" onclick="gotoStep(4)">Ver mi historia →</button>
-                </div>
-            </div>
+                    <div style="margin-bottom:1.25rem;">
+                        <label class="sel-label">Foto del objeto <span
+                                style="font-weight:400; text-transform:none;">(opcional)</span></label>
+                        <div class="upload-zone">
+                            <p style="font-size:2rem; margin:0;">👟</p>
+                            <p style="font-weight:600; color:var(--text-mid); margin:.25rem 0 0;">Sube una foto del
+                                objeto</p>
+                            <p style="font-size:.82rem; color:var(--text-soft); margin:.15rem 0 0;">JPG, PNG o WebP</p>
+                        </div>
+                    </div>
 
-            <!-- STEP 4: Preview + CTA -->
-            <div class="wstep" id="ws4">
-                <div class="story-preview">
-                    <div class="sp-icon">📖✨</div>
-                    <div class="sp-title" id="spTitle">La gran aventura de…</div>
-                    <p class="sp-sub" id="spSub">Completa los pasos anteriores para ver tu historia personalizada.</p>
-                </div>
+                    <div>
+                        <label class="sel-label">Descripción del objeto</label>
+                        <textarea class="win-sm" rows="3"
+                            placeholder="Ej: Zapatillas rojas con rayas brillantes y velcro de estrellitas..."
+                            style="resize:none;"></textarea>
+                        <p style="font-size:.8rem; color:var(--text-soft); margin:.4rem 0 0;">💡 Cuanto más detallada
+                            sea la descripción, más personalizado será el cuento.</p>
+                    </div>
 
-                <p style="text-align:center; font-size:.9rem; color:var(--text-soft); margin-bottom:1.5rem;">
-                    🎭 <strong style="color:var(--text-black);">10 páginas</strong> &nbsp;·&nbsp;
-                    🖼️ <strong style="color:var(--text-black);">Ilustraciones únicas generadas con IA</strong> &nbsp;·&nbsp;
-                    📄 <strong style="color:var(--text-black);">Descarga en PDF</strong>
-                </p>
+                    <button class="skip-btn" style="margin-top:.5rem;" onclick="">Prefiero que el sistema invente el
+                        objeto mágico →</button>
 
-                <div style="text-align:center;">
-                    <a href="#pricing" class="btn btn-lg" id="spCta">Generar esta historia — desde 4,97€ ✨</a>
-                    <p style="font-size:.84rem; margin-top:.9rem; color:var(--text-soft);">Sin suscripción. Los créditos no caducan. Sin letra pequeña.</p>
+                    <div class="wnav">
+                        <button class="wbtn back" onclick="demoGoto(2)">← Volver</button>
+                        <button class="wbtn" onclick="demoGoto(4)">Ver el último paso →</button>
+                    </div>
                 </div>
 
-                <div class="wnav" style="margin-top:1.5rem;">
-                    <button class="wbtn back" onclick="gotoStep(3)">← Cambiar algo</button>
-                    <span></span>
+                <!-- ── STEP 4: El Estilo Visual ──────────────────── -->
+                <div class="wstep" id="ws4">
+                    <h3>El Estilo Visual</h3>
+                    <p class="hint">Elige el estilo artístico de las ilustraciones y el idioma del cuento.</p>
+
+                    <div style="margin-bottom:1.75rem;">
+                        <label class="sel-label" style="margin-bottom:.75rem;">Estilo visual del cuento</label>
+                        <div class="genre-grid">
+                            <div class="genre-card on" onclick="selectGenre(this)">
+                                <div class="genre-thumb"
+                                    style="background:url('/assets/images/3d-animation-magic.webp') center/cover no-repeat;">
+                                    <span style="font-size:2.2rem; display:none;">🎬</span>
+                                    <div class="genre-check">✓</div>
+                                </div>
+                                <div class="genre-info">
+                                    <p class="genre-name">3D Animation Magic</p>
+                                    <p class="genre-desc">Estilo Pixar/Disney moderno</p>
+                                </div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this)">
+                                <div class="genre-thumb"
+                                    style="background:url('/assets/images/classic-fairytale.webp') center/cover no-repeat;">
+                                    <span style="font-size:2.2rem; display:none;">📖</span>
+                                    <div class="genre-check">✓</div>
+                                </div>
+                                <div class="genre-info">
+                                    <p class="genre-name">Classic Fairytale</p>
+                                    <p class="genre-desc">Ilustración de cuento clásico</p>
+                                </div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this)">
+                                <div class="genre-thumb"
+                                    style="background:url('/assets/images/anime-adventure.webp') center/cover no-repeat;">
+                                    <span style="font-size:2.2rem; display:none;">⚡</span>
+                                    <div class="genre-check">✓</div>
+                                </div>
+                                <div class="genre-info">
+                                    <p class="genre-name">Anime Adventure</p>
+                                    <p class="genre-desc">Estilo manga japonés</p>
+                                </div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this)">
+                                <div class="genre-thumb"
+                                    style="background:url('/assets/images/whimsical-claymation.webp') center/cover no-repeat;">
+                                    <span style="font-size:2.2rem; display:none;">🎨</span>
+                                    <div class="genre-check">✓</div>
+                                </div>
+                                <div class="genre-info">
+                                    <p class="genre-name">Whimsical Claymation</p>
+                                    <p class="genre-desc">Estilo plastilina/stop-motion</p>
+                                </div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this)">
+                                <div class="genre-thumb"
+                                    style="background:url('/assets/images/custom.webp') center/cover no-repeat;">
+                                    <span style="font-size:2.2rem; display:none;">✏️</span>
+                                    <div class="genre-check">✓</div>
+                                </div>
+                                <div class="genre-info">
+                                    <p class="genre-name">Custom</p>
+                                    <p class="genre-desc">Estilo personalizado</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:1.75rem;">
+                        <label class="sel-label" style="margin-bottom:.75rem;">Idioma del cuento</label>
+                        <div class="lang-pills">
+                            <button type="button" class="lang-pill on" onclick="selectLang(this)"><span
+                                    class="lang-code">ES</span> Español</button>
+                            <button type="button" class="lang-pill" onclick="selectLang(this)"><span
+                                    class="lang-code">GB</span> English</button>
+                            <button type="button" class="lang-pill" onclick="selectLang(this)"><span
+                                    class="lang-code">FR</span> Français</button>
+                            <button type="button" class="lang-pill" onclick="selectLang(this)"><span
+                                    class="lang-code">PT</span> Português</button>
+                            <button type="button" class="lang-pill" onclick="selectLang(this)"><span
+                                    class="lang-code">IT</span> Italiano</button>
+                        </div>
+                    </div>
+
+                    <div
+                        style="text-align:center; padding:1.5rem; background:linear-gradient(135deg,var(--brand-purple-lt),var(--accent-yellow-lt)); border:3px solid var(--brand-purple); border-radius:16px; margin-bottom:1rem;">
+                        <p style="font-size:1.05rem; font-weight:600; color:var(--text-black); margin:0 0 1rem;">🎉
+                            ¡Todo listo! Puedes generar la historia real ahora.</p>
+                        <a href="/index.html" class="btn btn-lg"
+                            style="width:100%; box-sizing:border-box; white-space:normal; text-align:center; display:block;">Crear
+                            esta historia — desde 4,97€ ✨</a>
+                        <p style="font-size:.82rem; color:var(--text-soft); margin:.75rem 0 0;">Sin suscripción. Los
+                            créditos no caducan. Sin letra pequeña.</p>
+                    </div>
+
+                    <div class="wnav" style="margin-top:.5rem;">
+                        <button class="wbtn back" onclick="demoGoto(3)">← Cambiar algo</button>
+                        <span></span>
+                    </div>
                 </div>
-            </div>
-        </div><!-- /wizard-box -->
-    </div>
-</section>
+
+            </div><!-- /wizard-box -->
+        </div>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      HOW IT WORKS
 ══════════════════════════════════════════════ -->
-<section class="how-section section-pad">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow">El proceso</span>
-            <h2>Tú diseñas. La IA crea. Tu peque crece.</h2>
-            <p>No es tecnología por tecnología. Es pedagogía narrativa con una IA que hace el trabajo pesado para que tú sigas siendo el centro de su mundo.</p>
+    <section class="how-section section-pad">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow">El proceso</span>
+                <h2>Tú diseñas. Los Agentes crean. Tu peque crece.</h2>
+                <p>No es tecnología por tecnología. Es pedagogía narrativa con un Sistema de Agentes Expertos que hace
+                    el trabajo creativo para que tú sigas siendo el centro de su mundo.</p>
+            </div>
+            <div class="steps-row">
+                <div class="step-card">
+                    <div class="step-icon">✍️</div>
+                    <h3>Tú pones las pautas</h3>
+                    <p>El nombre, la edad, el reto emocional de esta noche y —si quieres— un objeto especial que ya le
+                        importe. 60 segundos y tienes el mapa de la aventura.</p>
+                </div>
+                <div class="step-card" style="transform: translateY(-10px);">
+                    <div class="step-icon"
+                        style="background:var(--accent-yellow-lt); border-color:var(--accent-yellow-dk);">⚡</div>
+                    <h3>Los Agentes Expertos crean la historia</h3>
+                    <p>Nuestro Sistema de Agentes Expertos genera 10 páginas únicas, calibradas para su franja de edad,
+                        su reto emocional y su mundo personal.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon" style="background:var(--ui-green-lt); border-color:var(--ui-green);">🌱</div>
+                    <h3>Tu peque aprende jugando</h3>
+                    <p>Sin darse cuenta, practica habilidades emocionales reales siendo el héroe de la historia. Y tú
+                        tienes 15 minutos de paz merecida y cero culpa.</p>
+                </div>
+            </div>
         </div>
-        <div class="steps-row">
-            <div class="step-card">
-                <div class="step-icon">✍️</div>
-                <h3>Tú pones las pautas</h3>
-                <p>El nombre, la edad, el reto emocional de esta noche y —si quieres— un objeto especial que ya le importe. 60 segundos y tienes el mapa de la aventura.</p>
-            </div>
-            <div class="step-card" style="transform: translateY(-10px);">
-                <div class="step-icon" style="background:var(--accent-yellow-lt); border-color:var(--accent-yellow-dk);">⚡</div>
-                <h3>La IA teje la historia</h3>
-                <p>Nuestra IA pedagógicamente entrenada genera 10 páginas únicas, calibradas para su franja de edad, su reto emocional y su mundo personal.</p>
-            </div>
-            <div class="step-card">
-                <div class="step-icon" style="background:var(--ui-green-lt); border-color:var(--ui-green);">🌱</div>
-                <h3>Tu peque aprende jugando</h3>
-                <p>Sin darse cuenta, practica habilidades emocionales reales siendo el héroe de la historia. Y tú tienes 15 minutos de paz merecida y cero culpa.</p>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      SAMPLE STORY — Make it tangible
 ══════════════════════════════════════════════ -->
-<section class="preview-section">
-    <div class="wrap">
-        <div class="preview-header">
-            <span class="eyebrow eyebrow-dark">Muestra real · Historia generada</span>
-            <h2>Así se ve un cuento de NubeKids</h2>
-            <p>Historia de <strong style="color:white;">Sofía</strong>, 5 años · trabajando los celos con su peluche dinosaurio.</p>
-        </div>
-
-        <div class="book-spread">
-            <div class="book-left">
-                <h4>Sofía y el Rugido Invisible</h4>
-                <p>
-                    Sofía tenía un problema muy gordo dentro del pecho. Desde que llegó el bebé, ese problema le hacía rugir por dentro sin querer.<br><br>
-                    Pero Dino, su dinosaurio de peluche, guardaba un secreto: podía escuchar todos los rugidos invisibles del mundo.<br><br>
-                    <em>— "¿Sabes qué pasa cuando los rugidos no tienen nombre?" — le susurró Dino, con sus ojitos verdes muy abiertos.</em><br><br>
-                    Sofía negó con la cabeza. Nadie le había explicado eso antes.
-                </p>
+    <section class="preview-section">
+        <div class="wrap">
+            <div class="preview-header">
+                <span class="eyebrow eyebrow-dark">Muestra real · Historia generada</span>
+                <h2>Así se ve un cuento de NubeKids</h2>
+                <p>Historia de <strong style="color:white;">Sofía</strong>, 5 años · trabajando los celos con su peluche
+                    dinosaurio.</p>
             </div>
-            <div class="book-right">
-                <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración: Sofía con su dinosaurio Dino">
-                    <!-- Sky background -->
-                    <rect width="280" height="230" rx="6" fill="#EEF2FF"/>
-                    <!-- Moon -->
-                    <circle cx="238" cy="30" r="20" fill="#FEF9C3" stroke="#FDE68A" stroke-width="2"/>
-                    <circle cx="245" cy="24" r="13" fill="#EEF2FF"/>
-                    <!-- Stars -->
-                    <text x="18" y="32" font-size="14">⭐</text>
-                    <text x="205" y="62" font-size="9">✨</text>
-                    <text x="135" y="18" font-size="8">🌟</text>
-                    <text x="60" y="58" font-size="7">✨</text>
-                    <!-- Floor -->
-                    <rect x="0" y="190" width="280" height="40" rx="0 0 6 6" fill="#DDD6FE"/>
-                    <!-- Rug -->
-                    <ellipse cx="140" cy="195" rx="80" ry="14" fill="#C4B5FD" stroke="#8B5CF6" stroke-width="2"/>
-                    <!-- Sofía body -->
-                    <path d="M88 152 L82 192 L118 192 L112 152Z" fill="#DDD6FE" stroke="#1E293B" stroke-width="2"/>
-                    <!-- Sofía head -->
-                    <circle cx="100" cy="127" r="24" fill="#FBBF24" stroke="#1E293B" stroke-width="2.5"/>
-                    <!-- Hair -->
-                    <path d="M76 116 Q100 98 124 116" fill="#1E293B"/>
-                    <path d="M76 116 L72 130 Q76 140 80 128Z" fill="#1E293B"/>
-                    <path d="M124 116 L128 130 Q124 140 120 128Z" fill="#1E293B"/>
-                    <!-- Face -->
-                    <circle cx="92"  cy="125" r="3" fill="#1E293B"/>
-                    <circle cx="108" cy="125" r="3" fill="#1E293B"/>
-                    <path d="M93 136 Q100 142 107 136" fill="none" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
-                    <!-- Arms -->
-                    <line x1="88"  y1="162" x2="70"  y2="172" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/>
-                    <line x1="112" y1="162" x2="148" y2="148" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round"/>
-                    <!-- DINO -->
-                    <ellipse cx="162" cy="158" rx="20" ry="22" fill="#34D399" stroke="#1E293B" stroke-width="2"/>
-                    <circle  cx="162" cy="138" r="14" fill="#34D399" stroke="#1E293B" stroke-width="2"/>
-                    <!-- Dino eyes -->
-                    <circle cx="156" cy="135" r="3.5" fill="white" stroke="#1E293B" stroke-width="1.5"/>
-                    <circle cx="168" cy="135" r="3.5" fill="white" stroke="#1E293B" stroke-width="1.5"/>
-                    <circle cx="157" cy="136" r="1.8" fill="#1E293B"/>
-                    <circle cx="169" cy="136" r="1.8" fill="#1E293B"/>
-                    <!-- Dino spikes -->
-                    <polygon points="153,130 157,118 161,130" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5"/>
-                    <polygon points="160,128 164,115 168,128" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5"/>
-                    <polygon points="166,130 170,118 174,130" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5"/>
-                    <!-- Speech bubble from Dino -->
-                    <ellipse cx="218" cy="82" rx="48" ry="26" fill="white" stroke="#1E293B" stroke-width="2"/>
-                    <polygon points="182,96 174,110 192,102" fill="white" stroke="#1E293B" stroke-width="2"/>
-                    <polygon points="182,96 174,110 192,102" fill="white"/>
-                    <text x="186" y="76" font-size="7.5" fill="#8B5CF6" font-weight="bold">¡Los rugidos</text>
-                    <text x="184" y="88" font-size="7.5" fill="#8B5CF6" font-weight="bold">tienen nombre!</text>
-                    <!-- Heart floating -->
-                    <text x="128" y="110" font-size="14">💜</text>
-                </svg>
+
+            <div style="position:relative; z-index:1; max-width:820px; margin:0 auto;">
+                <img src="/assets/images/book-image.jpg"
+                    alt="Ejemplo real de cuento generado — historia personalizada de Sofía"
+                    style="width:100%; border-radius:12px; border:4px solid var(--border); box-shadow:var(--shadow-xl), 0 50px 100px rgba(0,0,0,.55); display:block;" />
+            </div>
+            <div style="display:none">
+                <div class="book-left">
+                    <h4></h4>
+                </div>
+                <div class="book-right">
+                    <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Sky background -->
+                        <rect width="280" height="230" rx="6" fill="#EEF2FF" />
+                        <!-- Moon -->
+                        <circle cx="238" cy="30" r="20" fill="#FEF9C3" stroke="#FDE68A" stroke-width="2" />
+                        <circle cx="245" cy="24" r="13" fill="#EEF2FF" />
+                        <!-- Stars -->
+                        <text x="18" y="32" font-size="14">⭐</text>
+                        <text x="205" y="62" font-size="9">✨</text>
+                        <text x="135" y="18" font-size="8">🌟</text>
+                        <text x="60" y="58" font-size="7">✨</text>
+                        <!-- Floor -->
+                        <rect x="0" y="190" width="280" height="40" rx="0 0 6 6" fill="#DDD6FE" />
+                        <!-- Rug -->
+                        <ellipse cx="140" cy="195" rx="80" ry="14" fill="#C4B5FD" stroke="#8B5CF6" stroke-width="2" />
+                        <!-- Sofía body -->
+                        <path d="M88 152 L82 192 L118 192 L112 152Z" fill="#DDD6FE" stroke="#1E293B" stroke-width="2" />
+                        <!-- Sofía head -->
+                        <circle cx="100" cy="127" r="24" fill="#FBBF24" stroke="#1E293B" stroke-width="2.5" />
+                        <!-- Hair -->
+                        <path d="M76 116 Q100 98 124 116" fill="#1E293B" />
+                        <path d="M76 116 L72 130 Q76 140 80 128Z" fill="#1E293B" />
+                        <path d="M124 116 L128 130 Q124 140 120 128Z" fill="#1E293B" />
+                        <!-- Face -->
+                        <circle cx="92" cy="125" r="3" fill="#1E293B" />
+                        <circle cx="108" cy="125" r="3" fill="#1E293B" />
+                        <path d="M93 136 Q100 142 107 136" fill="none" stroke="#1E293B" stroke-width="2"
+                            stroke-linecap="round" />
+                        <!-- Arms -->
+                        <line x1="88" y1="162" x2="70" y2="172" stroke="#1E293B" stroke-width="2.5"
+                            stroke-linecap="round" />
+                        <line x1="112" y1="162" x2="148" y2="148" stroke="#1E293B" stroke-width="2.5"
+                            stroke-linecap="round" />
+                        <!-- DINO -->
+                        <ellipse cx="162" cy="158" rx="20" ry="22" fill="#34D399" stroke="#1E293B" stroke-width="2" />
+                        <circle cx="162" cy="138" r="14" fill="#34D399" stroke="#1E293B" stroke-width="2" />
+                        <!-- Dino eyes -->
+                        <circle cx="156" cy="135" r="3.5" fill="white" stroke="#1E293B" stroke-width="1.5" />
+                        <circle cx="168" cy="135" r="3.5" fill="white" stroke="#1E293B" stroke-width="1.5" />
+                        <circle cx="157" cy="136" r="1.8" fill="#1E293B" />
+                        <circle cx="169" cy="136" r="1.8" fill="#1E293B" />
+                        <!-- Dino spikes -->
+                        <polygon points="153,130 157,118 161,130" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5" />
+                        <polygon points="160,128 164,115 168,128" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5" />
+                        <polygon points="166,130 170,118 174,130" fill="#FBBF24" stroke="#1E293B" stroke-width="1.5" />
+                        <!-- Speech bubble from Dino -->
+                        <ellipse cx="218" cy="82" rx="48" ry="26" fill="white" stroke="#1E293B" stroke-width="2" />
+                        <polygon points="182,96 174,110 192,102" fill="white" stroke="#1E293B" stroke-width="2" />
+                        <polygon points="182,96 174,110 192,102" fill="white" />
+                        <text x="186" y="76" font-size="7.5" fill="#8B5CF6" font-weight="bold">¡Los rugidos</text>
+                        <text x="184" y="88" font-size="7.5" fill="#8B5CF6" font-weight="bold">tienen nombre!</text>
+                        <!-- Heart floating -->
+                        <text x="128" y="110" font-size="14">💜</text>
+                    </svg>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      TESTIMONIALS
 ══════════════════════════════════════════════ -->
-<section class="testi-section section-pad">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow">Lo que dicen las familias</span>
-            <h2>El antes y el después que más importa</h2>
-            <p>No prometemos transformaciones instantáneas. Prometemos una herramienta que funciona cuando la usas.</p>
+    <section class="testi-section section-pad">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow">Lo que dicen las familias</span>
+                <h2>El antes y el después que más importa</h2>
+                <p>No prometemos transformaciones instantáneas. Prometemos una herramienta que funciona cuando la usas.
+                </p>
+            </div>
+
+            <div class="testi-grid">
+                <!-- Testi 1 -->
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <div class="testi-label before">Antes</div>
+                    <p class="testi-text">"Las noches eran una batalla. Lloraba cada vez que apagábamos el móvil y
+                        cambiarlo por otra cosa era imposible."</p>
+                    <div class="testi-label after">Después de 2 semanas</div>
+                    <p class="testi-text">"Ahora él mismo pide 'el cuento de NubeKids' antes de dormir. Y lo mejor:
+                        <strong>me explica qué aprendió el protagonista</strong>. Eso no me lo esperaba."</p>
+                    <div class="testi-author">
+                        <div class="testi-avatar">👩</div>
+                        <div>
+                            <div class="testi-name">Laura M.</div>
+                            <div class="testi-detail">Mamá de Marcos, 4 años · Madrid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testi 2 — featured -->
+                <div class="testi-card" style="border-color:var(--brand-purple); box-shadow: var(--shadow-lg);">
+                    <div class="testi-stars">★★★★★</div>
+                    <div class="testi-label before">Antes</div>
+                    <p class="testi-text">"Mi hija se frustaba llorando cada vez que se equivocaba. Tan dura consigo
+                        misma con 6 años. Me partía el corazón."</p>
+                    <div class="testi-label after">Después de 1 mes</div>
+                    <p class="testi-text">"Creamos cuentos trabajando 'el superpoder del error'. La semana pasada me
+                        dijo: <strong>'Mamá, me he equivocado y está bien, como la valiente Mía del cuento'.</strong> Me
+                        tuve que ir al baño a llorar de alegría."</p>
+                    <div class="testi-author">
+                        <div class="testi-avatar">👩‍🦱</div>
+                        <div>
+                            <div class="testi-name">Patricia G.</div>
+                            <div class="testi-detail">Mamá de Mía, 6 años · Barcelona</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testi 3 -->
+                <div class="testi-card">
+                    <div class="testi-stars">★★★★★</div>
+                    <div class="testi-label before">Antes</div>
+                    <p class="testi-text">"Soy papá en solitario con dos peques. No tenía tiempo ni energía para
+                        inventarme cuentos cada noche. La culpa me comía."</p>
+                    <div class="testi-label after">Ahora</div>
+                    <p class="testi-text">"En 2 minutos tengo un cuento que aborda exactamente lo que pasó ese día.
+                        <strong>El ritual de las noches es el mejor momento del día para los dos.</strong> Eso antes era
+                        impensable."</p>
+                    <div class="testi-author">
+                        <div class="testi-avatar">👨</div>
+                        <div>
+                            <div class="testi-name">Roberto A.</div>
+                            <div class="testi-detail">Papá de Nico (6) y Vera (8) · Sevilla</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="testi-grid">
-            <!-- Testi 1 -->
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <div class="testi-label before">Antes</div>
-                <p class="testi-text">"Las noches eran una batalla. Lloraba cada vez que apagábamos el móvil y cambiarlo por otra cosa era imposible."</p>
-                <div class="testi-label after">Después de 2 semanas</div>
-                <p class="testi-text">"Ahora él mismo pide 'el cuento de NubeKids' antes de dormir. Y lo mejor: <strong>me explica qué aprendió el protagonista</strong>. Eso no me lo esperaba."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">👩</div>
-                    <div>
-                        <div class="testi-name">Laura M.</div>
-                        <div class="testi-detail">Mamá de Marcos, 4 años · Madrid</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testi 2 — featured -->
-            <div class="testi-card" style="border-color:var(--brand-purple); box-shadow: var(--shadow-lg);">
-                <div class="testi-stars">★★★★★</div>
-                <div class="testi-label before">Antes</div>
-                <p class="testi-text">"Mi hija se frustaba llorando cada vez que se equivocaba. Tan dura consigo misma con 6 años. Me partía el corazón."</p>
-                <div class="testi-label after">Después de 1 mes</div>
-                <p class="testi-text">"Creamos cuentos trabajando 'el superpoder del error'. La semana pasada me dijo: <strong>'Mamá, me he equivocado y está bien, como la valiente Mía del cuento'.</strong> Me tuve que ir al baño a llorar de alegría."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">👩‍🦱</div>
-                    <div>
-                        <div class="testi-name">Patricia G.</div>
-                        <div class="testi-detail">Mamá de Mía, 6 años · Barcelona</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testi 3 -->
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <div class="testi-label before">Antes</div>
-                <p class="testi-text">"Soy papá en solitario con dos peques. No tenía tiempo ni energía para inventarme cuentos cada noche. La culpa me comía."</p>
-                <div class="testi-label after">Ahora</div>
-                <p class="testi-text">"En 2 minutos tengo un cuento que aborda exactamente lo que pasó ese día. <strong>El ritual de las noches es el mejor momento del día para los dos.</strong> Eso antes era impensable."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar">👨</div>
-                    <div>
-                        <div class="testi-name">Roberto A.</div>
-                        <div class="testi-detail">Papá de Nico (6) y Vera (8) · Sevilla</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      COMPARISON
 ══════════════════════════════════════════════ -->
-<section class="comp-section section-pad">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow eyebrow-yellow">La diferencia importa</span>
-            <h2>No es otro juego. No es una app de vídeos.</h2>
-            <p class="lead">Es otra categoría completamente diferente.</p>
+    <section class="comp-section section-pad">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow eyebrow-yellow">La diferencia importa</span>
+                <h2>No es otro juego. No es una app de vídeos.</h2>
+                <p class="lead">Es otra categoría completamente diferente.</p>
+            </div>
+
+            <div class="comp-scroll">
+                <div class="comp-table">
+                    <div class="comp-head">
+                        <div class="comp-head-cell">Comparativa</div>
+                        <div class="comp-head-cell">Entretenimiento pasivo</div>
+                        <div class="comp-head-cell">NubeKids Tales ✨</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-cell feat">Rol del niño o niña</div>
+                        <div class="comp-cell bad">❌ Consumidor pasivo (modo zombi)</div>
+                        <div class="comp-cell good">✅ Protagonista activo de la historia</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-cell feat">Contenido</div>
+                        <div class="comp-cell bad">❌ Genérico, diseñado para enganchar</div>
+                        <div class="comp-cell good">✅ Diseñado para su reto emocional real</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-cell feat">Privacidad</div>
+                        <div class="comp-cell bad">❌ Anuncios, seguimiento y datos vendidos</div>
+                        <div class="comp-cell good">✅ Sin anuncios. Datos no vendidos. Nunca.</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-cell feat">Efecto post-uso</div>
+                        <div class="comp-cell bad">❌ Irritabilidad, ansiedad, "quiero más"</div>
+                        <div class="comp-cell good">✅ Calma, reflexión, quiere contar lo que aprendió</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-cell feat">Tu rol como padre/madre</div>
+                        <div class="comp-cell bad">❌ Desplazado por el algoritmo</div>
+                        <div class="comp-cell good">✅ Potenciado como co-creador y guía</div>
+                    </div>
+                </div><!-- /comp-table -->
+            </div><!-- /comp-scroll -->
         </div>
-
-        <div class="comp-table">
-            <div class="comp-head">
-                <div class="comp-head-cell">Comparativa</div>
-                <div class="comp-head-cell">Entretenimiento pasivo</div>
-                <div class="comp-head-cell">NubeKids Tales ✨</div>
+    </section>
+    ══════════════════════════════════════════════ -->
+    <section class="trust-section section-pad">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow">Por qué funciona</span>
+                <h2>No es tecnología por tecnología.</h2>
+                <p>Tres pilares que hacen de NubeKids algo diferente a cualquier app infantil que hayas probado.</p>
             </div>
-            <div class="comp-row">
-                <div class="comp-cell feat">Rol del niño o niña</div>
-                <div class="comp-cell bad">❌ Consumidor pasivo (modo zombi)</div>
-                <div class="comp-cell good">✅ Protagonista activo de la historia</div>
-            </div>
-            <div class="comp-row">
-                <div class="comp-cell feat">Contenido</div>
-                <div class="comp-cell bad">❌ Genérico, diseñado para enganchar</div>
-                <div class="comp-cell good">✅ Diseñado para su reto emocional real</div>
-            </div>
-            <div class="comp-row">
-                <div class="comp-cell feat">Privacidad</div>
-                <div class="comp-cell bad">❌ Anuncios, seguimiento y datos vendidos</div>
-                <div class="comp-cell good">✅ Sin anuncios. Datos no vendidos. Nunca.</div>
-            </div>
-            <div class="comp-row">
-                <div class="comp-cell feat">Efecto post-uso</div>
-                <div class="comp-cell bad">❌ Irritabilidad, ansiedad, "quiero más"</div>
-                <div class="comp-cell good">✅ Calma, reflexión, quiere contar lo que aprendió</div>
-            </div>
-            <div class="comp-row">
-                <div class="comp-cell feat">Tu rol como padre/madre</div>
-                <div class="comp-cell bad">❌ Desplazado por el algoritmo</div>
-                <div class="comp-cell good">✅ Potenciado como co-creador y guía</div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- ══════════════════════════════════════════════
-     WHY IT WORKS — Trust / Pedagogy
-══════════════════════════════════════════════ -->
-<section class="trust-section section-pad">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow">Por qué funciona</span>
-            <h2>No es tecnología por tecnología.</h2>
-            <p>Tres pilares que hacen de NubeKids algo diferente a cualquier app infantil que hayas probado.</p>
-        </div>
-        <div class="trust-grid">
-            <div class="trust-card">
-                <div class="trust-icon">🎓</div>
-                <h3>Pedagogía narrativa real</h3>
-                <p>Las historias están estructuradas sobre principios de psicología del desarrollo infantil y disciplina positiva. No es entretenimiento con barniz educativo. Es educación con forma de cuento.</p>
-            </div>
-            <div class="trust-card" style="border-color:var(--brand-purple); background:var(--brand-purple-lt);">
-                <div class="trust-icon">🤖</div>
-                <h3>IA ética: amplifica tu voz</h3>
-                <p>Nuestra IA no sustituye tu rol. Lo amplifica. Tú pones los valores, los retos y la personalidad de tu peque. La IA hace el trabajo de creación narrativa. El guía sigues siendo tú.</p>
-            </div>
-            <div class="trust-card">
-                <div class="trust-icon">🔒</div>
-                <h3>Privacidad total, sin negociación</h3>
-                <p>Cero anuncios. El nombre y los datos de tu hijo no se venden, no se comparten ni se usan para entrenar modelos externos. La historia que creas es vuestra y de nadie más.</p>
+            <div class="trust-grid">
+                <div class="trust-card">
+                    <div class="trust-icon">🎓</div>
+                    <h3>Pedagogía narrativa real</h3>
+                    <p>Las historias están estructuradas sobre principios de psicología del desarrollo infantil y
+                        disciplina positiva. No es entretenimiento con barniz educativo. Es educación con forma de
+                        cuento.</p>
+                </div>
+                <div class="trust-card" style="border-color:var(--brand-purple); background:var(--brand-purple-lt);">
+                    <div class="trust-icon">⚡</div>
+                    <h3>Tecnología que amplifica tu voz</h3>
+                    <p>Nuestro sistema no sustituye tu rol. Lo amplifica. Tú pones los valores, los retos y la
+                        personalidad de tu peque. El Sistema de Agentes hace el trabajo de creación narrativa. El guía
+                        sigues siendo tú.</p>
+                </div>
+                <div class="trust-card">
+                    <div class="trust-icon">🔒</div>
+                    <h3>Privacidad total, sin negociación</h3>
+                    <p>Cero anuncios. El nombre y los datos de tu hijo no se venden, no se comparten ni se usan para
+                        entrenar modelos externos. La historia que creas es vuestra y de nadie más.</p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      PRICING — Credit packs
 ══════════════════════════════════════════════ -->
-<section class="pricing-section section-pad" id="pricing">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow">Sin suscripciones. Sin sorpresas.</span>
-            <h2>Paga solo lo que uses.</h2>
-            <p class="lead">Un juguete dura dos semanas. Un hábito emocional dura para siempre. Y cuesta menos que dos cafés.</p>
+    <section class="pricing-section section-pad" id="pricing">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow">Sin suscripciones. Sin sorpresas.</span>
+                <h2>Paga solo lo que uses.</h2>
+                <p class="lead">Un juguete dura dos semanas. Un hábito emocional dura para siempre. Y cuesta menos que
+                    dos cafés.</p>
+            </div>
+
+            <div class="price-grid">
+                <!-- Starter -->
+                <div class="price-card">
+                    <div>
+                        <div class="price-label" style="color:var(--text-soft);">Para probar la magia</div>
+                        <div class="price-amount">4,97€ <span>/ historia</span></div>
+                        <p class="price-desc">Crea una historia completa ahora y comprueba el resultado con tus propios
+                            ojos.</p>
+                    </div>
+                    <ul class="price-feats">
+                        <li class="price-feat">✅ <strong>1 cuento personalizado completo</strong></li>
+                        <li class="price-feat">📖 10 páginas con ilustraciones generadas</li>
+                        <li class="price-feat">📄 Descarga en PDF · guardado en tu cuenta</li>
+                        <li class="price-feat">⚡ Listo en menos de 60 segundos</li>
+                    </ul>
+                    <a href="#wizard" class="btn" style="text-align:center;">Crear 1 historia</a>
+                </div>
+
+                <!-- Popular -->
+                <div class="price-card hot">
+                    <div>
+                        <div class="price-label" style="color:var(--accent-yellow);">⭐ Más elegido por familias</div>
+                        <div class="price-amount">13,90€ <span>/ 3 historias</span></div>
+                        <p class="price-desc">Para trabajar diferentes retos emocionales a lo largo del mes.</p>
+                    </div>
+                    <ul class="price-feats">
+                        <li class="price-feat">✅ <strong>3 cuentos personalizados</strong></li>
+                        <li class="price-feat">🎯 Cada uno con un reto diferente o el mismo reforzado</li>
+                        <li class="price-feat">📖 10 páginas + ilustraciones por cuento</li>
+                        <li class="price-feat">📚 3 PDFs descargables guardados</li>
+                        <li class="price-feat">💰 <strong>Ahorra un 20% vs. individual</strong> <span
+                                class="savings-badge">3,99€/historia</span></li>
+                    </ul>
+                    <a href="#wizard" class="btn btn-green" style="text-align:center;">Crear 3 historias</a>
+                </div>
+
+                <!-- Value -->
+                <div class="price-card">
+                    <div>
+                        <div class="price-label" style="color:var(--ui-green);">Mejor valor · 6 semanas</div>
+                        <div class="price-amount">21,90€ <span>/ 6 historias</span></div>
+                        <p class="price-desc">Para familias que quieren convertirlo en el ritual semanal de las noches.
+                        </p>
+                    </div>
+                    <ul class="price-feats">
+                        <li class="price-feat">✅ <strong>6 cuentos personalizados</strong></li>
+                        <li class="price-feat">📅 Un ritual de 6 semanas de evolución</li>
+                        <li class="price-feat">🌱 Progresión emocional curada semana a semana</li>
+                        <li class="price-feat">📚 Biblioteca personal de sus aventuras</li>
+                        <li class="price-feat">💰 <strong>Ahorra un 33%</strong> <span
+                                class="savings-badge">3,33€/historia</span></li>
+                    </ul>
+                    <a href="#wizard" class="btn btn-purple" style="text-align:center;">Crear 6 historias</a>
+                </div>
+            </div>
+
+            <p style="text-align:center; margin-top:2rem; font-size:.88rem; color:var(--text-soft);">
+                Los créditos no caducan. Sin renovación automática. Sin letra pequeña. Garantía de devolución si no
+                estás satisfecho/a.
+            </p>
         </div>
-
-        <div class="price-grid">
-            <!-- Starter -->
-            <div class="price-card">
-                <div>
-                    <div class="price-label" style="color:var(--text-soft);">Para probar la magia</div>
-                    <div class="price-amount">4,97€ <span>/ historia</span></div>
-                    <p class="price-desc">Crea una historia completa ahora y comprueba el resultado con tus propios ojos.</p>
-                </div>
-                <ul class="price-feats">
-                    <li class="price-feat">✅ <strong>1 cuento personalizado completo</strong></li>
-                    <li class="price-feat">📖 10 páginas con ilustraciones generadas</li>
-                    <li class="price-feat">📄 Descarga en PDF · guardado en tu cuenta</li>
-                    <li class="price-feat">⚡ Listo en menos de 60 segundos</li>
-                </ul>
-                <a href="#wizard" class="btn" style="text-align:center;">Crear 1 historia</a>
-            </div>
-
-            <!-- Popular -->
-            <div class="price-card hot">
-                <div>
-                    <div class="price-label" style="color:var(--accent-yellow);">⭐ Más elegido por familias</div>
-                    <div class="price-amount">13,90€ <span>/ 3 historias</span></div>
-                    <p class="price-desc">Para trabajar diferentes retos emocionales a lo largo del mes.</p>
-                </div>
-                <ul class="price-feats">
-                    <li class="price-feat">✅ <strong>3 cuentos personalizados</strong></li>
-                    <li class="price-feat">🎯 Cada uno con un reto diferente o el mismo reforzado</li>
-                    <li class="price-feat">📖 10 páginas + ilustraciones por cuento</li>
-                    <li class="price-feat">📚 3 PDFs descargables guardados</li>
-                    <li class="price-feat">💰 <strong>Ahorra un 20% vs. individual</strong> <span class="savings-badge">3,99€/historia</span></li>
-                </ul>
-                <a href="#wizard" class="btn btn-green" style="text-align:center;">Crear 3 historias</a>
-            </div>
-
-            <!-- Value -->
-            <div class="price-card">
-                <div>
-                    <div class="price-label" style="color:var(--ui-green);">Mejor valor · 6 semanas</div>
-                    <div class="price-amount">21,90€ <span>/ 6 historias</span></div>
-                    <p class="price-desc">Para familias que quieren convertirlo en el ritual semanal de las noches.</p>
-                </div>
-                <ul class="price-feats">
-                    <li class="price-feat">✅ <strong>6 cuentos personalizados</strong></li>
-                    <li class="price-feat">📅 Un ritual de 6 semanas de evolución</li>
-                    <li class="price-feat">🌱 Progresión emocional curada semana a semana</li>
-                    <li class="price-feat">📚 Biblioteca personal de sus aventuras</li>
-                    <li class="price-feat">💰 <strong>Ahorra un 33%</strong> <span class="savings-badge">3,33€/historia</span></li>
-                </ul>
-                <a href="#wizard" class="btn btn-purple" style="text-align:center;">Crear 6 historias</a>
-            </div>
-        </div>
-
-        <p style="text-align:center; margin-top:2rem; font-size:.88rem; color:var(--text-soft);">
-            Los créditos no caducan. Sin renovación automática. Sin letra pequeña. Garantía de devolución si no estás satisfecho/a.
-        </p>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      FAQ
 ══════════════════════════════════════════════ -->
-<section class="faq-section section-pad">
-    <div class="wrap">
-        <div class="section-header">
-            <span class="eyebrow">Preguntas frecuentes</span>
-            <h2>Respuestas honestas</h2>
+    <section class="faq-section section-pad">
+        <div class="wrap">
+            <div class="section-header">
+                <span class="eyebrow">Preguntas frecuentes</span>
+                <h2>Respuestas honestas</h2>
+            </div>
+            <div class="faq-list">
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        ¿Qué hace el sistema con los datos de mi hijo?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-a">El nombre y las preferencias que introduces solo se usan para generar esa
+                        historia concreta en tiempo real. No se crean perfiles de usuario, no se venden a terceros y no
+                        se usan para entrenar sistemas externos. Los datos de menores son sagrados para nosotros. Puedes
+                        leer nuestra política de privacidad completa en el pie de página.</div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        ¿El objeto mágico tiene que ser algo comprado en alguna tienda?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-a">Para nada. Puede ser absolutamente cualquier cosa que le importe a tu peque: su
+                        peluche de toda la vida, una piedra que encontró en el parque, sus zapatillas favoritas, su
+                        manta, incluso su mascota. La magia no está en el objeto, sino en que forma parte de su
+                        historia. Y si no tienes nada en mente o prefieres no incluirlo, el sistema inventará un objeto
+                        mágico perfecto y sorprendente para él o ella.</div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        ¿El contenido es realmente adecuado para la edad de mi hijo?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-a">Sí. El sistema adapta el vocabulario, la complejidad narrativa y la profundidad
+                        emocional según la franja de edad que seleccionas. Para los más pequeños (3-4): frases cortas,
+                        lenguaje concreto, emociones simples y mucha acción. Para los de 5-6: metáforas sencillas, más
+                        diálogo y dilemas cotidianos. Para los de 7-10: capas más complejas, gestión del fracaso y
+                        pensamiento crítico. Todo estructurado sobre principios de psicología del desarrollo.</div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        ¿Caducan los créditos que compro?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-a">No. Los créditos que compras son tuyos para siempre y a tu ritmo. No hay
+                        renovación automática, no hay suscripción oculta, no hay caducidad. Usas tus historias cuando
+                        quieras: esta semana, el mes que viene o cuando tu peque lo necesite.</div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        ¿Qué pasa si el cuento generado no me convence?
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-a">Puedes regenerar el cuento con las mismas o distintas preferencias. Si aún así no
+                        estás satisfecho/a, escríbenos y te devolvemos el crédito sin preguntas. Confiamos en lo que
+                        hemos creado, y no queremos que te quedes con algo que no funcione para vosotros.</div>
+                </div>
+
+            </div>
         </div>
-        <div class="faq-list">
-
-            <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    ¿Qué hace exactamente la IA con los datos de mi hijo?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-a">El nombre y las preferencias que introduces solo se usan para generar esa historia concreta en tiempo real. No se crean perfiles de usuario, no se venden a terceros y no se usan para entrenar modelos de IA externos. Los datos de menores son sagrados para nosotros. Puedes leer nuestra política de privacidad completa en el pie de página.</div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    ¿El objeto mágico tiene que ser algo comprado en alguna tienda?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-a">Para nada. Puede ser absolutamente cualquier cosa que le importe a tu peque: su peluche de toda la vida, una piedra que encontró en el parque, sus zapatillas favoritas, su manta, incluso su mascota. La magia no está en el objeto, sino en que forma parte de su historia. Y si no tienes nada en mente o prefieres no incluirlo, la IA inventará un objeto mágico perfecto y sorprendente para él o ella.</div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    ¿El contenido es realmente adecuado para la edad de mi hijo?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-a">Sí. La IA adapta el vocabulario, la complejidad narrativa y la profundidad emocional según la franja de edad que seleccionas. Para los más pequeños (3-4): frases cortas, lenguaje concreto, emociones simples y mucha acción. Para los de 5-6: metáforas sencillas, más diálogo y dilemas cotidianos. Para los de 7-10: capas más complejas, gestión del fracaso y pensamiento crítico. Todo estructurado sobre principios de psicología del desarrollo.</div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    ¿Caducan los créditos que compro?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-a">No. Los créditos que compras son tuyos para siempre y a tu ritmo. No hay renovación automática, no hay suscripción oculta, no hay caducidad. Usas tus historias cuando quieras: esta semana, el mes que viene o cuando tu peque lo necesite.</div>
-            </div>
-
-            <div class="faq-item">
-                <button class="faq-q" onclick="toggleFaq(this)">
-                    ¿Qué pasa si el cuento generado no me convence?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-a">Puedes regenerar el cuento con las mismas o distintas preferencias. Si aún así no estás satisfecho/a, escríbenos y te devolvemos el crédito sin preguntas. Confiamos en lo que hemos creado, y no queremos que te quedes con algo que no funcione para vosotros.</div>
-            </div>
-
-        </div>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      FINAL CTA
 ══════════════════════════════════════════════ -->
-<section class="final-cta">
-    <div class="stars-canvas" id="finalStars"></div>
-    <div class="final-cta-inner">
-        <span class="eyebrow eyebrow-dark" style="margin-bottom:2rem; display:inline-block;">Esta noche puede ser diferente.</span>
-        <h2>Dale a <span class="hl">[su nombre]</span> la historia<br>que no encontrará en ningún otro sitio.</h2>
-        <p class="lead">
-            No tienes que ser una familia perfecta.<br>
-            Solo tienes que querer darle las herramientas que tú no tuviste.<br>
-            Lo demás lo hacemos nosotros.
-        </p>
-        <div class="cta-group">
-            <a href="#wizard" class="btn btn-lg">Crear su primera historia ✨</a>
-            <a href="#pricing" class="btn btn-ghost btn-lg">Ver precios →</a>
+    <section class="final-cta">
+        <div class="stars-canvas" id="finalStars"></div>
+        <div class="final-cta-inner">
+            <span class="eyebrow eyebrow-dark" style="margin-bottom:2rem; display:inline-block;">Esta noche puede ser
+                diferente.</span>
+            <h2>Dale a <span class="hl">[su nombre]</span> la historia<br>que no encontrará en ningún otro sitio.</h2>
+            <p class="lead">
+                No tienes que ser una familia perfecta.<br>
+                Solo tienes que querer darle las herramientas que tú no tuviste.<br>
+                Lo demás lo hacemos nosotros.
+            </p>
+            <div class="cta-group">
+                <a href="#wizard" class="btn btn-lg">Crear su primera historia ✨</a>
+                <a href="#pricing" class="btn btn-ghost btn-lg">Ver precios →</a>
+            </div>
+            <p class="final-note">Sin registro previo para empezar · Sin suscripción · Desde 4,97€ · Los créditos no
+                caducan</p>
         </div>
-        <p class="final-note">Sin registro previo para empezar · Sin suscripción · Desde 4,97€ · Los créditos no caducan</p>
-    </div>
-</section>
+    </section>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      FOOTER
 ══════════════════════════════════════════════ -->
-<footer>
-    <p>© 2025 NubeKids Tales &nbsp;·&nbsp; <a href="#">Privacidad</a> &nbsp;·&nbsp; <a href="#">Términos de uso</a> &nbsp;·&nbsp; <a href="mailto:hola@nubekids.com">hola@nubekids.com</a></p>
-    <p>Hecho con ❤️ para padres que quieren hacerlo bien.</p>
-</footer>
+    <footer>
+        <p>© 2026 NubeKids Tales &nbsp;·&nbsp; <a href="#">Privacidad</a> &nbsp;·&nbsp; <a href="#">Términos de uso</a>
+            &nbsp;·&nbsp; <a href="/cdn-cgi/l/email-protection#325a5d5e53725c475057595b56411c515d5f"><span
+                    class="__cf_email__"
+                    data-cfemail="d8b0b7b4b998b6adbabdb3b1bcabf6bbb7b5">[email&#160;protected]</span></a></p>
+        <p>Hecho con ❤️ para padres que quieren hacerlo bien.</p>
+    </footer>
 
 
-<!-- ══════════════════════════════════════════════
+    <!-- ══════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════ -->
-<script>
-/* ─── STARS ─────────────────────────────────── */
-function mkStars(id, n) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    for (let i = 0; i < n; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        s.style.left   = (Math.random() * 100) + '%';
-        s.style.top    = (Math.random() * 100) + '%';
-        s.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-        s.style.setProperty('--dl',  (Math.random() * 4)     + 's');
-        const sz = Math.random() > 0.7 ? 3 : (Math.random() > 0.4 ? 2 : 1.5);
-        s.style.width  = sz + 'px';
-        s.style.height = sz + 'px';
-        el.appendChild(s);
-    }
-}
-mkStars('heroStars', 90);
-mkStars('finalStars', 70);
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        /* ─── STARS ─────────────────────────────────── */
+        function mkStars(id, n) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            for (let i = 0; i < n; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = (Math.random() * 100) + '%';
+                s.style.top = (Math.random() * 100) + '%';
+                s.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+                s.style.setProperty('--dl', (Math.random() * 4) + 's');
+                const sz = Math.random() > 0.7 ? 3 : (Math.random() > 0.4 ? 2 : 1.5);
+                s.style.width = sz + 'px';
+                s.style.height = sz + 'px';
+                el.appendChild(s);
+            }
+        }
+        mkStars('heroStars', 90);
+        mkStars('finalStars', 70);
 
-/* ─── AGE TABS ───────────────────────────────── */
-function showAge(i, btn) {
-    document.querySelectorAll('.scenario').forEach((el, j) => el.classList.toggle('on', j === i));
-    document.querySelectorAll('.age-tab').forEach(b  => b.classList.remove('on'));
-    btn.classList.add('on');
-}
+        /* ─── AGE TABS ───────────────────────────────── */
+        function showAge(i, btn) {
+            document.querySelectorAll('.scenario').forEach((el, j) => el.classList.toggle('on', j === i));
+            document.querySelectorAll('.age-tab').forEach(b => b.classList.remove('on'));
+            btn.classList.add('on');
+        }
 
-/* ─── FAQ ────────────────────────────────────── */
-function toggleFaq(btn) {
-    const item    = btn.closest('.faq-item');
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-    if (!wasOpen) item.classList.add('open');
-}
+        /* ─── FAQ ────────────────────────────────────── */
+        function toggleFaq(btn) {
+            const item = btn.closest('.faq-item');
+            const wasOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!wasOpen) item.classList.add('open');
+        }
 
-/* ─── WIZARD ─────────────────────────────────── */
-const W = { step: 1, name: '', age: '', challenge: '', object: '' };
+        /* ─── WIZARD DEMO ──────────────────────────────── */
+        function _updateDots(step) {
+            [0, 1, 2, 3].forEach(i => {
+                const d = document.getElementById('pd' + i);
+                if (!d) return;
+                d.classList.remove('done', 'current');
+                if (i + 1 < step) d.classList.add('done');
+                else if (i + 1 === step) d.classList.add('current');
+            });
+            const lbl = document.getElementById('pLabel');
+            if (lbl) lbl.textContent = 'Paso ' + step + ' de 4';
+        }
 
-const CHALLENGES = {
-    tiny: [
-        'Rabietas y emociones intensas',
-        'Aprender a compartir',
-        'Miedos nocturnos',
-        'La llegada de un hermano/a',
-        'Decir adiós a la guardería',
-        'Golpes y comportamientos agresivos'
-    ],
-    little: [
-        'Motivación para leer',
-        'Falta de foco y atención',
-        'Celos familiares',
-        'Empezar el cole nuevo',
-        'Baja autoestima',
-        'Miedos nuevos'
-    ],
-    reader: [
-        'Gestión del fracaso y el error',
-        'Frustración ante los retos',
-        'Confianza en sí mismo/a',
-        'Relaciones y amistades',
-        'Perseverancia y esfuerzo',
-        'Gestión de la rabia'
-    ]
+        window.demoGoto = function (n) {
+            document.querySelectorAll('.wstep').forEach(el => el.classList.remove('on'));
+            const step = document.getElementById('ws' + n);
+            if (step) step.classList.add('on');
+            _updateDots(n);
+            const wiz = document.getElementById('wizard');
+            if (wiz) wiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        window.demoMode = function (mode) {
+            const descMode = document.getElementById('demoDescMode');
+            const photoMode = document.getElementById('demoPhotoMode');
+            const btnDesc = document.getElementById('btnDesc');
+            const btnPhoto = document.getElementById('btnPhoto');
+            if (!descMode) return;
+            if (mode === 'desc') {
+                descMode.style.display = 'block';
+                photoMode.style.display = 'none';
+                btnDesc.classList.add('on'); btnPhoto.classList.remove('on');
+            } else {
+                descMode.style.display = 'none';
+                photoMode.style.display = 'block';
+                btnPhoto.classList.add('on'); btnDesc.classList.remove('on');
+            }
+        };
+
+        window.togglePed = function () {
+            const toggle = document.getElementById('pedToggle');
+            const sections = document.getElementById('pedSections');
+            if (!toggle) return;
+            toggle.classList.toggle('on');
+            sections.style.display = toggle.classList.contains('on') ? 'block' : 'none';
+        };
+
+        window.toggleAccord = function (btn) {
+            btn.closest('.accord-item').classList.toggle('open');
+        };
+
+        window.selectGenre = function (card) {
+            document.querySelectorAll('.genre-card').forEach(c => c.classList.remove('on'));
+            card.classList.add('on');
+        };
+
+        /* ─── DRAG SCROLL ────────────────────────────── */
+        (function () {
+            const el = document.querySelector('.comp-scroll');
+            if (!el) return;
+            let isDown = false, startX, scrollLeft;
+            el.addEventListener('mousedown', function (e) {
+                isDown = true; el.classList.add('dragging');
+                startX = e.pageX - el.offsetLeft;
+                scrollLeft = el.scrollLeft;
+                e.preventDefault();
+            });
+            el.addEventListener('mouseleave', function () { isDown = false; el.classList.remove('dragging'); });
+            el.addEventListener('mouseup', function () { isDown = false; el.classList.remove('dragging'); });
+            el.addEventListener('mousemove', function (e) {
+                if (!isDown) return;
+                const x = e.pageX - el.offsetLeft;
+                el.scrollLeft = scrollLeft - (x - startX) * 1.5;
+            });
+        })();
+
+        document.querySelectorAll('.lang-pill').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
 };
-const AGE_LABELS = { tiny: '3-4 años', little: '5-6 años', reader: '7-10 años' };
-
-function updateDots(step) {
-    [0,1,2,3].forEach(i => {
-        const d = document.getElementById('pd' + i);
-        d.classList.remove('done', 'current');
-        if (i + 1 < step)       d.classList.add('done');
-        else if (i + 1 === step) d.classList.add('current');
-    });
-    document.getElementById('pLabel').textContent = 'Paso ' + step + ' de 4';
-}
-
-function gotoStep(n) {
-    // Read current values
-    const nameEl = document.getElementById('wName');
-    const objEl  = document.getElementById('wObject');
-    if (nameEl) W.name   = nameEl.value.trim();
-    if (objEl)  W.object = objEl.value.trim();
-
-    // Validate step 1 → 2
-    if (n === 2 && !W.age) {
-        const ap = document.getElementById('agePills');
-        ap.style.outline      = '3px solid var(--brand-purple)';
-        ap.style.borderRadius = '8px';
-        ap.style.padding      = '4px';
-        setTimeout(() => { ap.style.outline = 'none'; ap.style.padding = '0'; }, 1800);
-        return;
-    }
-
-    // Populate challenges when going to step 2
-    if (n === 2 && W.age) {
-        const cp = document.getElementById('challengePills');
-        cp.innerHTML = '';
-        CHALLENGES[W.age].forEach(c => {
-            const p = document.createElement('span');
-            p.className = 'pill';
-            p.textContent = c;
-            if (c === W.challenge) p.classList.add('on');
-            p.onclick = () => {
-                document.querySelectorAll('#challengePills .pill').forEach(x => x.classList.remove('on'));
-                p.classList.add('on');
-                W.challenge = c;
-                refreshPreview();
-            };
-            cp.appendChild(p);
-        });
-    }
-
-    W.step = n;
-    document.querySelectorAll('.wstep').forEach(el => el.classList.remove('on'));
-    document.getElementById('ws' + n).classList.add('on');
-    updateDots(n);
-    if (n === 4) refreshPreview();
-
-    // Smooth scroll to wizard
-    document.getElementById('wizard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function pickAge(el) {
-    document.querySelectorAll('.age-pill').forEach(p => p.classList.remove('on'));
-    el.classList.add('on');
-    W.age       = el.dataset.age;
-    W.challenge = ''; // reset challenge when age changes
-    refreshPreview();
-}
-
-function skipObj() {
-    W.object = '';
-    if (document.getElementById('wObject')) document.getElementById('wObject').value = '';
-    gotoStep(4);
-}
-
-function refreshPreview() {
-    const nameEl = document.getElementById('wName');
-    const objEl  = document.getElementById('wObject');
-    if (nameEl) W.name   = nameEl.value.trim();
-    if (objEl)  W.object = objEl.value.trim();
-
-    const name      = W.name ? cap(W.name) : 'tu peque';
-    const age       = W.age  ? AGE_LABELS[W.age] : '';
-    const challenge = W.challenge || '';
-    const obj       = W.object;
-
-    const titleEl = document.getElementById('spTitle');
-    const subEl   = document.getElementById('spSub');
-    const ctaEl   = document.getElementById('spCta');
-
-    if (!titleEl) return;
-
-    titleEl.textContent = 'La gran aventura de ' + name;
-
-    if (challenge && obj) {
-        subEl.textContent = `Una historia donde ${name} usa ${obj} para aprender a gestionar: "${challenge}". 10 páginas. Ilustraciones únicas.`;
-    } else if (challenge) {
-        subEl.textContent = `Una historia personalizada para ${name}${age ? ' (' + age + ')' : ''} centrada en: "${challenge}". 10 páginas. Ilustraciones únicas.`;
-    } else if (W.name) {
-        subEl.textContent = `Una historia donde ${name} es el protagonista. Elige el reto emocional para completar tu historia.`;
-    } else {
-        subEl.textContent = 'Completa los pasos anteriores para ver tu historia personalizada.';
-    }
-
-    if (ctaEl && W.name) {
-        ctaEl.textContent = `Generar la historia de ${name} — desde 4,97€ ✨`;
-    }
-}
-
-function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-// Live update on name typing
-document.getElementById('wName')?.addEventListener('input', function() {
-    W.name = this.value.trim();
-    refreshPreview();
-});
-</script>
-
-</body>
-</html>
+    </script>
