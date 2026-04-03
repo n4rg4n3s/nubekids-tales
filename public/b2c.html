@@ -1719,7 +1719,7 @@
         <a href="#" class="nav-logo">☁️ NubeKids</a>
         <div class="nav-right">
             <span class="nav-note">Sin suscripción · Desde 4,97€</span>
-            <a href="#wizard" class="btn btn-sm">Crear cuento ✨</a>
+            <a href="/buy-credits" class="btn btn-sm">Crear cuento ✨</a>
         </div>
     </nav>
 
@@ -1739,7 +1739,7 @@
                 Su nombre. Su reto. Su historia. Sin anuncios, sin suscripción y con pedagogía de verdad.
             </p>
 
-            <a href="#wizard" class="btn btn-lg">Crear su historia ahora ✨</a>
+            <a href="/buy-credits" class="btn btn-lg">Crear su historia ahora ✨</a>
 
             <div class="trust-row">
                 <span class="trust-pill">🎓 Validado por pedagogos</span>
@@ -1819,19 +1819,20 @@
     <section class="wizard-section section-pad" id="wizard">
         <div class="wrap wizard-wrap">
             <div class="wizard-header">
-                <span class="eyebrow">Simulador interactivo · Sin registro previo</span>
+                <span class="eyebrow">Simulador interactivo · Sin registro · No genera historia</span>
                 <h2>Así funciona el proceso de creación</h2>
                 <p class="lead">Explora cada paso tal y como aparece en la app real. Cuatro preguntas. Una historia
                     única, irrepetible y completamente suya.</p>
             </div>
 
-            <div class="demo-note">
-                🔍 <strong>Demo interactiva</strong> — Navega entre los pasos para descubrir todas las opciones. No
+            <div class="demo-note" id="demo-note">
+                🔍 <strong>Demo interactiva · No genera historia:</strong> Navega entre los pasos para descubrir todas
+                las opciones. No
                 requiere registro ni compromiso.
             </div>
 
             <div class="wizard-box">
-                <!-- Progress bar -->
+                <!-- Progress bar --
                 <div class="wizard-top" id="wTop">
                     <div class="pdot current" id="pd0"></div>
                     <div class="pdot" id="pd1"></div>
@@ -1951,7 +1952,7 @@
 
                     <div class="wnav">
                         <span></span>
-                        <button class="wbtn" onclick="demoGoto(2)">Siguiente →</button>
+                        <button class="wbtn" onclick="demoGoto(2)">Siguiente</button>
                     </div>
                 </div>
 
@@ -2100,7 +2101,7 @@
 
                     <div class="wnav">
                         <button class="wbtn back" onclick="demoGoto(1)">← Volver</button>
-                        <button class="wbtn" onclick="demoGoto(3)">Siguiente →</button>
+                        <button class="wbtn" onclick="demoGoto(3)">Siguiente</button>
                     </div>
                 </div>
 
@@ -2137,7 +2138,7 @@
 
                     <div class="wnav">
                         <button class="wbtn back" onclick="demoGoto(2)">← Volver</button>
-                        <button class="wbtn" onclick="demoGoto(4)">Ver el último paso →</button>
+                        <button class="wbtn" onclick="demoGoto(4)">Último paso</button>
                     </div>
                 </div>
 
@@ -2227,9 +2228,9 @@
                         style="text-align:center; padding:1.5rem; background:linear-gradient(135deg,var(--brand-purple-lt),var(--accent-yellow-lt)); border:3px solid var(--brand-purple); border-radius:16px; margin-bottom:1rem;">
                         <p style="font-size:1.05rem; font-weight:600; color:var(--text-black); margin:0 0 1rem;">🎉
                             ¡Todo listo! Puedes generar la historia real ahora.</p>
-                        <a href="/index.html" class="btn btn-lg"
+                        <a href="/buy-credits" class="btn btn-lg"
                             style="width:100%; box-sizing:border-box; white-space:normal; text-align:center; display:block;">Crear
-                            esta historia — desde 4,97€ ✨</a>
+                            esta historia desde 4,97€ ✨</a>
                         <p style="font-size:.82rem; color:var(--text-soft); margin:.75rem 0 0;">Sin suscripción. Los
                             créditos no caducan. Sin letra pequeña.</p>
                     </div>
@@ -2457,7 +2458,7 @@
                         <div class="comp-head-cell">NubeKids Tales ✨</div>
                     </div>
                     <div class="comp-row">
-                        <div class="comp-cell feat">Rol del niño o niña</div>
+                        <div class="comp-cell feat">Rol del niño/a</div>
                         <div class="comp-cell bad">❌ Consumidor pasivo (modo zombi)</div>
                         <div class="comp-cell good">✅ Protagonista activo de la historia</div>
                     </div>
@@ -2472,12 +2473,12 @@
                         <div class="comp-cell good">✅ Sin anuncios. Datos no vendidos. Nunca.</div>
                     </div>
                     <div class="comp-row">
-                        <div class="comp-cell feat">Efecto post-uso</div>
+                        <div class="comp-cell feat">Efecto</div>
                         <div class="comp-cell bad">❌ Irritabilidad, ansiedad, "quiero más"</div>
                         <div class="comp-cell good">✅ Calma, reflexión, quiere contar lo que aprendió</div>
                     </div>
                     <div class="comp-row">
-                        <div class="comp-cell feat">Tu rol como padre/madre</div>
+                        <div class="comp-cell feat">Tu rol</div>
                         <div class="comp-cell bad">❌ Desplazado por el algoritmo</div>
                         <div class="comp-cell good">✅ Potenciado como co-creador y guía</div>
                     </div>
@@ -2485,7 +2486,7 @@
             </div><!-- /comp-scroll -->
         </div>
     </section>
-    ══════════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════════════ -->
     <section class="trust-section section-pad">
         <div class="wrap">
             <div class="section-header">
@@ -2546,7 +2547,7 @@
                         <li class="price-feat">📄 Descarga en PDF · guardado en tu cuenta</li>
                         <li class="price-feat">⚡ Listo en menos de 60 segundos</li>
                     </ul>
-                    <a href="#wizard" class="btn" style="text-align:center;">Crear 1 historia</a>
+                    <a href="/buy-credits" class="btn" style="text-align:center;">Crear 1 historia</a>
                 </div>
 
                 <!-- Popular -->
@@ -2564,7 +2565,7 @@
                         <li class="price-feat">💰 <strong>Ahorra un 20% vs. individual</strong> <span
                                 class="savings-badge">3,99€/historia</span></li>
                     </ul>
-                    <a href="#wizard" class="btn btn-green" style="text-align:center;">Crear 3 historias</a>
+                    <a href="/buy-credits" class="btn btn-green" style="text-align:center;">Crear 3 historias</a>
                 </div>
 
                 <!-- Value -->
@@ -2583,7 +2584,7 @@
                         <li class="price-feat">💰 <strong>Ahorra un 33%</strong> <span
                                 class="savings-badge">3,33€/historia</span></li>
                     </ul>
-                    <a href="#wizard" class="btn btn-purple" style="text-align:center;">Crear 6 historias</a>
+                    <a href="/buy-credits" class="btn btn-purple" style="text-align:center;">Crear 6 historias</a>
                 </div>
             </div>
 
@@ -2681,7 +2682,7 @@
                 Lo demás lo hacemos nosotros.
             </p>
             <div class="cta-group">
-                <a href="#wizard" class="btn btn-lg">Crear su primera historia ✨</a>
+                <a href="/buy-credits" class="btn btn-lg">Crear su primera historia ✨</a>
                 <a href="#pricing" class="btn btn-ghost btn-lg">Ver precios →</a>
             </div>
             <p class="final-note">Sin registro previo para empezar · Sin suscripción · Desde 4,97€ · Los créditos no
@@ -2760,8 +2761,8 @@
             const step = document.getElementById('ws' + n);
             if (step) step.classList.add('on');
             _updateDots(n);
-            const wiz = document.getElementById('wizard');
-            if (wiz) wiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const anchor = document.getElementById('demo-note');
+            if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
         window.demoMode = function (mode) {
