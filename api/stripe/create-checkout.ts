@@ -5,18 +5,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2024-12-18.acacia',
 });
 
-// Mapa de pack IDs → Stripe Price IDs
-// Generados el 01/04/2026 — cuenta acct_1CvoJ4DcvABCRuSU
+// Mapa de pack IDs → Stripe Price IDs activos
+// Actualizado el 03/04/2026 — cuenta acct_1CvoJ4DcvABCRuSU
 const PACK_PRICE_MAP: Record<string, string> = {
-    'b2c-trial': 'price_1THOLwDcvABCRuSU3NcAhy5B',
-    'b2c-family': 'price_1THOM4DcvABCRuSUQtxVIH2B',
-    'b2c-gift': 'price_1THOMBDcvABCRuSUtGWwVFkC',
-    'b2b-std-starter': 'price_1THOMJDcvABCRuSUOTLGL2Gp',
-    'b2b-std-growth': 'price_1THOMQDcvABCRuSUODiMlvBm',
-    'b2b-std-scale': 'price_1THOMYDcvABCRuSU4p2FmSDu',
-    'b2b-prm-starter': 'price_1THOMgDcvABCRuSUCwzqnhLp',
-    'b2b-prm-growth': 'price_1THOMpDcvABCRuSUz0DcZvsf',
-    'b2b-prm-scale': 'price_1THOMxDcvABCRuSUbbFEijDA',
+    'b2c-trial': 'price_1THqytDcvABCRuSUPk916Hmh',
+    'b2c-family': 'price_1THr0aDcvABCRuSUGGveajZp',
+    'b2c-gift': 'price_1THr0dDcvABCRuSUYFWdpMUw',
+    'b2b-std-starter': 'price_1THr0gDcvABCRuSUDbG88ec5',
+    'b2b-std-growth': 'price_1THr0jDcvABCRuSUUDmhC5Yk',
+    'b2b-std-scale': 'price_1THr0nDcvABCRuSUvow235eV',
+    'b2b-prm-starter': 'price_1THr0tDcvABCRuSUOhOTtFp7',
+    'b2b-prm-growth': 'price_1THr0wDcvABCRuSU7AS3UV7s',
+    'b2b-prm-scale': 'price_1THr0zDcvABCRuSUXNcyPt12',
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
