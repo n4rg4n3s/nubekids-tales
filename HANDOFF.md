@@ -1,6 +1,6 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-02 (Sesión Fase 10 — Flujo B2B → B2C completo)
+> **Última actualización:** 2026-04-04 (Refactor tenant → itemInteractionMode)
 > **Estado:** ✅ Fase 10 COMPLETADA — Funnel B2B2C end-to-end funcional
 > **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
 
@@ -25,6 +25,14 @@
 13. ✅ **`docs/INTEGRACION_PREMIUM.md`** — Guía de integración para tenants Premium (Shopify, WooCommerce, custom)
 14. ✅ **Deploy en Vercel exitoso** — TypeScript sin errores, build verde
 
+### Refactor de modelo (04 Abril 2026)
+
+1. ✅ **`src/types.ts`** — Nuevo campo `itemInteractionMode` en `TenantConfig`
+2. ✅ **`src/utils/itemInteraction.ts`** — Helper central para semántica narrativa/visual del objeto
+3. ✅ **`src/config/tenants/*.config.ts`** — `shoe-store-default` y `fashion-store-default` unificados bajo `wearable`
+4. ✅ **`src/services/agents/*.ts`** — Narrative, Storytelling y Visual Brief ya usan `itemInteractionMode`
+5. ✅ **Compatibilidad legacy preservada** — Las URLs `?tenant=shoe-store-default` y `?tenant=fashion-store-default` siguen siendo válidas
+
 ### Decisiones tomadas en esta sesión
 - **`storeName` visible en ambos planes**: Standard y Premium muestran el nombre de la tienda en Step 3
 - **Fallback CORS graceful**: si la imagen no se puede convertir a base64, se muestra como preview visual pero no se envía a Gemini — el cuento usa la descripción textual
@@ -32,6 +40,10 @@
 - **Test CORS no simulable con URLs públicas**: la mayoría de CDNs modernos envían headers CORS correctos; el fallback se activará con CDNs privados de e-Commerce
 - **Integración Premium requiere desarrollo técnico en el e-Commerce**: documentado en `docs/INTEGRACION_PREMIUM.md`
 - **Landings estáticas en `/public`**: sin React Router, HTML puro servido directamente por Vercel
+- **`itemInteractionMode` como fuente de verdad narrativa**: `tenant` sigue representando identidad comercial/branding; la semántica de uso del objeto ya no depende de `shoe-store` vs `fashion-store`
+- **Tenants demo legacy se mantienen**: `shoe-store-default` y `fashion-store-default` siguen existiendo por compatibilidad, pero no deben marcar la evolución futura del modelo
+- **`direct-b2c` usa `generic`**: B2C no se fuerza artificialmente a `wearable` ni `interactive`
+- **Onboarding B2B V1 = alta manual asistida**: no habrá self-serve B2B mientras el volumen de leads no justifique asumir la complejidad extra en auth, roles, provisioning y pagos
 
 ---
 
@@ -87,6 +99,20 @@
 | **Fallback CORS en 3 intentos** | fetch → canvas → url-only. Degrada gracefully sin romper el flujo |
 | **`post-story` como AppState** | CTA de conversión B2B→B2C sin interferir con el estado `reading` |
 | **Landings en `/public` como HTML estático** | Carga instantánea, SEO friendly, independientes del SPA |
+| **`itemInteractionMode` desacoplado de `tenant`** | `tenant` define branding e identidad comercial; `itemInteractionMode` define cómo el niño usa el objeto en narrativa e imagen |
+
+---
+
+## 🧠 Nota Operativa Importante
+
+- **No usar `shoe-store-default` y `fashion-store-default` como semántica de producto**: desde el refactor del 04/04/2026 esos IDs son tenants demo/legacy compatibles con URLs existentes.
+- **La fuente de verdad para comportamiento narrativo y visual es `itemInteractionMode`**.
+- **Asignación actual**:
+  - `shoe-store-default` → `wearable`
+  - `fashion-store-default` → `wearable`
+  - `direct-b2c` → `generic`
+- **Implicación práctica**: futuros tenants B2B no deben crearse siguiendo la taxonomía `shoe-store` / `fashion-store`; deben definirse por branding comercial y por `itemInteractionMode`.
+- **Decisión operativa vigente para B2B**: el alta de nuevos tenants será asistida/manual en V1. El self-serve B2B queda explícitamente pospuesto hasta que haya demanda que lo justifique.
 
 ---
 
@@ -169,6 +195,7 @@ D:\nubekids-tales\
 │   ├── utils/
 │   │   ├── pdfExport.ts
 │   │   ├── jsonParser.ts
+│   │   ├── itemInteraction.ts          # ✅ NUEVO Refactor tenant → itemInteractionMode
 │   │   └── itemImageLoader.ts              # ✅ NUEVO Fase 10
 │   │
 │   └── config/
@@ -272,6 +299,7 @@ FRONTEND_URL=http://localhost:5173
 | Item | Prioridad | Estado |
 |------|-----------|--------|
 | Sincronizar precios B2B (landing vs Stripe vs Supabase) | Alta | ⏳ Pendiente |
+| Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas |
 | Google OAuth config en GCP + Supabase | Media | ⏳ Cuando haya dominio |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |

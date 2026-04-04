@@ -4,6 +4,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { TenantConfig } from '../../types';
+import { getItemDescriptionFallbackPlaceholder } from '../../utils/itemInteraction';
 
 export interface ItemData {
   image: string | null;
@@ -207,7 +208,7 @@ export default function StepItem({
             /* Caso 3: sin imagen */
           ) : (
             <div className="text-center">
-              <p className="text-4xl mb-2">👟</p>
+              <p className="text-4xl mb-2">📸</p>
               <p className="text-[#1E293B]/60 font-medium">
                 Sube una foto de {tenantConfig.itemLabel}
               </p>
@@ -247,7 +248,7 @@ export default function StepItem({
         <textarea
           value={data.description}
           onChange={(e) => onChange({ ...data, description: e.target.value })}
-          placeholder={tenantConfig.itemPlaceholderText || `Ej: Zapatillas rojas con rayas brillantes y velcro de estrellitas...`}
+          placeholder={tenantConfig.itemPlaceholderText || getItemDescriptionFallbackPlaceholder(tenantConfig.itemInteractionMode)}
           className="w-full px-4 py-3 rounded-xl border-3 border-[#1E293B]/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] resize-none"
           rows={3}
         />

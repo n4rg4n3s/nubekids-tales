@@ -6,9 +6,14 @@
  * asegurando consistencia visual a lo largo del cuento.
  */
 
-import type { Beat, Genre } from '../../types';
+import type { Beat, Genre, ItemInteractionMode } from '../../types';
 import type { AgentDependencies } from '../dependencies';
 import { parseJsonSafely } from '../../utils/jsonParser';
+import {
+    getItemInteractionModeInstruction,
+    getItemInteractionPromptExample,
+    getItemInteractionVisualGuidance,
+} from '../../utils/itemInteraction';
 
 // ============================================
 // SYSTEM PROMPT
@@ -42,6 +47,7 @@ export interface VisualBriefInput {
     storyBeats: Beat[];
     genre: Genre;
     itemLabel: string;
+    itemInteractionMode: ItemInteractionMode;
     itemDescription?: string;
     heroName: string;
     heroDescription?: string;
@@ -124,6 +130,16 @@ function buildPrompt(input: VisualBriefInput): string {
     const itemSection = input.itemDescription
         ? `- Objeto mágico: ${input.itemLabel} (${input.itemDescription})`
         : `- Objeto mágico: ${input.itemLabel}`;
+    const interactionSection = [
+        `- Modo de interacción del objeto: ${input.itemInteractionMode}`,
+        `- Guía narrativa: ${getItemInteractionModeInstruction(input.itemInteractionMode)}`,
+        `- Guía visual: ${getItemInteractionVisualGuidance(input.itemInteractionMode, input.itemLabel)}`,
+    ].join('\n');
+    const examplePrompt = getItemInteractionPromptExample(
+        input.itemInteractionMode,
+        input.heroName,
+        input.itemLabel
+    );
 
     return `
 ESTILO VISUAL: ${input.genre}
@@ -132,6 +148,7 @@ PERSONAJES:
 ${heroSection}
 ${friendSection}
 ${itemSection}
+${interactionSection}
 
 ESCENAS A ILUSTRAR:
 ${beatsText}
@@ -152,13 +169,16 @@ REGLAS PARA fullPrompt:
 1. Empezar SIEMPRE con el estilo: "${input.genre} style illustration"
 2. Describir al protagonista de forma CONSISTENTE en todas las páginas
 3. El objeto mágico (${input.itemLabel}) debe mencionarse cuando sea relevante
-4. Incluir la acción específica de la escena
-5. Terminar con detalles de iluminación y mood
-6. NO incluir texto ni letras en las ilustraciones
-7. Máximo 100 palabras por fullPrompt
+4. Respetar SIEMPRE el modo de interacción del objeto: ${input.itemInteractionMode}
+5. ${getItemInteractionVisualGuidance(input.itemInteractionMode, input.itemLabel)}
+6. NO asumir que el objeto se lleva puesto salvo que el modo sea "wearable"
+7. Incluir la acción específica de la escena
+8. Terminar con detalles de iluminación y mood
+9. NO incluir texto ni letras en las ilustraciones
+10. Máximo 100 palabras por fullPrompt
 
 EJEMPLO de fullPrompt:
-"${input.genre} style illustration. A young child named ${input.heroName} standing in a magical forest clearing. The child wears glowing ${input.itemLabel} that emit soft sparkles. Wide-eyed expression of wonder, arms slightly raised. Warm golden sunlight filtering through trees, magical particles floating in the air. Soft shadows, whimsical atmosphere."
+"${input.genre} style illustration. ${examplePrompt} Wide-eyed expression of wonder, scene-specific action, warm golden sunlight filtering through the environment, magical particles floating in the air. Soft shadows, whimsical atmosphere."
   `.trim();
 }
 

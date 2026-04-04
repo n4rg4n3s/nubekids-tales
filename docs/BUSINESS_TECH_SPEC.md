@@ -6,6 +6,8 @@
 > **Estado:** Aprobado para implementación
 > **Audiencia:** Desarrollador junior que implementará estas features
 
+> **Nota 2026-04-04:** Este documento sigue siendo válido en negocio y flujos, pero el comportamiento narrativo del objeto ya no debe deducirse de `shoe-store` / `fashion-store`. La fuente de verdad actual es `itemInteractionMode`. Además, la decisión operativa vigente para B2B V1 es onboarding manual asistido, no self-serve.
+
 ---
 
 ## 0. Resumen Ejecutivo
@@ -31,12 +33,12 @@ Este documento cubre TODO lo que falta para que NubeKids sea un producto comerci
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                    NUBEKIDS (Plataforma)                  │
+│                    NUBEKIDS (Plataforma)                 │
 │                                                          │
-│  ┌─────────────┐    ┌─────────────┐    ┌──────────────┐ │
-│  │ ADMIN       │    │ TENANT B2B  │    │ USUARIO B2C  │ │
-│  │ (NubeKids)  │    │ (e-Commerce)│    │ (Padre/Madre)│ │
-│  └──────┬──────┘    └──────┬──────┘    └──────┬───────┘ │
+│  ┌─────────────┐    ┌─────────────┐    ┌──────────────┐  │
+│  │ ADMIN       │    │ TENANT B2B  │    │ USUARIO B2C  │  │
+│  │ (NubeKids)  │    │ (e-Commerce)│    │ (Padre/Madre)│  │
+│  └──────┬──────┘    └──────┬──────┘    └──────┬───────┘  │
 │         │                  │                   │         │
 │    Gestiona todo     Compra créditos     Compra créditos │
 │    Crea tenants      Configura widget    Crea cuentos    │

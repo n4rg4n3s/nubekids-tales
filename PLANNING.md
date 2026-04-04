@@ -3,7 +3,7 @@
 > Documento vivo de decisiones arquitectónicas y roadmap.
 > Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-04-02
+> **Última actualización:** 2026-04-04
 
 ---
 
@@ -237,6 +237,46 @@
 
 ---
 
+### ADR-017: `itemInteractionMode` desacoplado de `tenant` ✅ IMPLEMENTADO
+
+**Contexto:** El sistema estaba usando `shoe-store` y `fashion-store` como si fueran categorías narrativas, cuando en realidad la diferencia importante era cómo el niño se relaciona con el producto.
+
+**Decisión:** Mantener `tenant` como identidad comercial/branding y mover la semántica narrativa/visual del objeto a `itemInteractionMode`.
+
+**Asignación actual:**
+- `shoe-store-default` → `wearable`
+- `fashion-store-default` → `wearable`
+- `direct-b2c` → `generic`
+
+**Razón:**
+- preserva compatibilidad con URLs ya existentes
+- evita seguir creando tenants “falsos” para resolver comportamiento del objeto
+- prepara el sistema para nuevos modos como `interactive` sin romper arquitectura
+
+**Consecuencia:**
+- `shoe-store-default` y `fashion-store-default` siguen existiendo como tenants demo/legacy
+- la fuente de verdad narrativa deja de ser `verticalId` y pasa a `itemInteractionMode`
+- nuevos tenants no deben diseñarse alrededor de la taxonomía `shoe-store` / `fashion-store`
+
+---
+
+### ADR-018: Onboarding B2B V1 por alta manual asistida ✅ DECIDIDO
+
+**Contexto:** El código actual no soporta alta autónoma de `tenant_owner` ni creación pública de tenants. Implementar self-serve B2B ahora obligaría a tocar auth, roles, provisioning, compra B2B y estados intermedios de onboarding.
+
+**Decisión:** En V1, el onboarding de nuevas tiendas B2B será asistido/manual. NubeKids crea `tenant` + `tenant_owner` y después ese usuario entra ya provisionado para comprar packs B2B.
+
+**Razón:**
+- menor riesgo técnico
+- menor superficie de bugs en pagos y permisos
+- mejor encaje con el volumen actual de leads, que todavía no justifica self-serve
+
+**Consecuencia:**
+- el CTA B2B debe llevar a contacto / activación, no a signup autónomo de tenant
+- el self-serve B2B queda como fase posterior, no como requisito actual del MVP
+
+---
+
 ## Roadmap de Implementación
 
 ### ✅ Fase 1 — Refactor Multitenancy (COMPLETADA)
@@ -245,6 +285,7 @@
 - [x] Crear tenantLoader.ts con soporte para ?tenant= y ?token=
 - [x] Integrar Supabase para validación de tokens
 - [x] Añadir campos integrationLevel, storeName, itemLabelSingular
+- [x] Refactor 2026-04-04: introducir `itemInteractionMode` y desacoplar semántica narrativa de `tenant`
 
 ### ✅ Fase 2 — Wizard de Setup (COMPLETADA)
 - [x] Crear wizard de 4 pasos
@@ -326,17 +367,17 @@
 
 ### ✅ Landing Pages B2B + B2C (COMPLETADA — 02 Abril 2026)
 - [x] `public/b2b.html` — Landing B2B orientada a conversión de tiendas online
-  - [x] Hero con gancho de ventas (no tecnológico)
-  - [x] 3 pilares: incentivo compra / upsell checkout / recuperar carritos
-  - [x] Diferenciación clara Standard vs Premium (guión vs ilustraciones)
-  - [x] Tabla rojo/verde: problemas vs soluciones
-  - [x] Banda emocional: vínculo marca-familia
-  - [x] Sección matemática "La cuenta de la vieja"
-  - [x] Precios B2B revisados al alza
-  - [x] Sin ninguna mención a "IA"
-  - [x] CTAs a `/buy-credits`
+- [x] Hero con gancho de ventas (no tecnológico)
+- [x] 3 pilares: incentivo compra / upsell checkout / recuperar carritos
+- [x] Diferenciación clara Standard vs Premium (guión vs ilustraciones)
+- [x] Tabla rojo/verde: problemas vs soluciones
+- [x] Banda emocional: vínculo marca-familia
+- [x] Sección matemática "La cuenta de la vieja"
+- [x] Precios B2B revisados al alza
+- [x] Sin ninguna mención a "IA"
+- [x] CTAs a `/buy-credits`
 - [x] `public/b2c.html` — Landing B2C para padres
-- [ ] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
+- [x] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
 
 ### ✅ Fase 10 — Flujo B2B → B2C Completo (COMPLETADA)
 - [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`) — 3 fallbacks CORS
@@ -391,6 +432,7 @@
 | Item | Prioridad | Estado | Fase |
 |------|-----------|--------|------|
 | Precios B2B desincronizados (landing vs Stripe vs Supabase) | **ALTA** | ⏳ Pendiente | - |
+| Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas | - |
 | Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 — consume_credit es atómico | 10 |
 | Fuentes Fredoka/Nunito no importadas en index.css | Media | ✅ Resuelto sesión 2026-04-02 | 10 |
 | Google OAuth en GCP + Supabase | Media | ⏳ Cuando haya dominio | 7 |

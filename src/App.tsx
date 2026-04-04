@@ -20,6 +20,7 @@ import { AuthCallback } from './components/auth/AuthCallback';
 import { CreditBalance } from './components/credits/CreditBalance';
 // Stripe
 import BuyCredits from './components/credits/BuyCredits';
+import BuyCreditsB2B from './components/credits/BuyCreditsB2B';
 import CreditsSuccess from './components/credits/CreditsSuccess';
 import { consumeCredit } from './services/creditService';
 
@@ -54,7 +55,8 @@ type AppState =
   | 'promo-unavailable' // Fase 10: tenant B2B sin créditos disponibles
   | 'error'
   | 'no-credits'
-  | 'credits-success';
+  | 'credits-success'
+  | 'buy-credits-b2b';
 
 // Mensajes aleatorios para el loading
 const LOADING_MESSAGES = {
@@ -101,6 +103,12 @@ function App() {
   // Páginas generadas para el Book
   const [pages, setPages] = useState<ComicFace[]>([]);
   const [generationProgress, setGenerationProgress] = useState({ current: 0, total: 0, message: '' });
+
+  const getB2BStandalonePlan = (): 'standard' | 'premium' => {
+    if (typeof window === 'undefined') return 'standard';
+    const plan = new URLSearchParams(window.location.search).get('plan');
+    return plan === 'premium' ? 'premium' : 'standard';
+  };
 
   // ============================================
   // PROTECCIÓN DE NAVEGACIÓN
@@ -167,6 +175,12 @@ function App() {
         if (window.location.pathname === '/credits/success' || urlParams.get('session_id')) {
           window.history.replaceState({}, '', '/');
           setAppState('credits-success');
+          return;
+        }
+
+        // ── Pantalla dedicada de packs B2B ──────────────────────────────────
+        if (window.location.pathname === '/buy-credits-b2b') {
+          setAppState('buy-credits-b2b');
           return;
         }
 
@@ -781,6 +795,19 @@ function App() {
           onClose={() => setAppState('setup')}
         />
       </>
+    );
+  }
+
+  // ── Catálogo B2B standalone ────────────────────────────────────────────────
+  if (appState === 'buy-credits-b2b') {
+    return (
+      <BuyCreditsB2B
+        tenantId={auth.profile?.tenantId ?? tenantData?.tenantId ?? b2bSession?.tenantId}
+        defaultPlan={getB2BStandalonePlan()}
+        onClose={() => {
+          window.location.href = '/b2b.html';
+        }}
+      />
     );
   }
 

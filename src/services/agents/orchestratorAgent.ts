@@ -85,6 +85,7 @@ export async function orchestrate(
                 heroName: session.heroName,
                 friendName: undefined, // TODO: Extraer del contexto si existe
                 itemLabel: session.tenantConfig.itemLabel,
+                itemInteractionMode: session.tenantConfig.itemInteractionMode,
                 itemDescription: session.itemDescription,
                 ageGroup: session.ageGroup,
                 pedagogyProfile: session.pedagogyProfile,
@@ -112,6 +113,7 @@ export async function orchestrate(
                 heroName: session.heroName,
                 friendName: undefined, // TODO: Extraer del contexto si existe
                 itemLabel: session.tenantConfig.itemLabel,
+                itemInteractionMode: session.tenantConfig.itemInteractionMode,
                 itemDescription: session.itemDescription,
                 totalPages: 10,
             },
@@ -132,6 +134,7 @@ export async function orchestrate(
                 storyBeats,
                 genre: session.genre,
                 itemLabel: session.tenantConfig.itemLabel,
+                itemInteractionMode: session.tenantConfig.itemInteractionMode,
                 itemDescription: session.itemDescription,
                 heroName: session.heroName,
                 heroDescription: session.heroDescription || undefined,

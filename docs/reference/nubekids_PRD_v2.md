@@ -6,6 +6,8 @@
 > **Fecha:** 2026-03-24  
 > **Autores:** Equipo NubeKids
 
+> **Nota histórica 2026-04-04:** Este PRD describe una etapa previa del modelo. Hoy `shoe-store` y `fashion-store` no deben interpretarse como categorías narrativas del producto, sino como verticales/tenants demo legacy. La fuente de verdad actual para el comportamiento del objeto es `itemInteractionMode`.
+
 ---
 
 ## 1. Executive Summary & Product Vision
@@ -34,13 +36,19 @@ CAPA 3 — END USERS (Padres/Familias B2C)
   └─ Existe también una vertical B2C directa gestionada por NubeKids.
 ```
 
-### 1.3 Verticales Definidas (V1)
+### 1.3 Verticales Definidas (V1, modelo histórico)
 
 | Vertical ID | Nombre | Descripción | Item Mágico |
 |---|---|---|---|
 | `shoe-store` | Magic Sneakers | Tiendas de calzado infantil | Zapatos / Zapatillas |
 | `fashion-store` | Magic Wardrobe | Tiendas de moda infantil | Prenda o accesorio |
 | `direct-b2c` | NubeKids Stories | Canal B2C directo de NubeKids | Genérico / editable por usuario |
+
+Lectura actual recomendada:
+
+- `shoe-store-default` y `fashion-store-default` se mantienen por compatibilidad
+- ambos comparten actualmente `itemInteractionMode = wearable`
+- `direct-b2c` usa `itemInteractionMode = generic`
 
 ---
 

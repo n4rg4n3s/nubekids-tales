@@ -6,6 +6,25 @@
 
 ---
 
+## Nota de Evolución
+
+Esta guía describe la arquitectura base del sistema multiagente. Desde el 04/04/2026, el SaaS ya no debe interpretar `shoe-store` y `fashion-store` como categorías narrativas de producto.
+
+Regla actual:
+
+- `tenant` = identidad comercial / branding
+- `itemInteractionMode` = cómo se relaciona el niño con el objeto en narrativa e imagen
+
+Asignación actual en producción:
+
+- `shoe-store-default` → `wearable`
+- `fashion-store-default` → `wearable`
+- `direct-b2c` → `generic`
+
+Las URLs legacy con `?tenant=shoe-store-default` y `?tenant=fashion-store-default` se mantienen por compatibilidad.
+
+---
+
 ## 📊 Arquitectura del Sistema
 
 ```
@@ -80,6 +99,10 @@ src/
 │   ├── ragService.ts             # CREAR
 │   └── dependencies.ts           # CREAR
 │
+├── utils/
+│   ├── itemInteraction.ts        # NUEVO: semántica narrativa/visual del objeto
+│   └── jsonParser.ts             # CREAR
+│
 ├── data/
 │   └── rag/
 │       ├── index.ts              # Exporta todos los chunks
@@ -87,9 +110,11 @@ src/
 │       ├── child-psych.chunks.ts # CREAR
 │       └── storytelling.chunks.ts# CREAR
 │
-└── utils/
-    └── jsonParser.ts             # CREAR
 ```
+
+Nota:
+
+- En la implementación actual, cualquier lógica nueva que cambie cómo aparece o se usa el objeto mágico debe apoyarse en `itemInteractionMode`, no en `verticalId` ni en el nombre del tenant.
 
 ---
 

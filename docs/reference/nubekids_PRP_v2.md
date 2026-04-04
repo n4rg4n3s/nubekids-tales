@@ -3,6 +3,8 @@
 
 > **Template optimizado para agentes de IA** que implementen features con contexto suficiente y capacidades de auto-validación para lograr código funcional a través de refinamiento iterativo.
 
+> **Nota histórica 2026-04-04:** Este PRP refleja el diseño multivertical original. A día de hoy, la semántica narrativa del objeto ya no debe apoyarse en `shoe-store` / `fashion-store`, sino en `itemInteractionMode`. Usa este documento solo como referencia histórica, no como fuente de verdad actual sobre el modelo de tenant.
+
 ---
 
 ## Principios del Template
@@ -20,7 +22,7 @@
 Evolucionar "Magic Sneakers" (app single-tenant de generación de cuentos) hacia **NubeKids**: una plataforma SaaS multitenant B2B con:
 
 1. **Core Engine** reutilizable: motor de IA multiagente + RAG pedagógico.
-2. **Sistema de Verticales** configurables (shoe-store, fashion-store, direct-b2c).
+2. **Sistema de Verticales** configurables (modelo histórico: shoe-store, fashion-store, direct-b2c).
 3. **Widget embebible** para integración en checkouts de tiendas.
 4. **Age Group System** (reemplaza Novel Mode) con calibración narrativa por tramo de edad.
 5. **Pedagogy Mode** con formulario de personalización psicopedagógica.
@@ -164,11 +166,13 @@ Implementar el formulario de personalización pedagógica y la lógica del Narra
 // src/types.ts (AMPLIADO)
 
 export type VerticalId = 'shoe-store' | 'fashion-store' | 'direct-b2c';
+export type ItemInteractionMode = 'generic' | 'wearable' | 'interactive';
 
 export interface TenantConfig {
   tenantId: string;
   tenantName: string;
   verticalId: VerticalId;
+  itemInteractionMode: ItemInteractionMode;
   itemLabel: string;              // "zapatos" | "prenda" | "accesorio"
   itemPlaceholderText: string;    // Texto de ayuda en el campo item_model
   allowUserEditItem: boolean;     // Si el usuario final puede editar item_model

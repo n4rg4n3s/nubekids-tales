@@ -6,10 +6,11 @@
  * usando contexto del RAG científico.
  */
 
-import type { AgeGroup, PedagogyProfile } from '../../types';
+import type { AgeGroup, ItemInteractionMode, PedagogyProfile } from '../../types';
 import type { AgentDependencies } from '../dependencies';
 import { formatChunksForPrompt } from '../ragService';
 import { parseJsonSafely } from '../../utils/jsonParser';
+import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 
 // ============================================
 // SYSTEM PROMPT
@@ -38,6 +39,7 @@ export interface NarrativeInput {
     heroName: string;
     friendName?: string;
     itemLabel: string;
+    itemInteractionMode: ItemInteractionMode;
     itemDescription: string;
     ageGroup: AgeGroup;
     pedagogyProfile: PedagogyProfile;
@@ -108,6 +110,8 @@ function buildPrompt(input: NarrativeInput, ragContext: string): string {
     const storeSection = input.storeName
         ? `- Tienda de origen: ${input.storeName} (mencionar sutilmente en la historia)`
         : '';
+    const interactionSection = `- Modo de interacción del objeto: ${input.itemInteractionMode}
+- Guía de uso del objeto: ${getItemInteractionModeInstruction(input.itemInteractionMode)}`;
 
     return `
 ${ragContext ? `${ragContext}\n\n` : ''}
@@ -116,6 +120,7 @@ PERFIL DEL PROTAGONISTA:
 - Grupo de edad: ${input.ageGroup}
 ${friendSection}
 - Objeto mágico: ${input.itemLabel}${input.itemDescription ? ` - ${input.itemDescription}` : ''}
+${interactionSection}
 ${storeSection}
 
 ${pedagogySection}

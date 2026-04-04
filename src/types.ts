@@ -68,6 +68,7 @@ export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
 // ============================================
 
 export type VerticalId = 'shoe-store' | 'fashion-store' | 'direct-b2c';
+export type ItemInteractionMode = 'generic' | 'wearable' | 'interactive';
 
 // Nivel de integración del tenant
 export type IntegrationLevel = 'premium' | 'standard' | 'b2c';
@@ -76,6 +77,7 @@ export interface TenantConfig {
   tenantId: string;
   tenantName: string;
   verticalId: VerticalId;
+  itemInteractionMode: ItemInteractionMode;
 
   // Configuración del objeto mágico
   itemLabel: string;              // "zapatos" | "prenda" | "accesorio"
