@@ -1008,6 +1008,7 @@
             box-shadow: var(--shadow);
             padding: 24px 28px;
             display: flex;
+            flex-direction: column;
             gap: 16px;
             align-items: flex-start;
         }
@@ -1426,6 +1427,214 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .btn {
+                white-space: normal;
+                text-align: center;
+            }
+
+            .btn-lg {
+                font-size: 1.08rem;
+                padding: 16px 20px;
+            }
+
+            .nav-inner {
+                gap: 14px;
+                padding: 14px 20px;
+            }
+
+            .logo {
+                font-size: 1.35rem;
+                min-width: 0;
+            }
+
+            .nav-cta {
+                font-size: 0.95rem;
+                padding: 10px 16px;
+            }
+
+            #hero {
+                padding: 52px 0 44px;
+            }
+
+            .hero-eyebrow {
+                font-size: 0.82rem;
+                margin-bottom: 16px;
+            }
+
+            .hero-headline {
+                font-size: clamp(2.15rem, 10vw, 3rem);
+                margin-bottom: 14px;
+            }
+
+            .hero-sub {
+                font-size: 1rem;
+                line-height: 1.55;
+                margin-bottom: 24px;
+            }
+
+            .hero-ctas {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero-ctas .btn {
+                width: 100%;
+            }
+
+            .section-header {
+                margin-bottom: 36px;
+            }
+
+            .section-header p {
+                font-size: 0.98rem;
+            }
+
+            #math {
+                padding: 48px 0;
+            }
+
+            .math-card {
+                padding: 20px 18px;
+            }
+
+            .math-row {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 12px;
+                align-items: start;
+            }
+
+            .math-row .label {
+                min-width: 0;
+                font-size: 0.92rem;
+                line-height: 1.4;
+            }
+
+            .math-row .value {
+                font-size: 1.15rem;
+                line-height: 1.1;
+                text-align: right;
+                justify-self: end;
+            }
+
+            .math-row.highlight .value {
+                font-size: 1.35rem;
+            }
+
+            .pack-row {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .pack-label {
+                width: 100%;
+                margin-bottom: 2px;
+            }
+
+            .pack-stories {
+                flex: 1;
+            }
+
+            .pricing-plan.featured .pack-price,
+            .pack-price {
+                font-size: 1.18rem;
+            }
+
+            .pricing-note {
+                padding: 18px 20px;
+            }
+
+            #activation-request {
+                padding: 56px 0;
+            }
+
+            .activation-info,
+            .activation-form-card {
+                padding: 24px 20px;
+            }
+
+            .activation-info h3,
+            .activation-form-card h3 {
+                font-size: 1.85rem;
+                line-height: 1.1;
+            }
+
+            .activation-info p,
+            .activation-form-card p {
+                font-size: 1rem;
+            }
+
+            .activation-steps li {
+                gap: 12px;
+            }
+
+            .activation-step-copy strong {
+                font-size: 0.98rem;
+                line-height: 1.2;
+            }
+
+            .activation-step-copy span {
+                font-size: 0.94rem;
+            }
+
+            .activation-callout {
+                padding: 14px 16px;
+                font-size: 0.92rem;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .nav-inner {
+                padding: 14px 16px;
+            }
+
+            .logo {
+                font-size: 1.15rem;
+            }
+
+            .nav-cta {
+                font-size: 0.82rem;
+                padding: 10px 14px;
+            }
+
+            .hero-headline {
+                font-size: 2rem;
+            }
+
+            .hero-sub {
+                font-size: 0.94rem;
+            }
+
+            .math-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .math-row .value {
+                justify-self: start;
+                text-align: left;
+            }
+
+            .math-row.highlight {
+                margin: 0 -10px;
+                padding: 12px 10px;
+            }
+
+            .pack-stories,
+            .pack-unit {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -1458,7 +1667,8 @@
                         compran, y a los que ya compraron en clientes que <strong>vuelven</strong>.
                     </p>
                     <div class="hero-ctas">
-                        <a href="#activation-request" class="btn btn-primary btn-lg activation-link">Solicitar activación de tienda →</a>
+                        <a href="#activation-request" class="btn btn-primary btn-lg activation-link">Solicitar
+                            activación de tienda →</a>
                         <a href="#pillars" class="btn btn-outline btn-lg">¿Cómo funciona?</a>
                     </div>
                 </div>
@@ -1579,7 +1789,7 @@
                 <!-- CARD 3: Carritos abandonados -->
                 <div class="pillar-card card-sky">
                     <span class="pillar-num">03</span>
-                    <span class="pillar-emoji">🛒</span>
+                    <span class="pillar-emoji"></span>
                     <span class="pillar-tag tag-sky">Recupera carritos abandonados</span>
                     <h3>Reactiva a quien se fue sin comprar</h3>
                     <p>
@@ -1729,28 +1939,28 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>🔴Tasa de recompra baja, los clientes no vuelven solos</td>
-                            <td>🟢Vínculo emocional con tu marca que genera razones reales para volver</td>
+                            <td>Tasa de recompra baja, los clientes no vuelven solos</td>
+                            <td>Vínculo emocional con tu marca que genera razones reales para volver</td>
                         </tr>
                         <tr>
-                            <td>🔴Guerra de precios, te copian y te bajan el margen</td>
-                            <td>🟢Diferenciación que ningún competidor puede copiar a precio</td>
+                            <td>Guerra de precios, te copian y te bajan el margen</td>
+                            <td>Diferenciación que ningún competidor puede copiar a precio</td>
                         </tr>
                         <tr>
-                            <td>🔴Cada nueva venta cuesta más en publicidad</td>
-                            <td>🟢Valor percibido muy alto por el cliente, a un coste de 1,58–1,94 € por cuento</td>
+                            <td>Cada nueva venta cuesta más en publicidad</td>
+                            <td>Valor percibido muy alto por el cliente, a un coste de 1,58–1,94 € por cuento</td>
                         </tr>
                         <tr>
-                            <td>🔴La experiencia del cliente termina cuando llega el paquete</td>
-                            <td>🟢La experiencia empieza cuando el paquete llega, y dura semanas</td>
+                            <td>La experiencia del cliente termina cuando llega el paquete</td>
+                            <td>La experiencia empieza cuando el paquete llega, y dura semanas</td>
                         </tr>
                         <tr>
-                            <td>🔴Emails de confirmación que nadie abre</td>
-                            <td>🟢Email con un cuento del hijo del cliente = tasa de apertura >60%</td>
+                            <td>Vínculo emocional Emails de confirmación que nadie abre</td>
+                            <td>Email con un cuento del hijo del cliente = tasa de apertura >60%</td>
                         </tr>
                         <tr>
-                            <td>🔴3 de cada 4 carritos se abandonan sin comprar</td>
-                            <td>🟢Incentivo emocional que convierte la duda en decisión de compra</td>
+                            <td>3 de cada 4 carritos se abandonan sin comprar</td>
+                            <td>Incentivo emocional que convierte la duda en decisión de compra</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1771,10 +1981,14 @@
                     real ligado a tu marca. Eso no lo construye un descuento. Lo construye una historia.
                 </p>
                 <div class="emotion-icons">
-                    <div class="emotion-icon"><span class="ei">⭐</span><span>El niño protagoniza la historia</span></div>
-                    <div class="emotion-icon"><span class="ei">💜</span><span>La familia asocia tu marca con ese recuerdo</span></div>
-                    <div class="emotion-icon"><span class="ei">🔁</span><span>El cliente vuelve porque le importa lo que siente</span></div>
-                    <div class="emotion-icon"><span class="ei">🛡️</span><span>Inmune a la guerra de precios</span></div>
+                    <div class="emotion-icon"><span class="ei">⭐</span><span>El niño protagoniza la historia</span>
+                    </div>
+                    <div class="emotion-icon"><span class="ei">💜</span><span>La familia asocia tu marca con ese
+                            recuerdo</span></div>
+                    <div class="emotion-icon"><span class="ei">🔁</span><span>El cliente vuelve porque le importa lo que
+                            siente</span></div>
+                    <div class="emotion-icon"><span class="ei">🛡️</span><span>Inmune a la guerra de precios</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1844,7 +2058,7 @@
                 <div class="pricing-plan">
                     <div class="plan-top">
                         <div class="plan-name">Plan Standard</div>
-                        <div class="plan-desc">Sin integración técnica , URL personalizada en tu email</div>
+                        <div class="plan-desc">Sin integración técnica, URL personalizada en tu email</div>
                     </div>
                     <div class="packs">
                         <a href="#activation-request" class="pack-row activation-link" data-plan="standard">
@@ -1867,14 +2081,15 @@
                         </a>
                     </div>
                     <div class="plan-cta">
-                        <a href="#activation-request" class="btn btn-secondary activation-link" data-plan="standard">Solicitar activación Standard →</a>
+                        <a href="#activation-request" class="btn btn-secondary activation-link"
+                            data-plan="standard">Solicitar activación Standard →</a>
                     </div>
                 </div>
 
                 <div class="pricing-plan featured">
                     <div class="plan-top">
                         <div class="plan-name">Plan Premium </div>
-                        <div class="plan-desc">Con foto real del producto , el objeto mágico del cuento es su compra
+                        <div class="plan-desc">Con foto real del producto, el objeto mágico del cuento es su compra
                         </div>
                     </div>
                     <div class="packs">
@@ -1898,7 +2113,8 @@
                         </a>
                     </div>
                     <div class="plan-cta">
-                        <a href="#activation-request" class="btn btn-primary activation-link" data-plan="premium">Solicitar activación Premium →</a>
+                        <a href="#activation-request" class="btn btn-primary activation-link"
+                            data-plan="premium">Solicitar activación Premium →</a>
                     </div>
                 </div>
 
@@ -1911,7 +2127,8 @@
                     Si tu ticket medio
                     es 60 € y el pack Growth te cuesta 340 €, necesitas que esos 200 cuentos generen <strong>menos de 10
                         ventas adicionales</strong> para que salga rentable. El
-                    resto es beneficio puro. La activación de tienda es asistida: revisamos tu caso, te configuramos el tenant y te damos acceso al plan elegido.
+                    resto es beneficio puro. La activación de tienda es asistida: revisamos tu caso, te configuramos el
+                    tenant y te damos acceso al plan elegido.
                 </p>
             </div>
         </div>
@@ -1925,68 +2142,79 @@
             <div class="section-header">
                 <span class="tag">Onboarding B2B V1</span>
                 <h2>Te activamos la tienda y te damos acceso</h2>
-                <p>No necesitas WhatsApp Business ni una integración compleja para empezar. Déjanos tus datos, revisamos tu caso y te activamos el tenant de forma asistida.</p>
+                <p>No necesitas WhatsApp Business ni una integración compleja para empezar. Déjanos tus datos, revisamos
+                    tu caso y te activamos el tenant de forma asistida.</p>
             </div>
 
             <div class="activation-grid">
                 <div class="activation-info">
                     <h3>Cómo funciona la activación</h3>
-                    <p>Este primer onboarding es manual a propósito: así evitamos fricción técnica, revisamos el encaje de tu catálogo y te damos acceso con el plan correcto desde el primer día.</p>
+                    <p>Este primer onboarding es manual a propósito: así evitamos fricción técnica, revisamos el encaje
+                        de tu catálogo y te damos acceso con el plan correcto desde el primer día.</p>
 
                     <ul class="activation-steps">
                         <li>
                             <span class="activation-step-num">1</span>
                             <div class="activation-step-copy">
                                 <strong>Nos dejas tus datos</strong>
-                                <span>Nombre, tienda, web o Instagram, email, WhatsApp y el tipo de catálogo que vendes.</span>
+                                <span>Nombre, tienda, web o Instagram, email, WhatsApp y el tipo de catálogo que
+                                    vendes.</span>
                             </div>
                         </li>
                         <li>
                             <span class="activation-step-num">2</span>
                             <div class="activation-step-copy">
                                 <strong>Revisamos el encaje</strong>
-                                <span>Validamos si te conviene Standard o Premium y si tu caso encaja con el onboarding actual.</span>
+                                <span>Validamos si te conviene Standard o Premium y si tu caso encaja con el onboarding
+                                    actual.</span>
                             </div>
                         </li>
                         <li>
                             <span class="activation-step-num">3</span>
                             <div class="activation-step-copy">
                                 <strong>Activamos tu tenant</strong>
-                                <span>Creamos tu espacio B2B, te asociamos como <code>tenant_owner</code> y dejamos el acceso listo.</span>
+                                <span>Creamos tu espacio B2B, te asociamos como <code>tenant_owner</code> y dejamos el
+                                    acceso listo.</span>
                             </div>
                         </li>
                         <li>
                             <span class="activation-step-num">4</span>
                             <div class="activation-step-copy">
                                 <strong>Recibes acceso y siguientes pasos</strong>
-                                <span>Te contactamos por el canal que prefieras para darte acceso, resolver dudas y explicarte cómo empezar.</span>
+                                <span>Te contactamos por el canal que prefieras para darte acceso, resolver dudas y
+                                    explicarte cómo empezar.</span>
                             </div>
                         </li>
                     </ul>
 
                     <div class="activation-callout">
-                        Recomendación operativa: usa WhatsApp como canal principal de seguimiento y deja el email como respaldo formal para acceso, soporte y facturación.
+                        Recomendación operativa: usa WhatsApp como canal principal de seguimiento y deja el email como
+                        respaldo formal para acceso, soporte y facturación.
                     </div>
                 </div>
 
                 <div class="activation-form-card">
                     <h3>Solicitar activación</h3>
-                    <p>Rellena este formulario y te contactaremos con una propuesta de activación. Si prefieres WhatsApp, puedes dejar tu número aunque aún no tengas WhatsApp Business.</p>
+                    <p>Rellena este formulario y te contactaremos con una propuesta de activación. Si prefieres
+                        WhatsApp, puedes dejar tu número aunque aún no tengas WhatsApp Business.</p>
 
                     <form id="activation-form" class="activation-form">
                         <div class="field">
                             <label for="contact_name">Nombre de contacto</label>
-                            <input id="contact_name" name="contact_name" type="text" required placeholder="Tu nombre y apellidos" />
+                            <input id="contact_name" name="contact_name" type="text" required
+                                placeholder="Tu nombre y apellidos" />
                         </div>
 
                         <div class="field">
                             <label for="business_name">Nombre de la tienda</label>
-                            <input id="business_name" name="business_name" type="text" required placeholder="Ej. PequeModa Kids" />
+                            <input id="business_name" name="business_name" type="text" required
+                                placeholder="Ej. PequeModa Kids" />
                         </div>
 
                         <div class="field field-full">
                             <label for="business_url">Web o Instagram</label>
-                            <input id="business_url" name="business_url" type="text" placeholder="https://... o @tu_tienda" />
+                            <input id="business_url" name="business_url" type="text"
+                                placeholder="https://... o @tu_tienda" />
                         </div>
 
                         <div class="field">
@@ -2041,13 +2269,17 @@
 
                         <div class="field field-full">
                             <label for="notes">Qué quieres conseguir con NubeKids</label>
-                            <textarea id="notes" name="notes" placeholder="Ej. Mejorar recompra, añadir un regalo emocional al pedido, activar upsell en checkout..."></textarea>
+                            <textarea id="notes" name="notes"
+                                placeholder="Ej. Mejorar recompra, añadir un regalo emocional al pedido, activar upsell en checkout..."></textarea>
                         </div>
 
                         <div class="field field-full">
-                            <button id="activation-submit" type="submit" class="btn btn-primary activation-submit">Enviar solicitud de activación →</button>
-                            <div id="activation-status" class="activation-status" role="status" aria-live="polite"></div>
-                            <p class="activation-footnote">Tiempo orientativo de respuesta: 24-48 horas laborables. Tu acceso se activa manualmente por el equipo.</p>
+                            <button id="activation-submit" type="submit"
+                                class="btn btn-primary activation-submit">Enviar solicitud de activación →</button>
+                            <div id="activation-status" class="activation-status" role="status" aria-live="polite">
+                            </div>
+                            <p class="activation-footnote">Tiempo orientativo de respuesta: 24-48 horas laborables. Tu
+                                acceso se activa manualmente por el equipo.</p>
                         </div>
                     </form>
                 </div>
@@ -2144,8 +2376,10 @@
                 leyeran cinco noches seguidas.
             </p>
             <div class="cta-buttons">
-                <a href="#activation-request" class="btn btn-primary btn-lg activation-link" data-plan="standard">Solicitar activación Starter →</a>
-                <a href="#activation-request" class="btn btn-outline btn-lg activation-link" data-plan="premium">Quiero valorar Premium</a>
+                <a href="#activation-request" class="btn btn-primary btn-lg activation-link"
+                    data-plan="standard">Solicitar activación Starter →</a>
+                <a href="#activation-request" class="btn btn-outline btn-lg activation-link" data-plan="premium">Quiero
+                    valorar Premium</a>
             </div>
             <p class="cta-fine">Activación asistida · Sin permanencias · Los créditos no caducan</p>
         </div>
@@ -2157,7 +2391,8 @@
     <footer>
         <div class="container">
             <p>☁️ <strong style="color:var(--yellow)">NubeKids</strong> · Cuentos personalizados para tiendas online ·
-                <a href="#pricing">Ver packs</a> · <a href="#activation-request">Solicitar activación</a></p>
+                <a href="#pricing">Ver packs</a> · <a href="#activation-request">Solicitar activación</a>
+            </p>
         </div>
     </footer>
 
@@ -2241,4 +2476,5 @@
         }());
     </script>
 </body>
+
 </html>
