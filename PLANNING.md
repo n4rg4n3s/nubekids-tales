@@ -315,6 +315,20 @@
 
 ---
 
+### ADR-021: Tenant y token de prueba permanentes para validación comercial B2B ✅ DECIDIDO
+
+**Contexto:** Antes de comprar un pack, un tenant razonable querrá comprobar dos cosas por sí mismo: que cada enlace es realmente de un solo uso y qué experiencia final recibe su cliente.
+
+**Decisión:** Mantener un tenant de test operativo con saldo controlado y usar tokens nuevos por prueba como parte del proceso comercial y de QA.
+
+**Consecuencia:**
+- cada demo B2B puede validarse con datos reales sin tocar tenants de producción
+- cada test usa un token distinto
+- la validación mínima debe incluir: generación exitosa, `tokens.is_used = true` y decremento de saldo del tenant en 1
+- se documenta un runbook específico en `docs/b2b_tenant_activation_and_token_test_guide.md`
+
+---
+
 ## Roadmap de Implementación
 
 ### ✅ Fase 1 — Refactor Multitenancy (COMPLETADA)
@@ -434,6 +448,7 @@
 - [x] Consumir token + crédito de forma atómica antes de generar
 - [x] Reescribir `docs/INTEGRACION_PREMIUM.md` para integración segura
 - [x] Actualizar `HANDOFF.md`, `PLANNING.md`, simulador y `docs/BUSINESS_TECH_SPEC.md`
+- [x] Validar manualmente con tenant de test: 10 → 9 créditos tras 1 cuento correcto
 
 ### ✅ Fase 10 — Flujo B2B → B2C Completo (COMPLETADA)
 - [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`) — 3 fallbacks CORS
@@ -459,6 +474,9 @@
 - [ ] Crear aviso legal
 - [ ] Crear política de cookies
 - [ ] Revisar diariamente `b2b_activation_requests` y validar el circuito manual de provisioning
+- [ ] Preparar tenant demo estable y guión comercial para enseñar a tiendas cómo validar enlaces one-time
+- [ ] Probar emisión de tokens desde `/api/b2b/create-token` con el secreto del tenant de test
+- [ ] Documentar snippet o colección Postman para demos comerciales B2B
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
 ### ⏳ Fase 12 — Dashboard de Tenant (POST-LANZAMIENTO)
@@ -541,3 +559,4 @@
 | `BUSINESS_TECH_SPEC.md` | Auth, créditos, Stripe, integración B2B, pseudocódigo |
 | `nubekids_DD_Design_Document.md` | Guía de diseño UI/UX — aplicar en landings y componentes |
 | `docs/GUIA_RAG_V2.md` | Guía técnica RAG V2 |
+| `docs/b2b_tenant_activation_and_token_test_guide.md` | Runbook de alta de tenant, activación de `tenant_owner` y validación de tokens one-time |

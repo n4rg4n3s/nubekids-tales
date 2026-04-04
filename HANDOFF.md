@@ -1,6 +1,6 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-04 (B2B seguro con token one-time + activación asistida)
+> **Última actualización:** 2026-04-04 (B2B seguro con token one-time validado en producción)
 > **Estado:** ✅ Fase 10 COMPLETADA — Funnel B2B2C end-to-end funcional
 > **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
 
@@ -40,6 +40,7 @@
 3. ✅ **`src/services/tokenService.ts`** — Validación alineada con `credit_accounts.balance` y consumo atómico via RPC
 4. ✅ **`src/App.tsx`** — El flujo real de comprador final vuelve a ser `?token=...`
 5. ✅ **`docs/nubekids_b2b2c_simulator.html`** — `?tenant=` pasa a ser demo explícita con `demo=1`
+6. ✅ **Validación manual real completada** — token B2B de prueba consumido con éxito; balance del tenant de test pasó de 10 a 9
 
 ### Activación B2B V1 (04 Abril 2026)
 
@@ -64,6 +65,7 @@
 - **No hace falta WhatsApp Business en V1**: WhatsApp se usa como dato de contacto preferido, no como integración automatizada
 - **Flujo B2B seguro restaurado**: el enlace real para comprador final vuelve a ser `/?token=...`
 - **`?tenant=` deja de ser enlace comercial válido**: queda reservado a demo/testing interno con `demo=1`
+- **Validación comercial mínima ya hecha**: se verificó que el enlace B2B one-time funciona, genera el cuento y consume exactamente 1 crédito
 
 ---
 
@@ -96,6 +98,17 @@
 6. El comprador usa esa URL una sola vez.
 7. `consume_b2b_token()` descuenta de forma atómica 1 token + 1 crédito del tenant.
 8. `?tenant=` solo se usa en demo/testing interno con `demo=1`.
+
+### Runbook de test para nuevos tokens
+1. Mantener un tenant de pruebas con saldo controlado, por ejemplo `tenant-b2b-test`.
+2. Emitir un token nuevo para cada prueba. No reutilizar tokens ya consumidos.
+3. Para test rápido manual, insertar un token en `public.tokens` o emitirlo con `POST /api/b2b/create-token`.
+4. Abrir la URL `/?token=...` en la preview o en producción.
+5. Tras generar, verificar:
+   - `tokens.is_used = true`
+   - `credit_accounts.balance` del tenant disminuye en 1
+6. Para una segunda prueba, crear otro token nuevo (`nkt_manual_test_002`, `nkt_manual_test_003`, etc.).
+7. Referencia operativa: `docs/b2b_tenant_activation_and_token_test_guide.md`.
 
 ### 1. Sincronizar precios B2B
 - Los precios B2B en la landing `public/b2b.html` pueden diferir de los de Stripe y `credit_packs`
@@ -166,6 +179,7 @@
 - **Canal operativo recomendado para B2B V1**: formulario propio simple en `public/b2b.html`, con email obligatorio y WhatsApp opcional/recomendado como canal preferido.
 - **Fuente de verdad para enlaces B2B de cliente final**: `/?token=...`
 - **Uso permitido de `?tenant=`**: solo demo/testing interno y siempre con `demo=1`
+- **Guía operativa B2B**: usar `docs/b2b_tenant_activation_and_token_test_guide.md` para alta de `tenant_owner`, saldo de test y validación one-time
 
 ---
 
@@ -189,6 +203,7 @@ D:\nubekids-tales\
 │   └── b2c.html                             # Landing B2C (estática)
 │
 ├── docs/
+│   ├── b2b_tenant_activation_and_token_test_guide.md # ✅ NUEVO — runbook de alta tenant + tenant_owner + test one-time
 │   ├── nubekids_b2b2c_simulator.html        # ✅ NUEVO Fase 10 — Herramienta testing
 │   └── INTEGRACION_PREMIUM.md              # ✅ Actualizada — guía segura por token one-time
 │
@@ -351,6 +366,8 @@ FRONTEND_URL=http://localhost:5173
 5. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
 6. **Landing B2C** — copy basado en investigación NotebookLM (pendiente)
 7. **Sincronizar precios B2B** — landing vs Stripe vs Supabase
+8. **Preparar kit comercial de validación B2B** — tenant demo con saldo, guía de test y procedimiento para demostrar one-time links a tiendas interesadas
+9. **Probar emisión real via `/api/b2b/create-token`** — no solo inserción manual en `tokens`
 
 ---
 
