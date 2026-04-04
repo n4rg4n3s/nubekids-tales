@@ -8,7 +8,7 @@ import { directB2cConfig } from './tenants/direct-b2c.config';
  * TENANT LOADER
  * 
  * Reads tenant_id from:
- * 1. Query param: ?tenant=shoe-store-default
+ * 1. Query param demo-only: ?tenant=shoe-store-default&demo=1
  * 2. Fallback: direct-b2c (default for B2C users)
  * 
  * In V2: This will fetch config from API instead of local files.
@@ -24,7 +24,12 @@ export function getTenantIdFromUrl(): string {
   if (typeof window === 'undefined') return 'direct-b2c';
 
   const params = new URLSearchParams(window.location.search);
-  return params.get('tenant') ?? 'direct-b2c';
+  const isDemo = params.get('demo') === '1';
+  if (isDemo) {
+    return params.get('tenant') ?? 'direct-b2c';
+  }
+
+  return 'direct-b2c';
 }
 
 export function loadTenantConfig(tenantId?: string): TenantConfig {

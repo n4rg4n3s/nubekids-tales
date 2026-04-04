@@ -235,8 +235,9 @@ export interface UserProfile {
 // ============================================
 
 /**
- * Query params que llegan desde el link del e-Commerce.
- * Ejemplo: /?tenant=zapatos-lopez-001&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
+ * Query params B2B demo/testing.
+ * El flujo real de cliente final entra por `/?token=...`.
+ * Ejemplo demo: /?tenant=shoe-store-default&demo=1&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
  */
 export interface B2BSessionParams {
   tenant: string;

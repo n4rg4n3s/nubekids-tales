@@ -2,26 +2,31 @@
  * queryParamsService.ts
  *
  * Lee los query params de la URL al arrancar la app y determina
- * si estamos en modo sesión anónima B2B.
+ * si estamos en modo sesión anónima B2B de DEMO.
  *
- * URL de ejemplo (Plan Standard):
- *   /?tenant=zapatos-lopez-001
+ * IMPORTANTE:
+ * - El flujo real B2B para usuarios finales debe entrar por `?token=...`
+ * - `?tenant=...` queda reservado a demo/testing y requiere `&demo=1`
  *
- * URL de ejemplo (Plan Premium):
- *   /?tenant=zapatos-lopez-001&item=Nike+Air+Max+90+Kids&item_image=https://cdn.tienda.com/foto.jpg&customer_email=padre@email.com
+ * URL de ejemplo (Plan Standard demo):
+ *   /?tenant=shoe-store-default&demo=1
+ *
+ * URL de ejemplo (Plan Premium demo):
+ *   /?tenant=shoe-store-default&demo=1&item=Nike+Air+Max+90+Kids&item_image=https://cdn.tienda.com/foto.jpg&customer_email=padre@email.com
  */
 
 import type { B2BSessionParams } from '../types';
 
 /**
  * Lee window.location.search y extrae los parámetros B2B.
- * Devuelve null si no hay ?tenant= en la URL (flujo B2C directo).
+ * Devuelve null si no hay ?tenant= o si no es un enlace demo (`demo=1`).
  */
 export function parseB2BParams(): B2BSessionParams | null {
     const params = new URLSearchParams(window.location.search);
     const tenant = params.get('tenant');
+    const isDemo = params.get('demo') === '1';
 
-    if (!tenant || tenant.trim() === '') {
+    if (!tenant || tenant.trim() === '' || !isDemo) {
         return null;
     }
 

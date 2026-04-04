@@ -2,7 +2,7 @@
 // NubeKids - App principal con validación de token y flujo Auth → Setup → Orchestrator → Book
 
 import { useEffect, useState, useCallback } from 'react';
-import { validateToken, getTokenFromUrl } from './services/tokenService';
+import { validateToken, getTokenFromUrl, consumeB2BToken } from './services/tokenService';
 import type { TenantData, TokenData } from './services/tokenService';
 import type { TenantConfig, AgentBrief, ComicFace, B2BSession } from './types';
 import Setup from './components/Setup';
@@ -83,14 +83,14 @@ function App() {
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const [isAnonymousSession, setIsAnonymousSession] = useState(false);
 
-  // Datos del tenant (desde Supabase si hay token antiguo)
+  // Datos del tenant (desde Supabase si hay token B2B one-time)
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   // Config completa del tenant (desde tenantLoader)
   const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(null);
 
-  // ── FASE 10: Sesión B2B anónima via ?tenant= ─────────────────────────────
+  // ── Sesión B2B demo/testing via ?tenant=...&demo=1 ──────────────────────
   const [b2bSession, setB2BSession] = useState<B2BSession | null>(null);
 
   // Datos del setup completado
@@ -184,11 +184,35 @@ function App() {
           return;
         }
 
-        // ── FASE 10: Modo B2B anónimo via ?tenant= ───────────────────────────
+        // ── Modo B2B real via ?token=... (one-time) ─────────────────────────
+        const tokenCode = getTokenFromUrl();
+
+        if (tokenCode) {
+          setIsAnonymousSession(true);
+          const result = await validateToken(tokenCode);
+
+          if (result.valid && result.tenant && result.token) {
+            console.log('🔐 [B2B] Token one-time válido para tenant:', result.tenant.tenantId);
+            setTenantData(result.tenant);
+            setTokenData(result.token);
+            const config = loadTenantConfig(result.tenant.tenantId);
+            setTenantConfig(config);
+          } else {
+            if (result.code === 'no_credits') {
+              setAppState('promo-unavailable');
+              return;
+            }
+
+            setError(result.error || 'Token inválido o expirado');
+            setAppState('error');
+            return;
+          }
+        } else {
+          // ── FASE 10: Modo B2B demo/testing via ?tenant=...&demo=1 ─────────
         const b2bParams = parseB2BParams();
 
         if (b2bParams) {
-          console.log('🏪 [B2B] Detectado link de tenant:', b2bParams.tenant);
+          console.log('🧪 [B2B Demo] Detectado link demo de tenant:', b2bParams.tenant);
           clearQueryParams();
 
           const config = loadTenantConfig(b2bParams.tenant);
@@ -266,27 +290,10 @@ function App() {
           setAppState('setup');
           return;
         }
+        }
 
-        // ── Modo B2B con token (sistema antiguo — backward compat) ───────────
-        const tokenCode = getTokenFromUrl();
-
-        if (tokenCode) {
-          setIsAnonymousSession(true);
-          const result = await validateToken(tokenCode);
-
-          if (result.valid && result.tenant && result.token) {
-            console.log('🔍 tenantData.tenantId =', result.tenant.tenantId);
-            setTenantData(result.tenant);
-            setTokenData(result.token);
-            const config = loadTenantConfig(result.tenant.tenantId);
-            setTenantConfig(config);
-          } else {
-            setError(result.error || 'Token inválido o expirado');
-            setAppState('error');
-            return;
-          }
-        } else {
-          // ── Modo B2C directo ────────────────────────────────────────────────
+        // ── Modo B2C directo ────────────────────────────────────────────────
+        if (!tokenCode) {
           const tenantId = getTenantIdFromUrl();
           const config = loadTenantConfig(tenantId);
           setTenantConfig(config);
@@ -418,15 +425,27 @@ function App() {
     }
 
     // ── Resolver fuente de crédito ────────────────────────────────────────
-    // Prioridad: sesión B2B anónima (Fase 10) > token antiguo > usuario B2C
-    const creditTenantId = b2bSession?.tenantId ?? tenantData?.tenantId;
-    const creditUserId = auth.user?.id;
+    // Prioridad: token B2B one-time > sesión demo B2B > usuario B2C
+    if (tokenData?.token) {
+      const tokenConsumption = await consumeB2BToken(tokenData.token);
+      if (!tokenConsumption.success) {
+        if (tokenConsumption.code === 'no_credits') {
+          setAppState('promo-unavailable');
+          return;
+        }
 
-    // Verificar y consumir 1 crédito ANTES de generar
-    const creditConsumed = await consumeCredit(creditTenantId, creditUserId);
-    if (!creditConsumed) {
-      setAppState('no-credits');
-      return;
+        setError(tokenConsumption.error || 'No se pudo validar el enlace de esta promoción');
+        setAppState('error');
+        return;
+      }
+    } else {
+      const creditTenantId = b2bSession?.tenantId;
+      const creditUserId = auth.user?.id;
+      const creditConsumed = await consumeCredit(creditTenantId, creditUserId);
+      if (!creditConsumed) {
+        setAppState('no-credits');
+        return;
+      }
     }
 
     setSetupData(data);
@@ -457,6 +476,9 @@ function App() {
       if (b2bSession) {
         setB2BSession(prev => prev ? { ...prev, storyGenerated: true } : null);
       }
+      if (tokenData) {
+        setTokenData(prev => prev ? { ...prev, isUsed: true } : null);
+      }
 
       console.log('✅ Generación completada');
       setPages(generatedPages);
@@ -467,13 +489,13 @@ function App() {
       setError(err instanceof Error ? err.message : 'Error desconocido');
       setAppState('error');
     }
-  }, [tenantConfig, b2bSession, tenantData, auth.user, buildSessionContext, generateImages]);
+  }, [tenantConfig, b2bSession, tokenData, auth.user, buildSessionContext, generateImages]);
 
   // Reset / "volver al inicio"
   // En sesión B2B anónima tras generar → ir a post-story (CTA de conversión)
   // En cualquier otro caso → reset completo
   const handleReset = useCallback(() => {
-    if (b2bSession?.storyGenerated) {
+    if (b2bSession?.storyGenerated || tokenData?.isUsed) {
       // El usuario B2B terminó su cuento gratuito → mostrar CTA
       setAppState('post-story');
       return;
@@ -487,7 +509,7 @@ function App() {
     setGenerationProgress({ current: 0, total: 0, message: '' });
     agentDeps.cleanup();
     setAppState('setup');
-  }, [b2bSession]);
+  }, [b2bSession, tokenData]);
 
   // ============================================
   // RENDER: Loading con protección
@@ -637,6 +659,8 @@ function App() {
             onClick={() => {
               // Limpiar sesión B2B y entrar como B2C directo
               setB2BSession(null);
+              setTokenData(null);
+              setTenantData(null);
               setIsAnonymousSession(false);
               const config = loadTenantConfig(undefined);
               setTenantConfig(config);
@@ -670,7 +694,7 @@ function App() {
             onSignUp={auth.signUp}
             onSwitchToLogin={() => setAuthView('login')}
             error={auth.error}
-            initialEmail={b2bSession?.customerEmail}
+            initialEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
           />
         )}
       </>
@@ -766,7 +790,7 @@ function App() {
         <PostStoryActions
           heroName={setupData.heroName}
           tenantConfig={tenantConfig}
-          customerEmail={b2bSession?.customerEmail}
+          customerEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
           onCreateAnother={() => {
             setAuthView('signup');
             setAppState('auth');
@@ -779,7 +803,9 @@ function App() {
 
   // ── Sin créditos ─────────────────────────────────────────────────────────────
   if (appState === 'no-credits' && tenantConfig) {
-    const channel = b2bSession
+    const channel = tokenData && tenantData
+      ? (tenantData.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
+      : b2bSession
       ? (b2bSession.tenantConfig.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')
       : tenantData
         ? (tenantData.integrationLevel === 'premium' ? 'b2b_premium' : 'b2b_standard')

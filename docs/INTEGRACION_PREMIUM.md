@@ -1,174 +1,196 @@
-# Guía de Integración — NubeKids Plan Premium
+# Guia de Integracion B2B Segura - NubeKids
 
-> **Para:** Equipo técnico del e-Commerce
-> **Versión:** 1.0 — Abril 2026
-> **Tiempo estimado de integración:** 1–2 horas
-
----
-
-## ¿Qué hace esta integración?
-
-Cuando un cliente compra en tu tienda, el sistema genera automáticamente un link personalizado que incluye:
-- El nombre del producto comprado
-- La foto del producto
-- El email del cliente
-
-Al hacer clic, el cliente llega a NubeKids con el producto ya cargado como "objeto mágico" del cuento, sin tener que escribir ni subir nada.
+> Para: equipo tecnico del e-Commerce
+> Version: 2.0 - Abril 2026
+> Cambio critico: los enlaces reales de cliente final ya no usan `?tenant=...`
 
 ---
 
-## Los 5 parámetros del link
+## Regla principal
 
-| Parámetro | Tipo | Obligatorio | Descripción |
-|-----------|------|-------------|-------------|
-| `tenant` | string | ✅ Sí | Tu ID de tenant en NubeKids (te lo proporcionamos al darte de alta) |
-| `item` | string | Recomendado | Nombre del producto comprado |
-| `item_image` | URL | Recomendado (Plan Premium) | URL pública de la foto del producto |
-| `customer_email` | string | Opcional | Email del cliente — se pre-rellena en el registro |
-| `ref` | string | Opcional | Origen del click para tracking (`checkout`, `email`, `sms`) |
+El flujo correcto para clientes finales es:
 
-**Reglas importantes:**
-- Todos los valores deben ir **URL-encoded** (espacios → `+` o `%20`)
-- `item_image` debe ser una **URL pública accesible** (no requiere autenticación)
-- La URL completa puede tener hasta 2000 caracteres sin problemas
+1. Tu backend llama a `POST /api/b2b/create-token`
+2. NubeKids responde con una URL one-time `/?token=...`
+3. Esa URL se entrega al comprador
+4. Al generar el cuento se consumen de forma atomica:
+   - 1 token
+   - 1 credito del tenant
+
+`?tenant=...` queda reservado a demo/testing interno y requiere `&demo=1`.
 
 ---
 
-## Ejemplo de link completo
-```
-https://nubekids-tales.vercel.app/?tenant=zapatos-lopez-001&item=Nike+Air+Max+90+Kids+Rojo&item_image=https://cdn.tutienda.com/products/nike-90.jpg&customer_email=padre%40email.com&ref=checkout
-```
+## Que resuelve este cambio
+
+Evita que un enlace compartido pueda agotar todos los creditos de un tenant.
+
+Con el modelo actual:
+- 1 compra = 1 token
+- 1 token = 1 cuento
+- un token usado no puede reutilizarse
 
 ---
 
-## Implementación por plataforma
+## Endpoint de emision
 
-### Shopify
+`POST /api/b2b/create-token`
 
-Edita tu plantilla de email de confirmación de pedido (`.liquid`):
-```liquid
-{% comment %} NubeKids — Cuento mágico personalizado {% endcomment %}
-{% assign nk_tenant = 'TU_TENANT_ID' %}
-{% assign nk_item   = line_items.first.title | url_encode %}
-{% assign nk_img    = line_items.first.image.src | url_encode %}
-{% assign nk_email  = customer.email | url_encode %}
-{% assign nk_url    = 'https://nubekids-tales.vercel.app/?tenant=' | append: nk_tenant
-                      | append: '&item=' | append: nk_item
-                      | append: '&item_image=' | append: nk_img
-                      | append: '&customer_email=' | append: nk_email
-                      | append: '&ref=email' %}
+Headers:
 
-<div style="text-align:center; margin: 24px 0;">
-  <a href="{{ nk_url }}"
-     style="background:#8B5CF6; color:white; padding:14px 28px;
-            border-radius:8px; font-weight:bold; text-decoration:none;
-            display:inline-block;">
-    🎁 Crea el cuento mágico de tu peque — ¡Es gratis!
-  </a>
-</div>
+```http
+Content-Type: application/json
+x-nubekids-tenant-secret: TU_SECRETO_DE_INTEGRACION
 ```
 
----
+Body JSON:
 
-### WooCommerce
+```json
+{
+  "tenantId": "zapatos-lopez-001",
+  "itemName": "Nike Air Max 90 Kids Rojo",
+  "itemImageUrl": "https://cdn.tutienda.com/products/nike-90.jpg",
+  "customerEmail": "padre@email.com",
+  "expiresInHours": 720
+}
+```
 
-Añade este código en `functions.php` de tu tema hijo:
-```php
-add_action( 'woocommerce_email_after_order_table', 'nubekids_add_story_cta', 10, 2 );
+Respuesta:
 
-function nubekids_add_story_cta( $order, $sent_to_admin ) {
-  if ( $sent_to_admin ) return;
-
-  $tenant    = 'TU_TENANT_ID';
-  $items     = $order->get_items();
-  $first_item = reset( $items );
-
-  if ( ! $first_item ) return;
-
-  $product   = $first_item->get_product();
-  $item_name = urlencode( $first_item->get_name() );
-  $img_id    = $product ? get_post_thumbnail_id( $product->get_id() ) : null;
-  $img_url   = $img_id ? urlencode( wp_get_attachment_url( $img_id ) ) : '';
-  $email     = urlencode( $order->get_billing_email() );
-
-  $nk_url = "https://nubekids-tales.vercel.app/?tenant={$tenant}"
-           . "&item={$item_name}"
-           . ( $img_url ? "&item_image={$img_url}" : '' )
-           . "&customer_email={$email}"
-           . "&ref=woo-email";
-
-  echo '
-  <div style="text-align:center; margin:24px 0;">
-    <a href="' . esc_url( $nk_url ) . '"
-       style="background:#8B5CF6; color:white; padding:14px 28px;
-              border-radius:8px; font-weight:bold; text-decoration:none;
-              display:inline-block;">
-      🎁 Crea el cuento mágico de tu peque — ¡Es gratis!
-    </a>
-  </div>';
+```json
+{
+  "ok": true,
+  "token": "nkt_...",
+  "url": "https://nubekids-tales.vercel.app/?token=nkt_...",
+  "expiresAt": "2026-05-04T12:00:00.000Z"
 }
 ```
 
 ---
 
-### Plataforma custom / backend genérico
+## Campos por plan
 
-En el momento de generar el email de confirmación de pedido, construye la URL así (pseudocódigo):
-```javascript
-const NUBEKIDS_TENANT = 'TU_TENANT_ID';
-const NUBEKIDS_BASE   = 'https://nubekids-tales.vercel.app/';
+### Standard
 
-function buildNubeKidsUrl(order) {
-  const params = new URLSearchParams({
-    tenant:         NUBEKIDS_TENANT,
-    item:           order.firstItem.name,
-    item_image:     order.firstItem.imageUrl,
-    customer_email: order.customer.email,
-    ref:            'checkout',
-  });
-  return `${NUBEKIDS_BASE}?${params.toString()}`;
+Puedes emitir el token solo con:
+
+```json
+{
+  "tenantId": "zapatos-lopez-001",
+  "customerEmail": "padre@email.com"
 }
 ```
 
+Resultado:
+- el cliente entra con enlace one-time seguro
+- el cuento puede mencionar la tienda
+- no hace falta foto de producto
+
+### Premium
+
+Añade:
+- `itemName`
+- `itemImageUrl`
+- `customerEmail`
+
+Resultado:
+- Step 3 llega pre-rellenado
+- si la imagen se puede procesar, el producto entra tambien como referencia visual
+
 ---
 
-## ¿Qué pasa si la imagen no carga?
+## Ejemplo backend generico
 
-NubeKids gestiona automáticamente los fallos de carga de imagen con 3 niveles de fallback:
+```ts
+const response = await fetch('https://nubekids-tales.vercel.app/api/b2b/create-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-nubekids-tenant-secret': process.env.NUBEKIDS_TENANT_SECRET!,
+  },
+  body: JSON.stringify({
+    tenantId: 'zapatos-lopez-001',
+    itemName: order.firstItem.name,
+    itemImageUrl: order.firstItem.imageUrl,
+    customerEmail: order.customer.email,
+    expiresInHours: 24 * 30,
+  }),
+});
 
-1. **Descarga directa** — funciona con la mayoría de CDNs modernos (Shopify CDN, Cloudflare, etc.)
-2. **Carga alternativa** — para servidores sin headers CORS explícitos
-3. **Solo descripción textual** — si la imagen no se puede procesar, el cuento usa únicamente el nombre del producto
+const data = await response.json();
 
-En ningún caso el flujo se interrumpe para el cliente.
+if (!response.ok || !data.ok) {
+  throw new Error(data.error || 'No se pudo emitir el token de NubeKids');
+}
 
----
-
-## Cómo probar tu integración
-
-Usa el simulador incluido en el proyecto:
+const storyUrl = data.url;
 ```
-docs/nubekids_b2b2c_simulator.html
+
+---
+
+## Shopify
+
+Recomendacion:
+- no construir el link final en Liquid
+- llamar a `create-token` desde tu backend/app privada cuando el pedido quede confirmado
+- guardar la URL recibida y usarla despues en email, pagina de gracias o cuenta de cliente
+
+---
+
+## WooCommerce
+
+Recomendacion:
+- emitir el token desde backend PHP cuando el pedido pase a `processing` o `completed`
+- incluir la URL one-time recibida en el email transaccional
+
+---
+
+## Reglas operativas
+
+- `itemImageUrl` debe ser publica
+- todos los tokens deben generarse server-side
+- no exponer nunca `x-nubekids-tenant-secret` en frontend
+- no construir enlaces finales `?tenant=...` para compradores reales
+- si un token expira o ya fue usado, hay que emitir uno nuevo
+
+---
+
+## Demo y testing interno
+
+Para pruebas manuales del equipo, sigue existiendo el modo demo:
+
+```txt
+/?tenant=shoe-store-default&demo=1
+/?tenant=shoe-store-default&demo=1&item=Nike+Air+Max&item_image=https://...&customer_email=test@email.com
 ```
 
-O construye manualmente una URL de prueba con tus datos reales y ábrela en el navegador. Deberías ver el wizard con el producto pre-cargado en el Step 3.
+Eso no debe usarse en produccion con compradores reales.
 
 ---
 
-## Preguntas frecuentes
+## FAQ
 
-**¿Cuántos créditos consume cada cuento?**
-1 crédito = 1 cuento. Se descuenta de tu saldo al iniciar la generación.
+### Cuantos creditos consume cada cuento?
 
-**¿Qué pasa si mi saldo llega a 0?**
-El cliente verá una pantalla informando que la promoción no está disponible, con opción de crear su propio cuento de pago. Te recomendamos comprar créditos antes de lanzar campañas.
+1 token valido + 1 credito del tenant.
 
-**¿El cliente necesita registrarse para generar el cuento?**
-No. El primer cuento vía link de tenant es completamente gratuito y sin registro. El registro solo se solicita si quiere crear más cuentos por su cuenta.
+### Que pasa si el tenant no tiene saldo?
 
-**¿Puedo personalizar el texto del email?**
-Sí, el snippet de código es solo orientativo. Puedes adaptar el copy y el diseño del botón a tu identidad de marca.
+El usuario ve una pantalla de promocion no disponible. El token no debe reutilizarse como sustituto de saldo.
+
+### El cliente necesita registrarse?
+
+No para el primer cuento. El registro solo aparece si quiere crear otro por su cuenta.
+
+### Hace falta WhatsApp Business?
+
+No para esta integracion tecnica. Eso afecta solo al flujo comercial de activacion del tenant.
 
 ---
 
-*¿Dudas sobre la integración? Contacta con el equipo de NubeKids.*
+## Resumen
+
+- Real: `/?token=...`
+- Demo: `/?tenant=...&demo=1`
+- 1 compra = 1 token = 1 cuento
+

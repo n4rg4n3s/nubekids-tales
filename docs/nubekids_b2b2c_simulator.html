@@ -333,7 +333,7 @@
         <div class="card-emoji">🏪</div>
         <div>
           <div class="card-title">Plan Standard</div>
-          <div class="card-subtitle">Solo tenant ID. Sin foto de producto.</div>
+          <div class="card-subtitle">Demo interna: tenant ID + demo=1. Sin foto de producto.</div>
           <span class="plan-badge plan-standard">STANDARD</span>
         </div>
       </div>
@@ -354,7 +354,7 @@
         <div class="card-emoji">✨</div>
         <div>
           <div class="card-title">Plan Premium</div>
-          <div class="card-subtitle">Tenant + producto + foto + email.</div>
+          <div class="card-subtitle">Demo interna: tenant + producto + foto + email.</div>
           <span class="plan-badge plan-premium">PREMIUM</span>
         </div>
       </div>
@@ -383,7 +383,7 @@
         <div class="card-emoji">💸</div>
         <div>
           <div class="card-title">Sin créditos</div>
-          <div class="card-subtitle">Tenant con balance 0 → pantalla de aviso.</div>
+          <div class="card-subtitle">Demo interna con tenant balance 0 → pantalla de aviso.</div>
           <span class="plan-badge plan-error">SIN SALDO</span>
         </div>
       </div>
@@ -431,7 +431,7 @@
         <div class="card-emoji">🚧</div>
         <div>
           <div class="card-title">Premium — Fallback CORS</div>
-          <div class="card-subtitle">Imagen que fallará CORS → solo URL preview.</div>
+          <div class="card-subtitle">Demo interna con imagen que fallará CORS → solo URL preview.</div>
           <span class="plan-badge plan-premium">PREMIUM · CORS</span>
         </div>
       </div>
@@ -474,19 +474,19 @@
 
 <script>
   const TESTS = {
-    standard:  () => buildUrl({ tenant: v('s1_tenant') }),
-    premium:   () => buildUrl({ tenant: v('tenantId'), item: v('s2_item'), item_image: v('s2_img'), customer_email: v('s2_email'), ref: 'simulator' }),
-    nocredits: () => buildUrl({ tenant: v('s3_tenant') }),
+    standard:  () => buildUrl({ tenant: v('s1_tenant'), demo: '1' }),
+    premium:   () => buildUrl({ tenant: v('tenantId'), demo: '1', item: v('s2_item'), item_image: v('s2_img'), customer_email: v('s2_email'), ref: 'simulator' }),
+    nocredits: () => buildUrl({ tenant: v('s3_tenant'), demo: '1' }),
     b2c:       () => `${v('baseUrl').replace(/\/$/, '')}/`,
-    cors:      () => buildUrl({ tenant: v('tenantId'), item: 'Nike Air Max 90', item_image: v('s5_img'), ref: 'cors-test' }),
+    cors:      () => buildUrl({ tenant: v('tenantId'), demo: '1', item: 'Nike Air Max 90', item_image: v('s5_img'), ref: 'cors-test' }),
   };
 
   const CHECKLIST_ITEMS = [
-    { id: 'c1', label: '/?tenant= → wizard sin login → cuento → PDF', test: 'Standard' },
-    { id: 'c2', label: '/?item_image= → foto pre-cargada en Step 3', test: 'Premium' },
+    { id: 'c1', label: '/?tenant=...&demo=1 → wizard sin login → cuento → PDF', test: 'Standard demo' },
+    { id: 'c2', label: '/?item_image= con demo=1 → foto pre-cargada en Step 3', test: 'Premium demo' },
     { id: 'c3', label: 'Tenant sin créditos → "Promoción no disponible"', test: 'Sin créditos' },
-    { id: 'c4', label: 'Post-lectura anónimo → CTA "Crear otro" → registro', test: 'Standard' },
-    { id: 'c5', label: 'customer_email pre-rellenado en SignUp', test: 'Premium' },
+    { id: 'c4', label: 'Post-lectura anónimo → CTA "Crear otro" → registro', test: 'Standard demo' },
+    { id: 'c5', label: 'customer_email pre-rellenado en SignUp', test: 'Premium demo' },
     { id: 'c6', label: 'Flujo B2C directo sin regresiones', test: 'B2C directo' },
     { id: 'c7', label: 'Fallback CORS → "Solo vista previa" en Step 3', test: 'CORS fallback' },
   ];

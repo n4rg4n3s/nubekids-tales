@@ -11,7 +11,7 @@
 Hoy el SaaS permite:
 
 - B2C: registro/login, compra de créditos y generación de cuentos
-- B2B cliente final: acceso anónimo vía `?tenant=...`, consumo de créditos del tenant y conversión posterior a B2C
+- B2B cliente final: acceso anónimo vía `?token=...`, consumo one-time de crédito del tenant y conversión posterior a B2C
 
 Hoy el SaaS no permite todavía:
 

@@ -1029,6 +1029,185 @@
             font-weight: 900;
         }
 
+        /* ─── ACTIVATION FORM ───────────────────────────── */
+        #activation-request {
+            padding: 80px 0;
+            background: linear-gradient(180deg, #fff7d6 0%, #fdfbf7 100%);
+            border-top: var(--border);
+            border-bottom: var(--border);
+        }
+
+        .activation-grid {
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .activation-info,
+        .activation-form-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px 28px;
+        }
+
+        .activation-info h3,
+        .activation-form-card h3 {
+            font-size: 1.55rem;
+            margin-bottom: 12px;
+        }
+
+        .activation-info p,
+        .activation-form-card p {
+            font-size: 0.98rem;
+            line-height: 1.65;
+            font-weight: 700;
+            color: var(--ink-lite);
+        }
+
+        .activation-steps {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 22px 0;
+        }
+
+        .activation-steps li {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .activation-step-num {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            border: 2px solid var(--ink);
+            background: var(--yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .activation-step-copy strong {
+            display: block;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            color: var(--ink);
+        }
+
+        .activation-step-copy span {
+            display: block;
+            font-size: 0.92rem;
+            line-height: 1.55;
+            font-weight: 700;
+            color: var(--ink-lite);
+        }
+
+        .activation-callout {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 10px;
+            border: 2px solid var(--ink);
+            background: #ecfeff;
+            font-size: 0.9rem;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+
+        .activation-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field-full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.92rem;
+            color: var(--ink);
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            border: var(--border);
+            border-radius: 10px;
+            background: var(--cream);
+            color: var(--ink);
+            font: inherit;
+            font-size: 0.96rem;
+            font-weight: 700;
+            padding: 13px 14px;
+        }
+
+        .field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .field small {
+            font-size: 0.8rem;
+            color: var(--ink-lite);
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .activation-submit {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .activation-status {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 2px solid var(--ink);
+            font-size: 0.92rem;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+
+        .activation-status.is-visible {
+            display: block;
+        }
+
+        .activation-status.is-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .activation-status.is-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .activation-footnote {
+            margin-top: 14px;
+            font-size: 0.85rem;
+            color: var(--ink-lite);
+            font-weight: 700;
+        }
+
         /* ─── OBJECTIONS ────────────────────────────────── */
         #objections {
             background: var(--ink);
@@ -1227,6 +1406,14 @@
                 transform: none;
             }
 
+            .activation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activation-form {
+                grid-template-columns: 1fr;
+            }
+
             .math-inner {
                 grid-template-columns: 1fr;
             }
@@ -1250,7 +1437,7 @@
     <nav>
         <div class="nav-inner">
             <a href="/b2c.html" class="logo">Nube<span>Kids</span></a>
-            <a href="/buy-credits-b2b" class="btn btn-primary nav-cta">Ver packs de créditos →</a>
+            <a href="#activation-request" class="btn btn-primary nav-cta activation-link">Solicitar activación →</a>
         </div>
     </nav>
 
@@ -1271,7 +1458,7 @@
                         compran, y a los que ya compraron en clientes que <strong>vuelven</strong>.
                     </p>
                     <div class="hero-ctas">
-                        <a href="/buy-credits-b2b" class="btn btn-primary btn-lg">Ver packs de créditos →</a>
+                        <a href="#activation-request" class="btn btn-primary btn-lg activation-link">Solicitar activación de tienda →</a>
                         <a href="#pillars" class="btn btn-outline btn-lg">¿Cómo funciona?</a>
                     </div>
                 </div>
@@ -1660,19 +1847,19 @@
                         <div class="plan-desc">Sin integración técnica , URL personalizada en tu email</div>
                     </div>
                     <div class="packs">
-                        <a href="/buy-credits-b2b?plan=standard" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="standard">
                             <span class="pack-label">Starter</span>
                             <span class="pack-stories">50 cuentos</span>
                             <span class="pack-price">97 €</span>
                             <span class="pack-unit">1,94 €/c</span>
                         </a>
-                        <a href="/buy-credits-b2b?plan=standard" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="standard">
                             <span class="pack-label">Growth</span>
                             <span class="pack-stories">200 cuentos</span>
                             <span class="pack-price">340 €</span>
                             <span class="pack-unit">1,70 €/c</span>
                         </a>
-                        <a href="/buy-credits-b2b?plan=standard" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="standard">
                             <span class="pack-label">Scale</span>
                             <span class="pack-stories">500 cuentos</span>
                             <span class="pack-price">790 €</span>
@@ -1680,7 +1867,7 @@
                         </a>
                     </div>
                     <div class="plan-cta">
-                        <a href="/buy-credits-b2b?plan=standard" class="btn btn-secondary">Elegir pack Standard →</a>
+                        <a href="#activation-request" class="btn btn-secondary activation-link" data-plan="standard">Solicitar activación Standard →</a>
                     </div>
                 </div>
 
@@ -1691,19 +1878,19 @@
                         </div>
                     </div>
                     <div class="packs">
-                        <a href="/buy-credits-b2b?plan=premium" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="premium">
                             <span class="pack-label">Starter</span>
                             <span class="pack-stories">50 cuentos</span>
                             <span class="pack-price">145 €</span>
                             <span class="pack-unit">2,90 €/c</span>
                         </a>
-                        <a href="/buy-credits-b2b?plan=premium" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="premium">
                             <span class="pack-label">Growth</span>
                             <span class="pack-stories">200 cuentos</span>
                             <span class="pack-price">490 €</span>
                             <span class="pack-unit">2,45 €/c</span>
                         </a>
-                        <a href="/buy-credits-b2b?plan=premium" class="pack-row">
+                        <a href="#activation-request" class="pack-row activation-link" data-plan="premium">
                             <span class="pack-label">Scale</span>
                             <span class="pack-stories">500 cuentos</span>
                             <span class="pack-price">990 €</span>
@@ -1711,7 +1898,7 @@
                         </a>
                     </div>
                     <div class="plan-cta">
-                        <a href="/buy-credits-b2b?plan=premium" class="btn btn-primary">Elegir pack Premium →</a>
+                        <a href="#activation-request" class="btn btn-primary activation-link" data-plan="premium">Solicitar activación Premium →</a>
                     </div>
                 </div>
 
@@ -1724,8 +1911,146 @@
                     Si tu ticket medio
                     es 60 € y el pack Growth te cuesta 340 €, necesitas que esos 200 cuentos generen <strong>menos de 10
                         ventas adicionales</strong> para que salga rentable. El
-                    resto es beneficio puro.
+                    resto es beneficio puro. La activación de tienda es asistida: revisamos tu caso, te configuramos el tenant y te damos acceso al plan elegido.
                 </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+     ACTIVATION REQUEST
+════════════════════════════════════════════════════ -->
+    <section id="activation-request">
+        <div class="container">
+            <div class="section-header">
+                <span class="tag">Onboarding B2B V1</span>
+                <h2>Te activamos la tienda y te damos acceso</h2>
+                <p>No necesitas WhatsApp Business ni una integración compleja para empezar. Déjanos tus datos, revisamos tu caso y te activamos el tenant de forma asistida.</p>
+            </div>
+
+            <div class="activation-grid">
+                <div class="activation-info">
+                    <h3>Cómo funciona la activación</h3>
+                    <p>Este primer onboarding es manual a propósito: así evitamos fricción técnica, revisamos el encaje de tu catálogo y te damos acceso con el plan correcto desde el primer día.</p>
+
+                    <ul class="activation-steps">
+                        <li>
+                            <span class="activation-step-num">1</span>
+                            <div class="activation-step-copy">
+                                <strong>Nos dejas tus datos</strong>
+                                <span>Nombre, tienda, web o Instagram, email, WhatsApp y el tipo de catálogo que vendes.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="activation-step-num">2</span>
+                            <div class="activation-step-copy">
+                                <strong>Revisamos el encaje</strong>
+                                <span>Validamos si te conviene Standard o Premium y si tu caso encaja con el onboarding actual.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="activation-step-num">3</span>
+                            <div class="activation-step-copy">
+                                <strong>Activamos tu tenant</strong>
+                                <span>Creamos tu espacio B2B, te asociamos como <code>tenant_owner</code> y dejamos el acceso listo.</span>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="activation-step-num">4</span>
+                            <div class="activation-step-copy">
+                                <strong>Recibes acceso y siguientes pasos</strong>
+                                <span>Te contactamos por el canal que prefieras para darte acceso, resolver dudas y explicarte cómo empezar.</span>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="activation-callout">
+                        Recomendación operativa: usa WhatsApp como canal principal de seguimiento y deja el email como respaldo formal para acceso, soporte y facturación.
+                    </div>
+                </div>
+
+                <div class="activation-form-card">
+                    <h3>Solicitar activación</h3>
+                    <p>Rellena este formulario y te contactaremos con una propuesta de activación. Si prefieres WhatsApp, puedes dejar tu número aunque aún no tengas WhatsApp Business.</p>
+
+                    <form id="activation-form" class="activation-form">
+                        <div class="field">
+                            <label for="contact_name">Nombre de contacto</label>
+                            <input id="contact_name" name="contact_name" type="text" required placeholder="Tu nombre y apellidos" />
+                        </div>
+
+                        <div class="field">
+                            <label for="business_name">Nombre de la tienda</label>
+                            <input id="business_name" name="business_name" type="text" required placeholder="Ej. PequeModa Kids" />
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="business_url">Web o Instagram</label>
+                            <input id="business_url" name="business_url" type="text" placeholder="https://... o @tu_tienda" />
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Email</label>
+                            <input id="email" name="email" type="email" required placeholder="hola@tu-tienda.com" />
+                        </div>
+
+                        <div class="field">
+                            <label for="whatsapp">WhatsApp</label>
+                            <input id="whatsapp" name="whatsapp" type="tel" placeholder="+34 600 000 000" />
+                            <small>Opcional, pero recomendado si quieres respuesta más rápida.</small>
+                        </div>
+
+                        <div class="field">
+                            <label for="preferred_contact">Canal preferido</label>
+                            <select id="preferred_contact" name="preferred_contact" required>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="email">Email</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="catalog_type">Qué vendes</label>
+                            <select id="catalog_type" name="catalog_type" required>
+                                <option value="fashion">Moda infantil</option>
+                                <option value="shoes">Calzado infantil</option>
+                                <option value="toys">Juguetes</option>
+                                <option value="mixed" selected>Catálogo mixto</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="plan_interest">Plan que te interesa</label>
+                            <select id="plan_interest" name="plan_interest" required>
+                                <option value="undecided" selected>No lo tengo claro aún</option>
+                                <option value="standard">Standard</option>
+                                <option value="premium">Premium</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="monthly_orders_band">Pedidos al mes</label>
+                            <select id="monthly_orders_band" name="monthly_orders_band">
+                                <option value="">Prefiero no indicarlo</option>
+                                <option value="0-100">0-100</option>
+                                <option value="101-300">101-300</option>
+                                <option value="301-1000">301-1000</option>
+                                <option value="1000+">Más de 1000</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-full">
+                            <label for="notes">Qué quieres conseguir con NubeKids</label>
+                            <textarea id="notes" name="notes" placeholder="Ej. Mejorar recompra, añadir un regalo emocional al pedido, activar upsell en checkout..."></textarea>
+                        </div>
+
+                        <div class="field field-full">
+                            <button id="activation-submit" type="submit" class="btn btn-primary activation-submit">Enviar solicitud de activación →</button>
+                            <div id="activation-status" class="activation-status" role="status" aria-live="polite"></div>
+                            <p class="activation-footnote">Tiempo orientativo de respuesta: 24-48 horas laborables. Tu acceso se activa manualmente por el equipo.</p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </section>
@@ -1819,11 +2144,10 @@
                 leyeran cinco noches seguidas.
             </p>
             <div class="cta-buttons">
-                <a href="/buy-credits-b2b?plan=standard" class="btn btn-primary btn-lg">Empezar con el pack Starter →</a>
-                <a href="mailto:hola@nubekids.io"
-                    class="btn btn-outline btn-lg">Pedir una demo en vivo</a>
+                <a href="#activation-request" class="btn btn-primary btn-lg activation-link" data-plan="standard">Solicitar activación Starter →</a>
+                <a href="#activation-request" class="btn btn-outline btn-lg activation-link" data-plan="premium">Quiero valorar Premium</a>
             </div>
-            <p class="cta-fine">Sin contratos · Sin permanencias · Los créditos no caducan</p>
+            <p class="cta-fine">Activación asistida · Sin permanencias · Los créditos no caducan</p>
         </div>
     </section>
 
@@ -1833,9 +2157,88 @@
     <footer>
         <div class="container">
             <p>☁️ <strong style="color:var(--yellow)">NubeKids</strong> · Cuentos personalizados para tiendas online ·
-                <a href="/buy-credits-b2b">Ver packs</a> · <a href="mailto:hola@nubekids.io">Contactar</a></p>
+                <a href="#pricing">Ver packs</a> · <a href="#activation-request">Solicitar activación</a></p>
         </div>
     </footer>
 
+    <script>
+        (function () {
+            const form = document.getElementById('activation-form');
+            const statusBox = document.getElementById('activation-status');
+            const submitButton = document.getElementById('activation-submit');
+            const planField = document.getElementById('plan_interest');
+            const whatsappField = document.getElementById('whatsapp');
+            const preferredContactField = document.getElementById('preferred_contact');
+            const activationLinks = document.querySelectorAll('.activation-link');
+
+            function showStatus(message, type) {
+                statusBox.textContent = message;
+                statusBox.className = 'activation-status is-visible ' + (type === 'error' ? 'is-error' : 'is-success');
+            }
+
+            activationLinks.forEach((link) => {
+                link.addEventListener('click', function () {
+                    const selectedPlan = this.getAttribute('data-plan');
+                    if (selectedPlan && planField) {
+                        planField.value = selectedPlan;
+                    }
+                });
+            });
+
+            preferredContactField.addEventListener('change', function () {
+                if (this.value === 'whatsapp' && whatsappField) {
+                    whatsappField.focus();
+                }
+            });
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Enviando solicitud...';
+                statusBox.className = 'activation-status';
+                statusBox.textContent = '';
+
+                const payload = {
+                    contactName: document.getElementById('contact_name').value,
+                    businessName: document.getElementById('business_name').value,
+                    businessUrl: document.getElementById('business_url').value,
+                    email: document.getElementById('email').value,
+                    whatsapp: document.getElementById('whatsapp').value,
+                    preferredContact: document.getElementById('preferred_contact').value,
+                    catalogType: document.getElementById('catalog_type').value,
+                    planInterest: document.getElementById('plan_interest').value,
+                    monthlyOrdersBand: document.getElementById('monthly_orders_band').value,
+                    notes: document.getElementById('notes').value,
+                    landingPath: window.location.pathname + window.location.hash,
+                };
+
+                try {
+                    const response = await fetch('/api/b2b/activation-request', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    });
+
+                    const result = await response.json().catch(() => ({}));
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'No se pudo enviar la solicitud');
+                    }
+
+                    form.reset();
+                    planField.value = payload.planInterest || 'undecided';
+                    showStatus('Solicitud recibida. Revisaremos tu tienda y te contactaremos pronto para activarte el acceso.', 'success');
+                } catch (error) {
+                    showStatus(error instanceof Error ? error.message : 'No se pudo enviar la solicitud', 'error');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Enviar solicitud de activación →';
+                }
+            });
+        }());
+    </script>
 </body>
 </html>
