@@ -81,6 +81,7 @@ export async function generateBeats(
         contents: prompt,
         config: {
             systemInstruction: SYSTEM_PROMPT,
+            responseMimeType: 'application/json',
             temperature: 0.8,
             maxOutputTokens: 8192,
         },

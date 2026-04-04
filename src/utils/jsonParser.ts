@@ -15,35 +15,25 @@ export function parseJsonSafely<T>(response: string): T {
         .replace(/```\s*/g, '')
         .trim();
 
-    // 2. Intentar parse directo
-    try {
-        return JSON.parse(clean);
-    } catch {
-        // 3. Intentar extraer objeto JSON con regex
-        const jsonMatch = clean.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
+    const candidates = buildJsonCandidates(clean);
+
+    for (const candidate of candidates) {
+        try {
+            return JSON.parse(candidate) as T;
+        } catch {
+            // Intentar reparar respuestas "casi JSON"
+            const repaired = repairCommonJsonIssues(candidate);
             try {
-                return JSON.parse(jsonMatch[0]);
+                return JSON.parse(repaired) as T;
             } catch {
-                // Continuar al siguiente intento
+                // Continuar con el siguiente candidato
             }
         }
-
-        // 4. Intentar extraer array JSON
-        const arrayMatch = clean.match(/\[[\s\S]*\]/);
-        if (arrayMatch) {
-            try {
-                return JSON.parse(arrayMatch[0]);
-            } catch {
-                // Continuar
-            }
-        }
-
-        // 5. Log y throw
-        console.error('[jsonParser] Parse failed. Original response:', response);
-        console.error('[jsonParser] Cleaned response:', clean);
-        throw new Error('No valid JSON found in response');
     }
+
+    console.error('[jsonParser] Parse failed. Original response:', response);
+    console.error('[jsonParser] Cleaned response:', clean);
+    throw new Error('No valid JSON found in response');
 }
 
 /**
@@ -71,4 +61,98 @@ export function tryParseJson<T>(response: string): T | null {
     } catch {
         return null;
     }
+}
+
+function buildJsonCandidates(clean: string): string[] {
+    const candidates = new Set<string>();
+
+    if (clean) {
+        candidates.add(clean);
+    }
+
+    const objectMatch = clean.match(/\{[\s\S]*\}/);
+    if (objectMatch) {
+        candidates.add(objectMatch[0]);
+    }
+
+    const arrayMatch = clean.match(/\[[\s\S]*\]/);
+    if (arrayMatch) {
+        candidates.add(arrayMatch[0]);
+    }
+
+    return Array.from(candidates);
+}
+
+function repairCommonJsonIssues(input: string): string {
+    let repaired = input
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2018\u2019]/g, "'");
+
+    repaired = escapeInnerQuotes(repaired);
+
+    return repaired;
+}
+
+function escapeInnerQuotes(input: string): string {
+    let result = '';
+    let inString = false;
+    let escaped = false;
+
+    for (let i = 0; i < input.length; i++) {
+        const char = input[i];
+
+        if (!inString) {
+            if (char === '"') {
+                inString = true;
+            }
+            result += char;
+            continue;
+        }
+
+        if (escaped) {
+            result += char;
+            escaped = false;
+            continue;
+        }
+
+        if (char === '\\') {
+            result += char;
+            escaped = true;
+            continue;
+        }
+
+        if (char === '"') {
+            const nextMeaningful = findNextMeaningfulChar(input, i + 1);
+            const isClosingQuote =
+                nextMeaningful === null ||
+                nextMeaningful === ',' ||
+                nextMeaningful === '}' ||
+                nextMeaningful === ']' ||
+                nextMeaningful === ':';
+
+            if (isClosingQuote) {
+                inString = false;
+                result += char;
+            } else {
+                result += '\\"';
+            }
+
+            continue;
+        }
+
+        result += char;
+    }
+
+    return result;
+}
+
+function findNextMeaningfulChar(input: string, startIndex: number): string | null {
+    for (let i = startIndex; i < input.length; i++) {
+        const char = input[i];
+        if (!/\s/.test(char)) {
+            return char;
+        }
+    }
+
+    return null;
 }

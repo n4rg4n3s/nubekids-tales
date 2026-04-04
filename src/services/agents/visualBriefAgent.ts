@@ -85,6 +85,7 @@ export async function generateBriefs(
         contents: prompt,
         config: {
             systemInstruction: SYSTEM_PROMPT,
+            responseMimeType: 'application/json',
             temperature: 0.6, // Menos variabilidad para consistencia visual
             maxOutputTokens: 8192,
         },

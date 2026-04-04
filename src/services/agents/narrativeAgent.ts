@@ -85,6 +85,7 @@ export async function generateArc(
         contents: prompt,
         config: {
             systemInstruction: fullSystemPrompt,
+            responseMimeType: 'application/json',
             temperature: 0.7,
             maxOutputTokens: 8192,
         },

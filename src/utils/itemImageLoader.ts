@@ -2,7 +2,8 @@
  * itemImageLoader.ts
  *
  * Descarga la foto del producto desde una URL externa y la convierte a base64
- * para inyectarla en el wizard (Step 3: Objeto Mágico) y enviarla a Gemini.
+ * normalizado a JPEG para inyectarla en el wizard (Step 3: Objeto Mágico)
+ * y enviarla a Gemini.
  *
  * Estrategia de 3 intentos para manejar CORS:
  *   1. fetch() directo          → la mayoría de CDNs modernos (Shopify, Cloudflare)
@@ -14,7 +15,7 @@
 export type ImageLoadMethod = 'fetch' | 'canvas' | 'url-only' | 'failed';
 
 export interface ItemImageResult {
-    /** Base64 puro (sin el prefijo data:...). Null si no se pudo convertir. */
+    /** Base64 puro JPEG (sin el prefijo data:...). Null si no se pudo convertir. */
     base64: string | null;
     /** URL original del producto. Siempre presente. */
     url: string;
@@ -38,7 +39,7 @@ export async function loadItemImage(url: string): Promise<ItemImageResult> {
         const response = await fetch(url, { mode: 'cors' });
         if (response.ok) {
             const blob = await response.blob();
-            const base64 = await blobToBase64(blob);
+            const base64 = await blobToJpegBase64(blob);
             console.log('[itemImageLoader] ✅ Cargada via fetch directo');
             return { base64, url, loadMethod: 'fetch' };
         }
@@ -64,39 +65,38 @@ export async function loadItemImage(url: string): Promise<ItemImageResult> {
 
 // ─── Helpers privados ────────────────────────────────────────────────────
 
-function blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const result = reader.result as string;
-            // Extraer solo la parte base64, sin el prefijo "data:image/jpeg;base64,"
-            const base64 = result.split(',')[1];
-            if (!base64) {
-                reject(new Error('No se pudo extraer base64 del blob'));
-                return;
-            }
-            resolve(base64);
-        };
-        reader.onerror = () => reject(new Error('FileReader error'));
-        reader.readAsDataURL(blob);
-    });
+function blobToJpegBase64(blob: Blob): Promise<string> {
+    const objectUrl = URL.createObjectURL(blob);
+
+    return loadImageSourceAsJpegBase64(objectUrl, false)
+        .finally(() => URL.revokeObjectURL(objectUrl));
 }
 
-function loadViaCanvas(url: string): Promise<string> {
+function loadImageSourceAsJpegBase64(src: string, allowCrossOrigin: boolean): Promise<string> {
     return new Promise((resolve, reject) => {
         const img = new Image();
-        img.crossOrigin = 'anonymous';
+
+        if (allowCrossOrigin) {
+            img.crossOrigin = 'anonymous';
+        }
 
         const timeout = setTimeout(() => {
-            reject(new Error('Timeout cargando imagen en canvas'));
+            reject(new Error('Timeout normalizando imagen'));
         }, 8000);
 
         img.onload = () => {
             clearTimeout(timeout);
+
             try {
+                const { width, height } = constrainDimensions(
+                    img.naturalWidth || 1024,
+                    img.naturalHeight || 1024,
+                    1024
+                );
+
                 const canvas = document.createElement('canvas');
-                canvas.width = img.naturalWidth || 512;
-                canvas.height = img.naturalHeight || 512;
+                canvas.width = width;
+                canvas.height = height;
 
                 const ctx = canvas.getContext('2d');
                 if (!ctx) {
@@ -104,7 +104,10 @@ function loadViaCanvas(url: string): Promise<string> {
                     return;
                 }
 
-                ctx.drawImage(img, 0, 0);
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(img, 0, 0, width, height);
+
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
                 const base64 = dataUrl.split(',')[1];
 
@@ -121,9 +124,30 @@ function loadViaCanvas(url: string): Promise<string> {
 
         img.onerror = () => {
             clearTimeout(timeout);
-            reject(new Error('Error al cargar imagen en elemento <img>'));
+            reject(new Error('Error al normalizar imagen'));
         };
 
-        img.src = url;
+        img.src = src;
     });
+}
+
+function loadViaCanvas(url: string): Promise<string> {
+    return loadImageSourceAsJpegBase64(url, true);
+}
+
+function constrainDimensions(
+    width: number,
+    height: number,
+    maxDimension: number
+): { width: number; height: number } {
+    if (width <= maxDimension && height <= maxDimension) {
+        return { width, height };
+    }
+
+    const scale = Math.min(maxDimension / width, maxDimension / height);
+
+    return {
+        width: Math.max(1, Math.round(width * scale)),
+        height: Math.max(1, Math.round(height * scale)),
+    };
 }
