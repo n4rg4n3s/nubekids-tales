@@ -6,6 +6,8 @@
 > **Estado:** Aprobado para implementación
 > **Audiencia:** Desarrollador junior que implementará estas features
 
+> **Nota 2026-04-04:** Este documento sigue siendo válido en negocio y flujos, pero el comportamiento narrativo del objeto ya no debe deducirse de `shoe-store` / `fashion-store`. La fuente de verdad actual es `itemInteractionMode`. Además, la decisión operativa vigente para B2B V1 es onboarding manual asistido, no self-serve.
+
 ---
 
 ## 0. Resumen Ejecutivo
@@ -31,12 +33,12 @@ Este documento cubre TODO lo que falta para que NubeKids sea un producto comerci
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                    NUBEKIDS (Plataforma)                  │
+│                    NUBEKIDS (Plataforma)                 │
 │                                                          │
-│  ┌─────────────┐    ┌─────────────┐    ┌──────────────┐ │
-│  │ ADMIN       │    │ TENANT B2B  │    │ USUARIO B2C  │ │
-│  │ (NubeKids)  │    │ (e-Commerce)│    │ (Padre/Madre)│ │
-│  └──────┬──────┘    └──────┬──────┘    └──────┬───────┘ │
+│  ┌─────────────┐    ┌─────────────┐    ┌──────────────┐  │
+│  │ ADMIN       │    │ TENANT B2B  │    │ USUARIO B2C  │  │
+│  │ (NubeKids)  │    │ (e-Commerce)│    │ (Padre/Madre)│  │
+│  └──────┬──────┘    └──────┬──────┘    └──────┬───────┘  │
 │         │                  │                   │         │
 │    Gestiona todo     Compra créditos     Compra créditos │
 │    Crea tenants      Configura widget    Crea cuentos    │
@@ -752,50 +754,72 @@ export async function POST(request: Request) {
 
 ## 5. Integración e-Commerce (Dos Niveles)
 
-### 5.1 Plan Standard — Link Personalizado
+### 5.1 Regla de seguridad obligatoria
 
-El e-Commerce recibe un link único que incluye su `tenant_id`. El nombre de la tienda se teje en la narrativa.
+El usuario final ya no debe recibir enlaces `?tenant=...`.
 
+Flujo correcto:
+1. El e-Commerce llama a `POST /api/b2b/create-token`
+2. NubeKids devuelve una URL one-time `/?token=...`
+3. El cliente final usa esa URL
+4. Al generar el cuento se consumen de forma atómica 1 token + 1 crédito del tenant
+
+`?tenant=...` queda reservado a demo/testing y requiere `&demo=1`.
+
+### 5.2 Plan Standard — Token one-time
+
+El plan Standard también usa token one-time. La diferencia no es la seguridad del enlace, sino el payload que se inyecta.
+
+Payload mínimo:
+
+```json
+{
+  "tenantId": "zapatos-lopez-001",
+  "customerEmail": "padre@email.com"
+}
 ```
-URL del link:
-https://stories.nubekids.io/?tenant={tenant_id}&ref=checkout
-
-Ejemplo:
-https://stories.nubekids.io/?tenant=zapatos-lopez-001&ref=checkout
-```
-
-**Cómo lo usa el e-Commerce:**
-- En su email de confirmación de pedido, añaden un banner/botón con ese link.
-- En una página de "gracias por tu compra", incluyen el link.
-- En redes sociales, lo comparten como promoción.
 
 **Qué pasa cuando el usuario hace clic:**
-1. NubeKids carga la config del tenant (branding, storeName, etc.)
-2. El wizard se abre SIN login (sesión anónima)
-3. El nombre de la tienda se inyecta en el cuento via `tenantConfig.storeName`
-4. Se consume 1 crédito del balance del tenant
-5. Al terminar: "¿Quieres crear otro cuento?" → Redirect a registro B2C
+1. NubeKids valida el token y el saldo del tenant
+2. El wizard se abre sin login
+3. La historia puede mencionar la tienda via `tenantConfig.storeName`
+4. Se consume 1 token + 1 crédito del tenant
+5. Al terminar: "¿Quieres crear otro cuento?" → conversión a registro B2C
 
-### 5.2 Plan Premium — Widget con Foto del Producto
+### 5.3 Plan Premium — Token one-time + datos del producto
 
-El e-Commerce integra un snippet en su checkout. La foto del producto se inyecta.
+Payload típico:
 
-#### Opción A: Redirect con Query Params (simple)
+```json
+{
+  "tenantId": "zapatos-lopez-001",
+  "itemName": "Nike Air Max 90 Kids Rojo",
+  "itemImageUrl": "https://cdn.tienda.com/products/nike-airmax-90.jpg",
+  "customerEmail": "padre@email.com",
+  "expiresInHours": 720
+}
+```
 
-```html
-<!-- En la página de confirmación del e-Commerce -->
-<a href="https://stories.nubekids.io/?tenant=zapatos-lopez-001&item=Nike+Air+Max+90+Kids+Rojo&item_image=https://cdn.tienda.com/products/nike-airmax-90.jpg&customer_email=padre@email.com"
-   class="nubekids-button">
-  ¡Crea un cuento mágico con tus zapatos nuevos!
-</a>
+Ejemplo de emisión desde backend:
 
-<!--
-  Query params:
-  - tenant: ID del tenant
-  - item: Nombre/modelo del producto (pre-rellena el wizard)
-  - item_image: URL de la foto del producto (se descarga client-side)
-  - customer_email: Para enviar el PDF al terminar (opcional)
--->
+```ts
+const response = await fetch('https://stories.nubekids.io/api/b2b/create-token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-nubekids-tenant-secret': process.env.NUBEKIDS_TENANT_SECRET!,
+  },
+  body: JSON.stringify({
+    tenantId: 'zapatos-lopez-001',
+    itemName: order.firstItem.name,
+    itemImageUrl: order.firstItem.imageUrl,
+    customerEmail: order.customer.email,
+    expiresInHours: 24 * 30,
+  }),
+});
+
+const data = await response.json();
+const storyUrl = data.url; // https://stories.nubekids.io/?token=nkt_...
 ```
 
 #### Opción B: Widget Embebible (avanzado, futuro V2)
@@ -812,10 +836,10 @@ El e-Commerce integra un snippet en su checkout. La foto del producto se inyecta
 ></nubekids-upsell>
 ```
 
-> **PARA V1:** Implementar solo Opción A (redirect con query params). Es lo mínimo viable.
+> **PARA V1:** Implementar solo emisión server-side de tokens one-time. El widget embebible queda para V2.
 > La Opción B (widget) es Fase 9 del roadmap.
 
-### 5.3 Manejo de item_image desde URL
+### 5.4 Manejo de item_image desde URL
 
 ```typescript
 // src/utils/itemImageLoader.ts — CREAR
@@ -880,7 +904,7 @@ FASE 1: ENTRADA DESDE E-COMMERCE (Gratis para el usuario)
          ▼
   [Clic en link/botón]
          │
-         │  URL: stories.nubekids.io/?tenant=xxx&item=yyy(&item_image=zzz)
+         │  URL real: stories.nubekids.io/?token=nkt_xxx
          │
          ▼
   [NubeKids: Carga config del tenant]
@@ -951,7 +975,7 @@ FASE 2: CONVERSIÓN A B2C (El usuario paga)
  * Determina quién paga el crédito de esta sesión.
  *
  * REGLA:
- * - Si el usuario llegó via un tenant B2B (query param ?tenant=)
+ * - Si el usuario llegó via un token B2B one-time (`?token=...`)
  *   Y es su primer cuento en esta sesión
  *   → El crédito se descuenta del tenant.
  *

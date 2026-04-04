@@ -1,10 +1,12 @@
 // src/config/tenants/shoe-store.config.ts
 import type { TenantConfig } from '../../types';
+import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 
 export const shoeStoreConfig: TenantConfig = {
   tenantId: 'shoe-store-default',
   tenantName: 'Magic Sneakers',
   verticalId: 'shoe-store',
+  itemInteractionMode: 'wearable',
   
   // Configuración del objeto mágico
   itemLabel: 'zapatos',
@@ -22,6 +24,7 @@ export const shoeStoreConfig: TenantConfig = {
     Eres un equipo de expertos en neuroeducación, psicología infantil y escritura creativa.
     Tu misión es crear cuentos infantiles donde los ZAPATOS del protagonista tienen poderes mágicos.
     Los zapatos son el elemento central de resolución de conflictos en cada aventura.
+    ${getItemInteractionModeInstruction('wearable')}
     Reglas absolutas:
     - Contenido 100% positivo, sin violencia, sin temas oscuros.
     - Los zapatos SIEMPRE tienen un papel activo en la resolución del problema.

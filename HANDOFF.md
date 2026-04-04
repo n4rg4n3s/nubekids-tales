@@ -1,6 +1,6 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-02 (Sesión Fase 10 — Flujo B2B → B2C completo)
+> **Última actualización:** 2026-04-04 (B2B seguro con token one-time + activación asistida)
 > **Estado:** ✅ Fase 10 COMPLETADA — Funnel B2B2C end-to-end funcional
 > **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
 
@@ -11,10 +11,10 @@
 ### Fase 10 — Flujo B2B → B2C completo ← HOY
 
 1. ✅ **`src/types.ts`** — Añadidos `B2BSessionParams`, `B2BSession`, `PaymentSource`, `PaymentDecision`
-2. ✅ **`src/services/queryParamsService.ts`** — Parser de query params B2B (`?tenant=`, `?item=`, `?item_image=`, `?customer_email=`, `?ref=`)
+2. ✅ **`src/services/queryParamsService.ts`** — `?tenant=...` relegado a demo/testing con `demo=1`
 3. ✅ **`src/services/sessionService.ts`** — `resolvePayment()`: lógica de quién paga el crédito
 4. ✅ **`src/utils/itemImageLoader.ts`** — Descarga imagen del producto con 3 fallbacks CORS (fetch → canvas → url-only)
-5. ✅ **`src/App.tsx`** — Integración completa: detección `?tenant=`, estado `b2bSession`, nuevos estados `post-story` y `promo-unavailable`, `handleReset` diferenciado B2B vs normal
+5. ✅ **`src/App.tsx`** — Flujo B2B real por `?token=...`, demo por `?tenant=...&demo=1`, `post-story` y `promo-unavailable`
 6. ✅ **`src/components/Setup.tsx`** — Props `initialItemImage`, `initialItemImageUrl`, `initialItemModel` funcionales. Bug corregido: `initialItemModel` ya se aplica a `itemData.description`
 7. ✅ **`src/components/wizard/StepItem.tsx`** — Pre-rellenado B2B, badge "Cargado automáticamente", fallback CORS con "Solo vista previa"
 8. ✅ **`src/components/PostStoryActions.tsx`** — CTA post-lectura con pricing, botón "Crear otro" → registro B2C
@@ -22,8 +22,32 @@
 10. ✅ **`src/index.css`** — Fix fuentes: importar Fredoka + Nunito desde Google Fonts
 11. ✅ **`src/components/credits/BuyCredits.tsx`** — Fix `Fredoka One` → `Fredoka`
 12. ✅ **`docs/nubekids_b2b2c_simulator.html`** — Herramienta de testing con 5 escenarios, checklist de Done y log
-13. ✅ **`docs/INTEGRACION_PREMIUM.md`** — Guía de integración para tenants Premium (Shopify, WooCommerce, custom)
+13. ✅ **`docs/INTEGRACION_PREMIUM.md`** — Guía de integración B2B segura por token one-time
 14. ✅ **Deploy en Vercel exitoso** — TypeScript sin errores, build verde
+
+### Refactor de modelo (04 Abril 2026)
+
+1. ✅ **`src/types.ts`** — Nuevo campo `itemInteractionMode` en `TenantConfig`
+2. ✅ **`src/utils/itemInteraction.ts`** — Helper central para semántica narrativa/visual del objeto
+3. ✅ **`src/config/tenants/*.config.ts`** — `shoe-store-default` y `fashion-store-default` unificados bajo `wearable`
+4. ✅ **`src/services/agents/*.ts`** — Narrative, Storytelling y Visual Brief ya usan `itemInteractionMode`
+5. ✅ **Compatibilidad demo preservada** — Las URLs `?tenant=shoe-store-default&demo=1` y `?tenant=fashion-store-default&demo=1` siguen siendo válidas para testing interno
+
+### Cierre de riesgo B2B (04 Abril 2026)
+
+1. ✅ **`api/b2b/create-token.ts`** — Nueva API serverless para emitir enlaces one-time `/?token=...`
+2. ✅ **`supabase/migrations/20260404_b2b_secure_token_flow.sql`** — Función RPC `consume_b2b_token()` + soporte a `used_at`, `created_at` e `integration_secret_hash`
+3. ✅ **`src/services/tokenService.ts`** — Validación alineada con `credit_accounts.balance` y consumo atómico via RPC
+4. ✅ **`src/App.tsx`** — El flujo real de comprador final vuelve a ser `?token=...`
+5. ✅ **`docs/nubekids_b2b2c_simulator.html`** — `?tenant=` pasa a ser demo explícita con `demo=1`
+
+### Activación B2B V1 (04 Abril 2026)
+
+1. ✅ **`public/b2b.html`** — CTAs públicos redirigidos a `Solicitar activación` en vez de compra directa sin tenant
+2. ✅ **Formulario first-party** — bloque `Solicitar activación` con email, WhatsApp, tipo de catálogo, plan de interés y preferencia de contacto
+3. ✅ **`api/b2b/activation-request.ts`** — API serverless para guardar leads B2B en Supabase
+4. ✅ **`supabase/migrations/20260404_b2b_activation_requests.sql`** — Tabla `b2b_activation_requests` con estados operativos (`new`, `contacted`, `qualified`, `activated`, `rejected`)
+5. ✅ **Copy operativo en la landing** — “Te activamos la tienda y te damos acceso”
 
 ### Decisiones tomadas en esta sesión
 - **`storeName` visible en ambos planes**: Standard y Premium muestran el nombre de la tienda en Step 3
@@ -32,10 +56,46 @@
 - **Test CORS no simulable con URLs públicas**: la mayoría de CDNs modernos envían headers CORS correctos; el fallback se activará con CDNs privados de e-Commerce
 - **Integración Premium requiere desarrollo técnico en el e-Commerce**: documentado en `docs/INTEGRACION_PREMIUM.md`
 - **Landings estáticas en `/public`**: sin React Router, HTML puro servido directamente por Vercel
+- **`itemInteractionMode` como fuente de verdad narrativa**: `tenant` sigue representando identidad comercial/branding; la semántica de uso del objeto ya no depende de `shoe-store` vs `fashion-store`
+- **Tenants demo legacy se mantienen**: `shoe-store-default` y `fashion-store-default` siguen existiendo por compatibilidad, pero no deben marcar la evolución futura del modelo
+- **`direct-b2c` usa `generic`**: B2C no se fuerza artificialmente a `wearable` ni `interactive`
+- **Onboarding B2B V1 = alta manual asistida**: no habrá self-serve B2B mientras el volumen de leads no justifique asumir la complejidad extra en auth, roles, provisioning y pagos
+- **Formulario propio simple como punto de entrada B2B**: capturamos el lead en nuestra propia base de datos y pedimos email + WhatsApp dentro del formulario
+- **No hace falta WhatsApp Business en V1**: WhatsApp se usa como dato de contacto preferido, no como integración automatizada
+- **Flujo B2B seguro restaurado**: el enlace real para comprador final vuelve a ser `/?token=...`
+- **`?tenant=` deja de ser enlace comercial válido**: queda reservado a demo/testing interno con `demo=1`
 
 ---
 
 ## ⚠️ PASOS MANUALES PENDIENTES
+
+### 0. Revisar solicitudes B2B entrantes
+- Tabla: `b2b_activation_requests`
+- Filtro inicial recomendado: `status = 'new'`
+- Orden: `created_at DESC`
+- Canal de respuesta:
+  - si `preferred_contact = whatsapp` y hay número → WhatsApp manual
+  - en cualquier caso, mantener email como respaldo formal
+
+### Runbook de alta manual (`tenant` + `tenant_owner`)
+1. Revisar la fila en `b2b_activation_requests` y validar si el caso encaja con el onboarding actual.
+2. Cambiar `status` a `contacted` cuando se haya respondido por primera vez.
+3. Crear el `tenant` en Supabase con branding e `integration_level` acordado.
+4. Crear o preparar la `credit_account` del tenant si procede.
+5. Crear el usuario en Supabase Auth (manual/invitación) y luego actualizar `profiles.role = 'tenant_owner'`.
+6. Asociar `profiles.tenant_id` al tenant recién creado.
+7. Verificar acceso al flujo de compra B2B (`/buy-credits-b2b`) con el contexto de tenant correcto.
+8. Cambiar la solicitud a `status = 'activated'` cuando el acceso esté entregado.
+
+### Runbook de integración segura B2B (`token` one-time)
+1. Crear el `tenant` en Supabase con su `tenant_id` público y branding.
+2. Generar un secreto de integración por tenant y guardar solo su hash SHA-256 en `tenants.integration_secret_hash`.
+3. Compartir el secreto al equipo técnico del e-Commerce por canal seguro.
+4. El e-Commerce llama a `POST /api/b2b/create-token` desde backend con header `x-nubekids-tenant-secret`.
+5. NubeKids devuelve una URL final `/?token=...`.
+6. El comprador usa esa URL una sola vez.
+7. `consume_b2b_token()` descuenta de forma atómica 1 token + 1 crédito del tenant.
+8. `?tenant=` solo se usa en demo/testing interno con `demo=1`.
 
 ### 1. Sincronizar precios B2B
 - Los precios B2B en la landing `public/b2b.html` pueden diferir de los de Stripe y `credit_packs`
@@ -87,6 +147,25 @@
 | **Fallback CORS en 3 intentos** | fetch → canvas → url-only. Degrada gracefully sin romper el flujo |
 | **`post-story` como AppState** | CTA de conversión B2B→B2C sin interferir con el estado `reading` |
 | **Landings en `/public` como HTML estático** | Carga instantánea, SEO friendly, independientes del SPA |
+| **`itemInteractionMode` desacoplado de `tenant`** | `tenant` define branding e identidad comercial; `itemInteractionMode` define cómo el niño usa el objeto en narrativa e imagen |
+| **Formulario B2B first-party + alta manual** | Capturamos leads en base propia y activamos manualmente el tenant antes de permitir compra B2B |
+| **B2B real por token one-time** | 1 compra = 1 token = 1 cuento; evita agotar el saldo del tenant por enlaces compartidos |
+
+---
+
+## 🧠 Nota Operativa Importante
+
+- **No usar `shoe-store-default` y `fashion-store-default` como semántica de producto**: desde el refactor del 04/04/2026 esos IDs son tenants demo/legacy compatibles con URLs existentes.
+- **La fuente de verdad para comportamiento narrativo y visual es `itemInteractionMode`**.
+- **Asignación actual**:
+  - `shoe-store-default` → `wearable`
+  - `fashion-store-default` → `wearable`
+  - `direct-b2c` → `generic`
+- **Implicación práctica**: futuros tenants B2B no deben crearse siguiendo la taxonomía `shoe-store` / `fashion-store`; deben definirse por branding comercial y por `itemInteractionMode`.
+- **Decisión operativa vigente para B2B**: el alta de nuevos tenants será asistida/manual en V1. El self-serve B2B queda explícitamente pospuesto hasta que haya demanda que lo justifique.
+- **Canal operativo recomendado para B2B V1**: formulario propio simple en `public/b2b.html`, con email obligatorio y WhatsApp opcional/recomendado como canal preferido.
+- **Fuente de verdad para enlaces B2B de cliente final**: `/?token=...`
+- **Uso permitido de `?tenant=`**: solo demo/testing interno y siempre con `demo=1`
 
 ---
 
@@ -98,27 +177,32 @@ D:\nubekids-tales\
 ├── pnpm-lock.yaml
 │
 ├── api/
+│   ├── b2b/
+│   │   ├── activation-request.ts           # ✅ NUEVO — captura leads B2B en Supabase
+│   │   └── create-token.ts                 # ✅ NUEVO — emite enlaces B2B one-time `/?token=...`
 │   └── stripe/
 │       ├── create-checkout.ts
 │       └── webhook.ts
 │
 ├── public/
-│   ├── b2b.html                             # Landing B2B (estática)
+│   ├── b2b.html                             # ✅ CTA a activación + formulario propio B2B
 │   └── b2c.html                             # Landing B2C (estática)
 │
 ├── docs/
 │   ├── nubekids_b2b2c_simulator.html        # ✅ NUEVO Fase 10 — Herramienta testing
-│   └── INTEGRACION_PREMIUM.md              # ✅ NUEVO Fase 10 — Guía integración tenants
+│   └── INTEGRACION_PREMIUM.md              # ✅ Actualizada — guía segura por token one-time
 │
 ├── supabase/
 │   └── migrations/
 │       ├── 001_profiles_and_trigger.sql
-│       └── stripe_price_id.sql
+│       ├── stripe_price_id.sql
+│       ├── 20260404_b2b_activation_requests.sql   # ✅ NUEVO — tabla leads B2B
+│       └── 20260404_b2b_secure_token_flow.sql     # ✅ NUEVO — consumo atómico token + crédito tenant
 │
 ├── src/
-│   ├── App.tsx                              # ✅ b2bSession + post-story + promo-unavailable
+│   ├── App.tsx                              # ✅ B2B real por token + demo por tenant + post-story
 │   ├── main.tsx
-│   ├── types.ts                             # ✅ B2BSessionParams, B2BSession, PaymentDecision
+│   ├── types.ts                             # ✅ B2BSessionParams demo-only, B2BSession, PaymentDecision
 │   ├── index.css                            # ✅ Fix: Fredoka + Nunito importadas
 │   │
 │   ├── lib/
@@ -169,6 +253,7 @@ D:\nubekids-tales\
 │   ├── utils/
 │   │   ├── pdfExport.ts
 │   │   ├── jsonParser.ts
+│   │   ├── itemInteraction.ts          # ✅ NUEVO Refactor tenant → itemInteractionMode
 │   │   └── itemImageLoader.ts              # ✅ NUEVO Fase 10
 │   │
 │   └── config/
@@ -182,16 +267,18 @@ D:\nubekids-tales\
 | Tabla | Propósito | Estado |
 |-------|-----------|--------|
 | `tenants` | Configuración de tenants B2B | ✅ |
-| `tokens` | Tokens B2B (TEST123, etc.) | ✅ |
+| `tokens` | Tokens B2B one-time para cliente final | ✅ |
 | `rag_chunks` | Chunks RAG con embeddings pgvector | ✅ |
 | `profiles` | Extiende auth.users con rol | ✅ Fase 7 |
 | `credit_accounts` | Balance de créditos (tenant o user) | ✅ Fase 8 |
 | `credit_transactions` | Historial de movimientos | ✅ Fase 8 |
 | `credit_packs` | Catálogo de 9 packs con stripe_price_id | ✅ Fase 9 |
+| `b2b_activation_requests` | Solicitudes de activación B2B desde la landing | ✅ V1 activación asistida |
 
 **Funciones RPC:**
 - `consume_credit(p_tenant_id, p_user_id, p_story_session_id)` → BOOLEAN
 - `add_credits(p_tenant_id, p_user_id, p_amount, p_stripe_payment_intent_id)` → INTEGER
+- `consume_b2b_token(p_token, p_story_session_id)` → JSONB
 - `match_rag_chunks(query_embedding, match_threshold, match_count)` → TABLE
 
 ---
@@ -272,6 +359,8 @@ FRONTEND_URL=http://localhost:5173
 | Item | Prioridad | Estado |
 |------|-----------|--------|
 | Sincronizar precios B2B (landing vs Stripe vs Supabase) | Alta | ⏳ Pendiente |
+| Integración B2B insegura por `?tenant=` | Alta | ✅ Resuelto — flujo real restaurado a token one-time |
+| Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas |
 | Google OAuth config en GCP + Supabase | Media | ⏳ Cuando haya dominio |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |
@@ -314,6 +403,7 @@ Falta para lanzamiento:
 - Legal (GDPR, términos, privacidad)
 - Landing B2C (copy en investigación)
 - Sincronizar precios B2B
+- Operativa diaria de revisión de `b2b_activation_requests`
 
 Estimación hasta lanzamiento: ~1 semana.
 ```

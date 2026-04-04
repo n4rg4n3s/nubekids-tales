@@ -12,10 +12,12 @@ import type {
     AgeGroupConfig,
     Language,
     Genre,
+    ItemInteractionMode,
 } from '../../types';
 import { AGE_GROUP_CONFIGS } from '../../types';
 import type { AgentDependencies } from '../dependencies';
 import { parseJsonSafely } from '../../utils/jsonParser';
+import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 
 // ============================================
 // SYSTEM PROMPT
@@ -50,6 +52,7 @@ export interface StorytellingInput {
     heroName: string;
     friendName?: string;
     itemLabel: string;
+    itemInteractionMode: ItemInteractionMode;
     itemDescription?: string;
     totalPages?: number;
 }
@@ -78,6 +81,7 @@ export async function generateBeats(
         contents: prompt,
         config: {
             systemInstruction: SYSTEM_PROMPT,
+            responseMimeType: 'application/json',
             temperature: 0.8,
             maxOutputTokens: 8192,
         },
@@ -115,6 +119,8 @@ CONFIGURACIÓN:
 - Protagonista: ${input.heroName}
 ${friendSection}
 - Objeto mágico: ${input.itemLabel}${input.itemDescription ? ` (${input.itemDescription})` : ''}
+- Modo de interacción del objeto: ${input.itemInteractionMode}
+- Guía de uso del objeto: ${getItemInteractionModeInstruction(input.itemInteractionMode)}
 - Idioma: ${input.language}
 - Estilo visual: ${input.genre}
 

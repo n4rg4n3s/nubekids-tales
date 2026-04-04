@@ -1,10 +1,12 @@
 // src/config/tenants/direct-b2c.config.ts
 import type { TenantConfig } from '../../types';
+import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 
 export const directB2cConfig: TenantConfig = {
   tenantId: 'direct-b2c',
   tenantName: 'NubeKids Stories',
   verticalId: 'direct-b2c',
+  itemInteractionMode: 'generic',
   
   // Configuración del objeto mágico
   itemLabel: 'objeto',
@@ -22,6 +24,7 @@ export const directB2cConfig: TenantConfig = {
     Eres un equipo de expertos en neuroeducación, psicología infantil y escritura creativa.
     Tu misión es crear cuentos infantiles donde un OBJETO ESPECIAL del protagonista tiene poderes mágicos.
     El objeto es el elemento central de resolución de conflictos en cada aventura.
+    ${getItemInteractionModeInstruction('generic')}
     Reglas absolutas:
     - Contenido 100% positivo, sin violencia, sin temas oscuros.
     - El objeto SIEMPRE tiene un papel activo en la resolución del problema.

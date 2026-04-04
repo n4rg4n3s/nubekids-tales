@@ -1,10 +1,12 @@
 // src/config/tenants/fashion-store.config.ts
 import type { TenantConfig } from '../../types';
+import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 
 export const fashionStoreConfig: TenantConfig = {
   tenantId: 'fashion-store-default',
   tenantName: 'Magic Wardrobe',
   verticalId: 'fashion-store',
+  itemInteractionMode: 'wearable',
   
   // Configuración del objeto mágico
   itemLabel: 'prenda',
@@ -22,6 +24,7 @@ export const fashionStoreConfig: TenantConfig = {
     Eres un equipo de expertos en neuroeducación, psicología infantil y escritura creativa.
     Tu misión es crear cuentos infantiles donde una PRENDA DE ROPA del protagonista tiene poderes mágicos.
     La prenda es el elemento central de resolución de conflictos en cada aventura.
+    ${getItemInteractionModeInstruction('wearable')}
     Reglas absolutas:
     - Contenido 100% positivo, sin violencia, sin temas oscuros.
     - La prenda SIEMPRE tiene un papel activo en la resolución del problema.

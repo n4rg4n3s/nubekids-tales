@@ -26,11 +26,13 @@ const PANEL_HEIGHT = CONTENT_HEIGHT;
 const INK_BLACK = '#1E293B';
 const PAPER = '#FCFBF8';
 
-async function imageUrlToBase64(url: string): Promise<string> {
-  if (url.startsWith('data:image')) {
-    return url;
-  }
+interface PdfImageAsset {
+  dataUrl: string;
+  width: number;
+  height: number;
+}
 
+async function loadPdfImageAsset(url: string): Promise<PdfImageAsset> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -47,12 +49,34 @@ async function imageUrlToBase64(url: string): Promise<string> {
       }
 
       ctx.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL('image/jpeg', 0.92));
+      resolve({
+        dataUrl: canvas.toDataURL('image/jpeg', 0.92),
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
     };
 
     img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
     img.src = url;
   });
+}
+
+function fitImageInBox(
+  imageWidth: number,
+  imageHeight: number,
+  maxWidth: number,
+  maxHeight: number
+): { width: number; height: number } {
+  if (imageWidth <= 0 || imageHeight <= 0) {
+    return { width: maxWidth, height: maxHeight };
+  }
+
+  const scale = Math.min(maxWidth / imageWidth, maxHeight / imageHeight);
+
+  return {
+    width: imageWidth * scale,
+    height: imageHeight * scale,
+  };
 }
 
 function drawSpreadBase(pdf: jsPDF, tenantConfig: TenantConfig): void {
@@ -91,20 +115,19 @@ async function drawCoverPage(
 
   if (coverImageUrl) {
     try {
-      const imgData = await imageUrlToBase64(coverImageUrl);
+      const imageAsset = await loadPdfImageAsset(coverImageUrl);
       const maxW = PANEL_WIDTH - 10;
       const maxH = PANEL_HEIGHT - 10;
-      let imgW = maxW;
-      let imgH = (imgW * 5) / 4;
-
-      if (imgH > maxH) {
-        imgH = maxH;
-        imgW = (imgH * 4) / 5;
-      }
+      const { width: imgW, height: imgH } = fitImageInBox(
+        imageAsset.width,
+        imageAsset.height,
+        maxW,
+        maxH
+      );
 
       const imgX = leftX + (PANEL_WIDTH - imgW) / 2;
       const imgY = panelY + (PANEL_HEIGHT - imgH) / 2;
-      pdf.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH);
+      pdf.addImage(imageAsset.dataUrl, 'JPEG', imgX, imgY, imgW, imgH);
     } catch (e) {
       console.warn('No se pudo cargar imagen de portada:', e);
     }
@@ -152,18 +175,17 @@ async function drawStoryPage(
 
   if (page.imageUrl) {
     try {
-      const imgData = await imageUrlToBase64(page.imageUrl);
-      let imgW = imageFrameW - 4;
-      let imgH = (imgW * 5) / 4;
-
-      if (imgH > imageFrameH - 4) {
-        imgH = imageFrameH - 4;
-        imgW = (imgH * 4) / 5;
-      }
+      const imageAsset = await loadPdfImageAsset(page.imageUrl);
+      const { width: imgW, height: imgH } = fitImageInBox(
+        imageAsset.width,
+        imageAsset.height,
+        imageFrameW - 4,
+        imageFrameH - 4
+      );
 
       const imgX = imageFrameX + (imageFrameW - imgW) / 2;
       const imgY = imageFrameY + (imageFrameH - imgH) / 2;
-      pdf.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH);
+      pdf.addImage(imageAsset.dataUrl, 'JPEG', imgX, imgY, imgW, imgH);
     } catch (e) {
       console.warn(`No se pudo cargar imagen de página ${pageNumber}:`, e);
       pdf.setFont('helvetica', 'normal');

@@ -36,6 +36,7 @@ export interface ImageGenerationResult {
 // ============================================
 
 const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
+const IMAGE_ASPECT_RATIO = '4:5';
 
 // Prefijo para mejorar la calidad de generación
 const STYLE_PREFIX = `Children's book illustration, high quality, vibrant colors, safe for children, no text or letters in the image. `;
@@ -90,6 +91,11 @@ export async function generateStoryImage(
         const response = await deps.geminiClient.models.generateContent({
             model: IMAGE_MODEL,
             contents: contents,
+            config: {
+                imageConfig: {
+                    aspectRatio: IMAGE_ASPECT_RATIO,
+                },
+            },
         });
 
         // Extraer la imagen de la respuesta
@@ -176,7 +182,7 @@ export async function generateAllImages(
  * Construye el prompt final para la generación de imagen.
  */
 function buildImagePrompt(input: ImageGenerationInput): string {
-    let prompt = STYLE_PREFIX + input.visualPrompt;
+    let prompt = `${STYLE_PREFIX}${input.visualPrompt} Compose the illustration in a portrait 4:5 format suitable for a children's book page.`;
 
     // Si hay referencias, indicar que las use
     if (input.heroPhoto) {

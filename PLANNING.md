@@ -3,7 +3,7 @@
 > Documento vivo de decisiones arquitectónicas y roadmap.
 > Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-04-02
+> **Última actualización:** 2026-04-04
 
 ---
 
@@ -179,10 +179,10 @@
 
 | Plan | Integración | Qué incluye el cuento | Precio |
 |------|-------------|----------------------|--------|
-| **Standard** | Link con `?tenant=xxx` | **Guión narrativo** menciona el nombre de tu tienda | Menor |
-| **Premium** | Link con `?tenant=xxx&item=yyy&item_image=zzz` | Guión + **ilustraciones**: el niño lleva puesto el producto comprado en tu tienda en cada imagen | Mayor |
+| **Standard** | Token one-time `?token=...` | **Guión narrativo** menciona el nombre de tu tienda | Menor |
+| **Premium** | Token one-time `?token=...` con `itemName` + `itemImageUrl` emitidos server-side | Guión + **ilustraciones**: el niño lleva puesto el producto comprado en tu tienda en cada imagen | Mayor |
 
-**V1:** Ambos niveles con query params. Widget embebible (iframe/Web Component) es V2.
+**V1:** Ambos niveles usan token one-time emitido desde backend. `?tenant=...` queda solo para demo/testing interno con `demo=1`. Widget embebible (iframe/Web Component) es V2.
 
 **Detalle completo:** Ver `BUSINESS_TECH_SPEC.md` § 5.
 
@@ -227,7 +227,7 @@
 
 **Convenciones de copy:**
 - **Sin mencionar "IA" en ningún punto de contacto con usuario final** — genera desconfianza en padres. Sustituir siempre por: "motor narrativo", "cuentos personalizados", "calibrado por edad y perfil del niño".
-- CTAs apuntan a `/buy-credits` (→ `BuyCredits.tsx`)
+- B2C puede apuntar a compra directa; B2B V1 debe apuntar a activación asistida, no a compra directa sin tenant provisionado
 - Sin la palabra "gratis" en CTAs — reencuadre de valor como inversión de negocio
 
 **Design system aplicado:** `nubekids_DD_Design_Document.md`
@@ -237,14 +237,93 @@
 
 ---
 
+### ADR-017: `itemInteractionMode` desacoplado de `tenant` ✅ IMPLEMENTADO
+
+**Contexto:** El sistema estaba usando `shoe-store` y `fashion-store` como si fueran categorías narrativas, cuando en realidad la diferencia importante era cómo el niño se relaciona con el producto.
+
+**Decisión:** Mantener `tenant` como identidad comercial/branding y mover la semántica narrativa/visual del objeto a `itemInteractionMode`.
+
+**Asignación actual:**
+- `shoe-store-default` → `wearable`
+- `fashion-store-default` → `wearable`
+- `direct-b2c` → `generic`
+
+**Razón:**
+- preserva compatibilidad con URLs ya existentes
+- evita seguir creando tenants “falsos” para resolver comportamiento del objeto
+- prepara el sistema para nuevos modos como `interactive` sin romper arquitectura
+
+**Consecuencia:**
+- `shoe-store-default` y `fashion-store-default` siguen existiendo como tenants demo/legacy
+- la fuente de verdad narrativa deja de ser `verticalId` y pasa a `itemInteractionMode`
+- nuevos tenants no deben diseñarse alrededor de la taxonomía `shoe-store` / `fashion-store`
+
+---
+
+### ADR-018: Onboarding B2B V1 por alta manual asistida ✅ DECIDIDO
+
+**Contexto:** El código actual no soporta alta autónoma de `tenant_owner` ni creación pública de tenants. Implementar self-serve B2B ahora obligaría a tocar auth, roles, provisioning, compra B2B y estados intermedios de onboarding.
+
+**Decisión:** En V1, el onboarding de nuevas tiendas B2B será asistido/manual. NubeKids crea `tenant` + `tenant_owner` y después ese usuario entra ya provisionado para comprar packs B2B.
+
+**Razón:**
+- menor riesgo técnico
+- menor superficie de bugs en pagos y permisos
+- mejor encaje con el volumen actual de leads, que todavía no justifica self-serve
+
+**Consecuencia:**
+- el CTA B2B debe llevar a contacto / activación, no a signup autónomo de tenant
+- el self-serve B2B queda como fase posterior, no como requisito actual del MVP
+
+---
+
+### ADR-019: Captura de leads B2B con formulario propio + persistencia en Supabase ✅ IMPLEMENTADO
+
+**Contexto:** El onboarding B2B V1 es asistido/manual, pero hacía falta un punto de entrada propio en la landing para no depender de `mailto:` ni empujar a compra directa sin tenant provisionado.
+
+**Decisión:** Añadir un formulario first-party en `public/b2b.html` y persistir cada solicitud en `b2b_activation_requests` mediante una API route serverless (`/api/b2b/activation-request`).
+
+**Razón:**
+- reduce fricción frente al contacto puramente por email
+- mantiene el lead dentro de la base de datos del producto
+- permite pedir WhatsApp y email sin requerir WhatsApp Business
+- deja trazabilidad operativa para el alta manual de `tenant` + `tenant_owner`
+
+**Consecuencia:**
+- el canal público principal B2B pasa a ser `Solicitar activación`
+- las compras B2B públicas siguen sin self-serve
+- el siguiente salto natural, si hay volumen, será notificación automática o mini-backoffice para revisar solicitudes
+
+---
+
+### ADR-020: Enlace B2B real por token one-time; `?tenant=` solo demo/testing ✅ IMPLEMENTADO
+
+**Contexto:** El uso de `?tenant=...` como enlace real de cliente final permitía reutilización ilimitada hasta agotar el saldo del tenant. Eso erosionaba la confianza comercial del canal B2B.
+
+**Decisión:** Restaurar el flujo real a `/?token=...` y dejar `?tenant=...` exclusivamente para demo/testing interno con `demo=1`.
+
+**Implementación:**
+- API `POST /api/b2b/create-token`
+- Secreto por tenant validado con `x-nubekids-tenant-secret`
+- RPC `consume_b2b_token()` para consumir de forma atómica 1 token + 1 crédito del tenant
+- `validateToken()` ya no usa `tenants.tokens_used/tokens_total`; usa `credit_accounts.balance`
+
+**Consecuencia:**
+- 1 compra = 1 token = 1 cuento
+- un link compartido no puede vaciar el saldo del tenant
+- la documentación de integración debe prohibir explícitamente `?tenant=...` en producción
+
+---
+
 ## Roadmap de Implementación
 
 ### ✅ Fase 1 — Refactor Multitenancy (COMPLETADA)
 - [x] Ampliar types.ts con TenantConfig, AgeGroup, PedagogyProfile, AgentBrief
 - [x] Crear configs de tenant (shoe-store, fashion-store, direct-b2c)
-- [x] Crear tenantLoader.ts con soporte para ?tenant= y ?token=
+- [x] Crear tenantLoader.ts con soporte para `?token=` real y `?tenant=...&demo=1` para testing interno
 - [x] Integrar Supabase para validación de tokens
 - [x] Añadir campos integrationLevel, storeName, itemLabelSingular
+- [x] Refactor 2026-04-04: introducir `itemInteractionMode` y desacoplar semántica narrativa de `tenant`
 
 ### ✅ Fase 2 — Wizard de Setup (COMPLETADA)
 - [x] Crear wizard de 4 pasos
@@ -326,21 +405,39 @@
 
 ### ✅ Landing Pages B2B + B2C (COMPLETADA — 02 Abril 2026)
 - [x] `public/b2b.html` — Landing B2B orientada a conversión de tiendas online
-  - [x] Hero con gancho de ventas (no tecnológico)
-  - [x] 3 pilares: incentivo compra / upsell checkout / recuperar carritos
-  - [x] Diferenciación clara Standard vs Premium (guión vs ilustraciones)
-  - [x] Tabla rojo/verde: problemas vs soluciones
-  - [x] Banda emocional: vínculo marca-familia
-  - [x] Sección matemática "La cuenta de la vieja"
-  - [x] Precios B2B revisados al alza
-  - [x] Sin ninguna mención a "IA"
-  - [x] CTAs a `/buy-credits`
+- [x] Hero con gancho de ventas (no tecnológico)
+- [x] 3 pilares: incentivo compra / upsell checkout / recuperar carritos
+- [x] Diferenciación clara Standard vs Premium (guión vs ilustraciones)
+- [x] Tabla rojo/verde: problemas vs soluciones
+- [x] Banda emocional: vínculo marca-familia
+- [x] Sección matemática "La cuenta de la vieja"
+- [x] Precios B2B revisados al alza
+- [x] Sin ninguna mención a "IA"
+- [x] CTAs públicos B2B a activación asistida en vez de compra directa
 - [x] `public/b2c.html` — Landing B2C para padres
-- [ ] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
+- [x] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
+
+### ✅ Captura de activación B2B V1 (COMPLETADA — 04 Abril 2026)
+- [x] CTA claro en `public/b2b.html` hacia `Solicitar activación`
+- [x] Bloque/formulario propio con email, WhatsApp, catálogo, plan y preferencia de contacto
+- [x] API route `api/b2b/activation-request.ts`
+- [x] Tabla `b2b_activation_requests` en Supabase
+- [x] Copy de proceso: “Te activamos la tienda y te damos acceso”
+- [x] Documentar runbook interno de alta manual en `HANDOFF.md`
+
+### ✅ Refuerzo de seguridad B2B one-time (COMPLETADA — 04 Abril 2026)
+- [x] Restaurar `?token=` como flujo real de usuario final B2B
+- [x] Reservar `?tenant=` para demo/testing interno con `demo=1`
+- [x] Crear `api/b2b/create-token.ts`
+- [x] Crear migración `20260404_b2b_secure_token_flow.sql`
+- [x] Añadir RPC `consume_b2b_token()`
+- [x] Consumir token + crédito de forma atómica antes de generar
+- [x] Reescribir `docs/INTEGRACION_PREMIUM.md` para integración segura
+- [x] Actualizar `HANDOFF.md`, `PLANNING.md`, simulador y `docs/BUSINESS_TECH_SPEC.md`
 
 ### ✅ Fase 10 — Flujo B2B → B2C Completo (COMPLETADA)
 - [x] Implementar carga de `item_image` desde URL (`src/utils/itemImageLoader.ts`) — 3 fallbacks CORS
-- [x] Ampliar query params soportados: `?tenant=&item=&item_image=&customer_email=&ref=`
+- [x] Ampliar modo demo `?tenant=...&demo=1&item=&item_image=&customer_email=&ref=`
 - [x] Implementar lógica de sesión anónima (1er cuento gratis via tenant)
 - [x] Pantalla "Promoción no disponible" si tenant sin créditos (`promo-unavailable`)
 - [x] Implementar flujo "crear otro cuento" → `PostStoryActions.tsx` → registro B2C
@@ -361,6 +458,7 @@
 - [ ] Crear términos de servicio
 - [ ] Crear aviso legal
 - [ ] Crear política de cookies
+- [ ] Revisar diariamente `b2b_activation_requests` y validar el circuito manual de provisioning
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
 ### ⏳ Fase 12 — Dashboard de Tenant (POST-LANZAMIENTO)
@@ -391,6 +489,9 @@
 | Item | Prioridad | Estado | Fase |
 |------|-----------|--------|------|
 | Precios B2B desincronizados (landing vs Stripe vs Supabase) | **ALTA** | ⏳ Pendiente | - |
+| Riesgo de drenaje de créditos vía `?tenant=` reutilizable | **ALTA** | ✅ Resuelto con token one-time | - |
+| Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas | - |
+| No hay notificación automática de nuevas solicitudes B2B | Media | Aceptable V1 — revisión manual en Supabase | 11 |
 | Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 — consume_credit es atómico | 10 |
 | Fuentes Fredoka/Nunito no importadas en index.css | Media | ✅ Resuelto sesión 2026-04-02 | 10 |
 | Google OAuth en GCP + Supabase | Media | ⏳ Cuando haya dominio | 7 |

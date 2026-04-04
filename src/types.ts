@@ -68,6 +68,7 @@ export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
 // ============================================
 
 export type VerticalId = 'shoe-store' | 'fashion-store' | 'direct-b2c';
+export type ItemInteractionMode = 'generic' | 'wearable' | 'interactive';
 
 // Nivel de integración del tenant
 export type IntegrationLevel = 'premium' | 'standard' | 'b2c';
@@ -76,6 +77,7 @@ export interface TenantConfig {
   tenantId: string;
   tenantName: string;
   verticalId: VerticalId;
+  itemInteractionMode: ItemInteractionMode;
 
   // Configuración del objeto mágico
   itemLabel: string;              // "zapatos" | "prenda" | "accesorio"
@@ -233,8 +235,9 @@ export interface UserProfile {
 // ============================================
 
 /**
- * Query params que llegan desde el link del e-Commerce.
- * Ejemplo: /?tenant=zapatos-lopez-001&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
+ * Query params B2B demo/testing.
+ * El flujo real de cliente final entra por `/?token=...`.
+ * Ejemplo demo: /?tenant=shoe-store-default&demo=1&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
  */
 export interface B2BSessionParams {
   tenant: string;

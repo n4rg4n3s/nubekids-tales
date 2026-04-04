@@ -1,6 +1,15 @@
 ﻿// src/services/tokenService.ts
 import { supabase } from '../lib/supabase';
 
+export type TokenErrorCode =
+  | 'not_found'
+  | 'already_used'
+  | 'expired'
+  | 'tenant_not_found'
+  | 'no_credits'
+  | 'service_unavailable'
+  | 'connection_error';
+
 export interface TokenData {
   id: string;
   token: string;
@@ -33,9 +42,16 @@ export interface TenantData {
 
 export interface ValidateTokenResult {
   valid: boolean;
+  code?: TokenErrorCode;
   error?: string;
   token?: TokenData;
   tenant?: TenantData;
+}
+
+export interface ConsumeB2BTokenResult {
+  success: boolean;
+  code?: TokenErrorCode | 'consumed';
+  error?: string;
 }
 
 /**
@@ -43,7 +59,11 @@ export interface ValidateTokenResult {
  */
 export async function validateToken(tokenCode: string): Promise<ValidateTokenResult> {
   if (!supabase) {
-    return { valid: false, error: 'Servicio no disponible (Supabase no configurado)' };
+    return {
+      valid: false,
+      code: 'service_unavailable',
+      error: 'Servicio no disponible (Supabase no configurado)',
+    };
   }
 
   try {
@@ -54,15 +74,15 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
       .single();
 
     if (tokenError || !tokenRow) {
-      return { valid: false, error: 'Token no válido o no encontrado' };
+      return { valid: false, code: 'not_found', error: 'Token no válido o no encontrado' };
     }
 
     if (tokenRow.is_used) {
-      return { valid: false, error: 'Este enlace ya ha sido utilizado' };
+      return { valid: false, code: 'already_used', error: 'Este enlace ya ha sido utilizado' };
     }
 
     if (tokenRow.expires_at && new Date(tokenRow.expires_at) < new Date()) {
-      return { valid: false, error: 'Este enlace ha expirado' };
+      return { valid: false, code: 'expired', error: 'Este enlace ha expirado' };
     }
 
     const { data: tenantRow, error: tenantError } = await supabase
@@ -72,11 +92,26 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
       .single();
 
     if (tenantError || !tenantRow) {
-      return { valid: false, error: 'Tenant no encontrado' };
+      return { valid: false, code: 'tenant_not_found', error: 'Tenant no encontrado' };
     }
 
-    if (tenantRow.tokens_used >= tenantRow.tokens_total) {
-      return { valid: false, error: 'El establecimiento no tiene créditos disponibles' };
+    const { data: creditAccount, error: creditError } = await supabase
+      .from('credit_accounts')
+      .select('balance')
+      .eq('tenant_id', tenantRow.tenant_id)
+      .maybeSingle();
+
+    if (creditError) {
+      console.error('Error checking tenant credit balance:', creditError);
+      return { valid: false, code: 'connection_error', error: 'Error de conexión' };
+    }
+
+    if ((creditAccount?.balance ?? 0) < 1) {
+      return {
+        valid: false,
+        code: 'no_credits',
+        error: 'El establecimiento no tiene créditos disponibles',
+      };
     }
 
     return {
@@ -108,34 +143,52 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
     };
   } catch (error) {
     console.error('Error validating token:', error);
-    return { valid: false, error: 'Error de conexión' };
+    return { valid: false, code: 'connection_error', error: 'Error de conexión' };
   }
 }
 
 /**
- * Marks a token as used (call this when story generation starts)
+ * Consume de forma atómica 1 token B2B one-time + 1 crédito del tenant.
  */
-export async function consumeToken(tokenId: string): Promise<boolean> {
+export async function consumeB2BToken(
+  tokenCode: string,
+  storySessionId?: string
+): Promise<ConsumeB2BTokenResult> {
   if (!supabase) {
-    console.error('Cannot consume token: Supabase not configured');
-    return false;
+    return {
+      success: false,
+      code: 'service_unavailable',
+      error: 'Servicio no disponible (Supabase no configurado)',
+    };
   }
 
   try {
-    const { error: tokenError } = await supabase
-      .from('tokens')
-      .update({ is_used: true, used_at: new Date().toISOString() })
-      .eq('id', tokenId);
+    const { data, error } = await supabase.rpc('consume_b2b_token', {
+      p_token: tokenCode,
+      p_story_session_id: storySessionId ?? null,
+    });
 
-    if (tokenError) {
-      console.error('Error consuming token:', tokenError);
-      return false;
+    if (error) {
+      console.error('Error consuming B2B token:', error);
+      return {
+        success: false,
+        code: 'connection_error',
+        error: 'Error de conexión al consumir el token',
+      };
     }
 
-    return true;
+    return {
+      success: data?.success === true,
+      code: data?.code,
+      error: data?.error,
+    };
   } catch (error) {
-    console.error('Error consuming token:', error);
-    return false;
+    console.error('Error consuming B2B token:', error);
+    return {
+      success: false,
+      code: 'connection_error',
+      error: 'Error de conexión al consumir el token',
+    };
   }
 }
 
