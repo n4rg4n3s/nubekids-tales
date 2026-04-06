@@ -4,7 +4,10 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { TenantConfig } from '../../types';
-import { getItemDescriptionFallbackPlaceholder } from '../../utils/itemInteraction';
+import {
+  getItemDescriptionFallbackPlaceholder,
+  getItemInteractionStepCopy,
+} from '../../utils/itemInteraction';
 
 export interface ItemData {
   image: string | null;
@@ -32,6 +35,7 @@ export default function StepItem({
   prefilledItemImageUrl,
 }: StepItemProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const stepCopy = getItemInteractionStepCopy(tenantConfig.itemInteractionMode);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,13 +50,6 @@ export default function StepItem({
 
   const removeImage = () => {
     onChange({ ...data, image: null });
-  };
-
-  const getTitle = () => {
-    if (tenantConfig.storeName) {
-      return `${tenantConfig.itemLabelSingular} de ${tenantConfig.storeName}`;
-    }
-    return tenantConfig.itemLabelSingular || 'El Objeto Mágico';
   };
 
   const showStoreSuggestion =
@@ -73,10 +70,10 @@ export default function StepItem({
       {/* Header */}
       <div className="text-center mb-4">
         <h3 className="text-lg font-bold text-[#1E293B]">
-          {getTitle()}
+          {stepCopy.stepTitle}
         </h3>
         <p className="text-sm text-[#1E293B]/60 mt-1">
-          El objeto que tendrá poderes mágicos en la historia
+          {stepCopy.stepSubtitle}
         </p>
       </div>
 
@@ -118,7 +115,7 @@ export default function StepItem({
           <p className="text-sm text-[#1E293B]">
             <span className="font-bold">💡 Sugerencia:</span>{' '}
             ¿Has comprado algo especial en <strong>{tenantConfig.storeName}</strong>?{' '}
-            ¡Sube una foto y lo convertiremos en el objeto mágico del cuento!
+            Súbelo y lo convertiremos en una parte importante del cuento.
           </p>
         </motion.div>
       )}
@@ -126,7 +123,7 @@ export default function StepItem({
       {/* Upload de imagen */}
       <div>
         <label className="block text-sm font-bold text-[#1E293B] mb-2">
-          Foto del objeto{' '}
+          {stepCopy.uploadLabel}{' '}
           <span className="text-[#1E293B]/50 font-normal">(opcional)</span>
         </label>
 
@@ -210,7 +207,7 @@ export default function StepItem({
             <div className="text-center">
               <p className="text-4xl mb-2">📸</p>
               <p className="text-[#1E293B]/60 font-medium">
-                Sube una foto de {tenantConfig.itemLabel}
+                {stepCopy.uploadPrompt}
               </p>
               <p className="text-[#1E293B]/40 text-sm mt-1">JPG, PNG o WebP</p>
             </div>
@@ -234,13 +231,13 @@ export default function StepItem({
             className="mb-3 p-3 bg-[#8B5CF6]/10 rounded-lg border border-[#8B5CF6]/30"
           >
             <p className="text-sm text-[#1E293B] font-medium">
-              ✏️ <strong>Sin foto?</strong> No te preocupes. Describe el objeto y lo incluiremos en el cuento.
+              ✏️ <strong>Sin foto?</strong> {stepCopy.noPhotoHint}
             </p>
           </motion.div>
         )}
 
         <label className="block text-sm font-bold text-[#1E293B] mb-2">
-          Descripción del objeto{' '}
+          {stepCopy.descriptionLabel}{' '}
           {!data.image && !hasUrlOnlyPreview && (
             <span className="text-[#8B5CF6]">(recomendado)</span>
           )}
@@ -248,7 +245,7 @@ export default function StepItem({
         <textarea
           value={data.description}
           onChange={(e) => onChange({ ...data, description: e.target.value })}
-          placeholder={tenantConfig.itemPlaceholderText || getItemDescriptionFallbackPlaceholder(tenantConfig.itemInteractionMode)}
+          placeholder={getItemDescriptionFallbackPlaceholder(tenantConfig.itemInteractionMode)}
           className="w-full px-4 py-3 rounded-xl border-3 border-[#1E293B]/30 text-sm focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] resize-none"
           rows={3}
         />
@@ -283,7 +280,7 @@ export default function StepItem({
           animate={{ opacity: 1 }}
           className="text-sm text-[#1E293B]/50 text-center py-4 bg-gray-50 rounded-xl"
         >
-          💫 Puedes continuar sin objeto. El cuento tendrá magia de todas formas.
+          💫 {stepCopy.emptyStateHint}
         </motion.p>
       )}
     </motion.div>

@@ -3,18 +3,24 @@ import type { TenantConfig } from '../types';
 import { shoeStoreConfig } from './tenants/shoe-store.config';
 import { fashionStoreConfig } from './tenants/fashion-store.config';
 import { directB2cConfig } from './tenants/direct-b2c.config';
+import { wearableDemoConfig } from './tenants/wearable-demo.config';
+import { interactiveDemoConfig } from './tenants/interactive-demo.config';
 
 /**
  * TENANT LOADER
  * 
  * Reads tenant_id from:
- * 1. Query param demo-only: ?tenant=shoe-store-default&demo=1
+ * 1. Query param demo-only: ?tenant=wearable-demo-default&demo=1
  * 2. Fallback: direct-b2c (default for B2C users)
  * 
- * In V2: This will fetch config from API instead of local files.
+ * IMPORTANTE:
+ * - Este loader queda reservado a demos locales y compatibilidad legacy.
+ * - El flujo B2B real por `?token=...` debe construir la config desde datos reales del tenant.
  */
 
 const TENANT_CONFIGS: Record<string, TenantConfig> = {
+  'wearable-demo-default': wearableDemoConfig,
+  'interactive-demo-default': interactiveDemoConfig,
   'shoe-store-default': shoeStoreConfig,
   'fashion-store-default': fashionStoreConfig,
   'direct-b2c': directB2cConfig,

@@ -1,12 +1,12 @@
 # BUSINESS_TECH_SPEC.md — NubeKids Platform
 # Especificación Técnica de Negocio: Auth, Pagos, Créditos, Integración e-Commerce
 
-> **Versión:** 1.0
-> **Fecha:** 2026-03-30
-> **Estado:** Aprobado para implementación
+> **Versión:** 1.1
+> **Fecha:** 2026-04-06
+> **Estado:** Vigente para operación V1
 > **Audiencia:** Desarrollador junior que implementará estas features
 
-> **Nota 2026-04-04:** Este documento sigue siendo válido en negocio y flujos, pero el comportamiento narrativo del objeto ya no debe deducirse de `shoe-store` / `fashion-store`. La fuente de verdad actual es `itemInteractionMode`. Además, la decisión operativa vigente para B2B V1 es onboarding manual asistido, no self-serve.
+> **Nota 2026-04-06:** Este documento sigue siendo válido en negocio y flujos, pero el comportamiento narrativo del objeto ya no debe deducirse de `shoe-store` / `fashion-store`. La fuente de verdad actual es `itemInteractionMode`, persistida en `public.tenants.item_interaction_mode`. El runtime B2B real construye `TenantConfig` desde los datos reales del tenant. Además, la decisión operativa vigente para B2B V1 es onboarding manual asistido, no self-serve.
 
 ---
 
@@ -65,23 +65,23 @@ CANAL B2C (Padre paga):
 
 Dos niveles de servicio. La diferencia técnica es si inyectan foto del producto o solo el nombre de la tienda.
 
-#### Plan Standard (Link-based)
-El e-Commerce recibe un link personalizado. El nombre de la tienda se teje en la narrativa del cuento ("en la tienda mágica de Zapatos López..."). NO se inyecta foto del producto.
+#### Plan Standard (token one-time)
+El e-Commerce emite un link one-time server-side. El nombre de la tienda se teje en la narrativa del cuento ("en la tienda mágica de Zapatos López..."). NO se inyecta foto del producto.
 
 | Pack | Cuentos | Precio | Por cuento |
 |------|---------|--------|------------|
-| Starter | 50 | 25€ | 0.50€ |
-| Growth | 200 | 79€ | 0.40€ |
-| Scale | 500 | 159€ | 0.32€ |
+| Starter | 50 | 97€ | 1,94€ |
+| Growth | 200 | 340€ | 1,70€ |
+| Scale | 500 | 790€ | 1,58€ |
 
-#### Plan Premium (Widget con foto del producto)
-El e-Commerce integra un snippet de código en su checkout. La foto del producto comprado se inyecta automáticamente en el wizard del cuento como "objeto mágico".
+#### Plan Premium (token one-time + producto inyectado)
+El e-Commerce emite el token desde backend e inyecta `itemName` + `itemImageUrl`. La foto del producto comprado se inyecta automáticamente en el wizard del cuento como "objeto mágico". El widget embebible queda como evolución V2, no como requisito de V1.
 
 | Pack | Cuentos | Precio | Por cuento |
 |------|---------|--------|------------|
-| Starter | 50 | 39€ | 0.78€ |
-| Growth | 200 | 129€ | 0.65€ |
-| Scale | 500 | 259€ | 0.52€ |
+| Starter | 50 | 145€ | 2,90€ |
+| Growth | 200 | 490€ | 2,45€ |
+| Scale | 500 | 990€ | 1,98€ |
 
 > **Por qué Premium es más caro:** Mayor consumo de API (imagen adicional procesada por Gemini), soporte técnico para integración, y mayor valor percibido (el producto real aparece en el cuento).
 
@@ -89,9 +89,9 @@ El e-Commerce integra un snippet de código en su checkout. La foto del producto
 
 | Pack | Cuentos | Precio |
 |------|---------|--------|
-| Prueba | 1 | 2.99€ |
-| Familia | 3 | 6.99€ |
-| Regala Magia | 5 | 9.99€ |
+| Prueba | 1 | 4,97€ |
+| Familia | 3 | 13,90€ |
+| Regala Magia | 5 | 21,90€ |
 
 > Sin suscripción en V1. Packs de un solo pago. Razón: el churn de suscripciones para este producto sería muy alto. Mejor capturar valor upfront.
 
@@ -172,6 +172,7 @@ CREATE POLICY "Admins can read all profiles"
 ALTER TABLE public.tenants ADD COLUMN IF NOT EXISTS
   owner_id UUID REFERENCES auth.users(id),
   plan_level TEXT DEFAULT 'standard' CHECK (plan_level IN ('standard', 'premium')),
+  item_interaction_mode TEXT CHECK (item_interaction_mode IN ('generic', 'wearable', 'interactive')),
   credits_balance INTEGER DEFAULT 0,
   credits_total_purchased INTEGER DEFAULT 0,
   stripe_customer_id TEXT,
@@ -358,7 +359,7 @@ CREATE TABLE public.credit_packs (
   description TEXT,
   channel TEXT NOT NULL CHECK (channel IN ('b2b_standard', 'b2b_premium', 'b2c')),
   credits INTEGER NOT NULL,
-  price_cents INTEGER NOT NULL,  -- En céntimos de euro (2999 = 29.99€)
+  price_cents INTEGER NOT NULL,  -- En céntimos de euro (2999 = 29,99€)
   currency TEXT DEFAULT 'eur',
   stripe_price_id TEXT,  -- ID del Price en Stripe
   is_active BOOLEAN DEFAULT true,
@@ -368,17 +369,17 @@ CREATE TABLE public.credit_packs (
 -- Insertar catálogo inicial
 INSERT INTO public.credit_packs (id, name, channel, credits, price_cents, sort_order) VALUES
   -- B2B Standard
-  ('b2b-std-starter', 'Starter',  'b2b_standard', 50,  2500,  1),
-  ('b2b-std-growth',  'Growth',   'b2b_standard', 200, 7900,  2),
-  ('b2b-std-scale',   'Scale',    'b2b_standard', 500, 15900, 3),
+  ('b2b-std-starter', 'Starter',  'b2b_standard', 50,   9700,  1),
+  ('b2b-std-growth',  'Growth',   'b2b_standard', 200, 34000,  2),
+  ('b2b-std-scale',   'Scale',    'b2b_standard', 500, 79000,  3),
   -- B2B Premium
-  ('b2b-prm-starter', 'Starter',  'b2b_premium',  50,  3900,  1),
-  ('b2b-prm-growth',  'Growth',   'b2b_premium',  200, 12900, 2),
-  ('b2b-prm-scale',   'Scale',    'b2b_premium',  500, 25900, 3),
+  ('b2b-prm-starter', 'Starter',  'b2b_premium',  50,  14500,  1),
+  ('b2b-prm-growth',  'Growth',   'b2b_premium',  200, 49000,  2),
+  ('b2b-prm-scale',   'Scale',    'b2b_premium',  500, 99000,  3),
   -- B2C
-  ('b2c-trial',       'Prueba',        'b2c', 1,  299,  1),
-  ('b2c-family',      'Familia',       'b2c', 3,  699,  2),
-  ('b2c-gift',        'Regala Magia',  'b2c', 5,  999,  3);
+  ('b2c-trial',       'Prueba',        'b2c', 1,   497,  1),
+  ('b2c-family',      'Familia',       'b2c', 3,  1390,  2),
+  ('b2c-gift',        'Regala Magia',  'b2c', 5,  2190,  3);
 ```
 
 ### 3.2 Funciones RPC para Créditos
@@ -561,8 +562,8 @@ export async function getCreditPacks(
 PASOS EN STRIPE DASHBOARD:
 1. Crear cuenta en stripe.com (ya tienes cuenta)
 2. Ir a Products > crear un producto por cada credit_pack:
-   - "NubeKids B2B Standard - Starter (50 cuentos)" → Price: 25.00€ one-time
-   - "NubeKids B2B Standard - Growth (200 cuentos)" → Price: 79.00€ one-time
+   - "NubeKids B2B Standard - Starter (50 cuentos)" → Price: 97.00€ one-time
+   - "NubeKids B2B Standard - Growth (200 cuentos)" → Price: 340.00€ one-time
    - ... (repetir para cada pack)
 3. Copiar el Price ID (price_xxxx) de cada uno
 4. Actualizar la tabla credit_packs con el stripe_price_id correspondiente
@@ -783,8 +784,9 @@ Payload mínimo:
 1. NubeKids valida el token y el saldo del tenant
 2. El wizard se abre sin login
 3. La historia puede mencionar la tienda via `tenantConfig.storeName`
-4. Se consume 1 token + 1 crédito del tenant
-5. Al terminar: "¿Quieres crear otro cuento?" → conversión a registro B2C
+4. El copy del wizard y la semántica del objeto se resuelven por `itemInteractionMode`
+5. Se consume 1 token + 1 crédito del tenant
+6. Al terminar: "¿Quieres crear otro cuento?" → conversión a registro B2C
 
 ### 5.3 Plan Premium — Token one-time + datos del producto
 
@@ -803,7 +805,7 @@ Payload típico:
 Ejemplo de emisión desde backend:
 
 ```ts
-const response = await fetch('https://stories.nubekids.io/api/b2b/create-token', {
+const response = await fetch('https://nubekids-tales.vercel.app/api/b2b/create-token', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -819,7 +821,7 @@ const response = await fetch('https://stories.nubekids.io/api/b2b/create-token',
 });
 
 const data = await response.json();
-const storyUrl = data.url; // https://stories.nubekids.io/?token=nkt_...
+const storyUrl = data.url; // https://nubekids-tales.vercel.app/?token=nkt_...
 ```
 
 #### Opción B: Widget Embebible (avanzado, futuro V2)
@@ -904,7 +906,7 @@ FASE 1: ENTRADA DESDE E-COMMERCE (Gratis para el usuario)
          ▼
   [Clic en link/botón]
          │
-         │  URL real: stories.nubekids.io/?token=nkt_xxx
+         │  URL real: nubekids-tales.vercel.app/?token=nkt_xxx
          │
          ▼
   [NubeKids: Carga config del tenant]
@@ -942,7 +944,7 @@ FASE 2: CONVERSIÓN A B2C (El usuario paga)
          │    [Pantalla de registro / login]
          │         │
          │         │  "Crea tu cuenta NubeKids para guardar tus cuentos
-         │         │   y crear nuevos desde solo 2.99€"
+         │         │   y crear nuevos desde solo 4,97€"
          │         │
          │         ├── Registro con email + password
          │         ├── Registro con Google

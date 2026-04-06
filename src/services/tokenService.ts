@@ -1,5 +1,17 @@
 ﻿// src/services/tokenService.ts
-import { supabase } from '../lib/supabase';
+import type {
+  BrandColors,
+  IntegrationLevel,
+  ItemInteractionMode,
+  TenantConfig,
+} from '../types';
+import { buildTenantConfigFromRuntimeTenant } from '../config/tenantConfigFactory';
+import { inferItemInteractionModeFromLegacy } from '../utils/itemInteraction';
+
+async function getSupabaseClient() {
+  const { supabase } = await import('../lib/supabase');
+  return supabase;
+}
 
 export type TokenErrorCode =
   | 'not_found'
@@ -27,14 +39,11 @@ export interface TenantData {
   tenantId: string;
   name: string;
   brandName: string;
-  integrationLevel: 'premium' | 'standard' | 'b2c';
-  verticalId: string;
-  itemLabel: string;
-  brandColors: {
-    primary: string;
-    accent: string;
-    background: string;
-  };
+  integrationLevel: IntegrationLevel;
+  verticalId: string | null;
+  itemInteractionMode: ItemInteractionMode;
+  itemLabel: string | null;
+  brandColors: BrandColors;
   pedagogyEnabled: boolean;
   tokensTotal: number;
   tokensUsed: number;
@@ -46,6 +55,7 @@ export interface ValidateTokenResult {
   error?: string;
   token?: TokenData;
   tenant?: TenantData;
+  tenantConfig?: TenantConfig;
 }
 
 export interface ConsumeB2BTokenResult {
@@ -58,6 +68,7 @@ export interface ConsumeB2BTokenResult {
  * Validates a token from URL and returns tenant + token data
  */
 export async function validateToken(tokenCode: string): Promise<ValidateTokenResult> {
+  const supabase = await getSupabaseClient();
   if (!supabase) {
     return {
       valid: false,
@@ -114,6 +125,23 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
       };
     }
 
+    const tenantData: TenantData = {
+      id: tenantRow.id,
+      tenantId: tenantRow.tenant_id,
+      name: tenantRow.name,
+      brandName: tenantRow.brand_name,
+      integrationLevel: normalizeIntegrationLevel(tenantRow.integration_level),
+      verticalId: tenantRow.vertical_id ?? null,
+      itemInteractionMode:
+        normalizeRuntimeMode(tenantRow.item_interaction_mode) ??
+        inferItemInteractionModeFromLegacy(tenantRow.vertical_id, tenantRow.item_label),
+      itemLabel: tenantRow.item_label ?? null,
+      brandColors: normalizeBrandColors(tenantRow.brand_colors),
+      pedagogyEnabled: tenantRow.pedagogy_enabled ?? true,
+      tokensTotal: tenantRow.tokens_total,
+      tokensUsed: tenantRow.tokens_used,
+    };
+
     return {
       valid: true,
       token: {
@@ -127,19 +155,8 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
         isUsed: tokenRow.is_used,
         expiresAt: tokenRow.expires_at,
       },
-      tenant: {
-        id: tenantRow.id,
-        tenantId: tenantRow.tenant_id,
-        name: tenantRow.name,
-        brandName: tenantRow.brand_name,
-        integrationLevel: tenantRow.integration_level,
-        verticalId: tenantRow.vertical_id,
-        itemLabel: tenantRow.item_label,
-        brandColors: tenantRow.brand_colors,
-        pedagogyEnabled: tenantRow.pedagogy_enabled,
-        tokensTotal: tenantRow.tokens_total,
-        tokensUsed: tenantRow.tokens_used,
-      },
+      tenant: tenantData,
+      tenantConfig: buildTenantConfigFromRuntimeTenant(tenantData),
     };
   } catch (error) {
     console.error('Error validating token:', error);
@@ -154,6 +171,7 @@ export async function consumeB2BToken(
   tokenCode: string,
   storySessionId?: string
 ): Promise<ConsumeB2BTokenResult> {
+  const supabase = await getSupabaseClient();
   if (!supabase) {
     return {
       success: false,
@@ -199,4 +217,30 @@ export function getTokenFromUrl(): string | null {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
   return params.get('token');
+}
+
+function normalizeIntegrationLevel(level: unknown): IntegrationLevel {
+  if (level === 'premium' || level === 'standard' || level === 'b2c') {
+    return level;
+  }
+
+  return 'standard';
+}
+
+function normalizeRuntimeMode(value: unknown): ItemInteractionMode | null {
+  if (value === 'generic' || value === 'wearable' || value === 'interactive') {
+    return value;
+  }
+
+  return null;
+}
+
+function normalizeBrandColors(value: unknown): BrandColors {
+  const colors = value as Partial<BrandColors> | null | undefined;
+
+  return {
+    primary: colors?.primary || '#8B5CF6',
+    accent: colors?.accent || '#FBBF24',
+    background: colors?.background || '#FDFBF7',
+  };
 }

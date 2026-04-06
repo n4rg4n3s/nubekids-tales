@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Política de Privacidad · Winke</title>
+    <meta name="description"
+        content="Política de Privacidad de Winke (winke.fun). Cómo tratamos, protegemos y gestionamos tus datos personales y los de los menores a tu cargo." />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        /* ── Design Tokens ── */
+        :root {
+            --magic-purple: #8B5CF6;
+            --purple-dark: #6D28D9;
+            --purple-light: #EDE9FE;
+            --yellow: #FBBF24;
+            --cream: #FDFBF7;
+            --ink: #1E293B;
+            --ink-soft: #475569;
+            --sky: #BAE6FD;
+            --mint: #A7F3D0;
+            --border: #1E293B;
+            --shadow: 4px 4px 0px #1E293B;
+            --shadow-sm: 2px 2px 0px #1E293B;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        /* ── Reset ── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--cream);
+            color: var(--ink);
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        /* ── Header ── */
+        .site-header {
+            background: var(--magic-purple);
+            border-bottom: 3px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .site-header .logo {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .site-header .logo span {
+            color: var(--yellow);
+        }
+
+        .back-link {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 6px 16px;
+            transition: background 0.15s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--magic-purple);
+            border-bottom: 3px solid var(--border);
+            padding: 48px 24px 56px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 4px 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-meta span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .hero-meta span strong {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* ── Layout ── */
+        .page-wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ── Table of Contents ── */
+        .toc {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-bottom: 48px;
+        }
+
+        .toc h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--magic-purple);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: toc-counter;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 32px;
+        }
+
+        @media (max-width: 600px) {
+            .toc ol {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .toc li {
+            counter-increment: toc-counter;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .toc li::before {
+            content: counter(toc-counter) ". ";
+            color: var(--magic-purple);
+            font-weight: 700;
+        }
+
+        .toc li a {
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .toc li a:hover {
+            color: var(--magic-purple);
+            text-decoration: underline;
+        }
+
+        /* ── Alert Box ── */
+        .alert {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 36px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .alert-purple {
+            background: var(--purple-light);
+            border-left: 6px solid var(--magic-purple);
+        }
+
+        .alert-yellow {
+            background: #FFFBEB;
+            border-left: 6px solid var(--yellow);
+        }
+
+        .alert-mint {
+            background: #ECFDF5;
+            border-left: 6px solid #10B981;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-body {
+            flex: 1;
+        }
+
+        .alert-body strong {
+            display: block;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .alert-body p {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+        }
+
+        /* ── Sections ── */
+        .section {
+            margin-bottom: 56px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-number {
+            background: var(--magic-purple);
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--magic-purple);
+            margin: 24px 0 10px;
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Data Table ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .data-table thead tr {
+            background: var(--ink);
+        }
+
+        .data-table thead th {
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: #F8FAFC;
+        }
+
+        .data-table tbody td {
+            padding: 12px 16px;
+            color: var(--ink-soft);
+            vertical-align: top;
+        }
+
+        .data-table tbody td:first-child {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        /* ── Provider Cards ── */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .provider-card {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+        }
+
+        .provider-card .provider-name {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .provider-card .provider-role {
+            font-size: 0.78rem;
+            color: var(--magic-purple);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .provider-card p {
+            font-size: 0.82rem !important;
+            color: var(--ink-soft) !important;
+            line-height: 1.5 !important;
+        }
+
+        .tag {
+            display: inline-block;
+            background: var(--purple-light);
+            color: var(--purple-dark);
+            border: 1px solid var(--magic-purple);
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            margin-top: 8px;
+        }
+
+        .tag-green {
+            background: #ECFDF5;
+            color: #065F46;
+            border-color: #10B981;
+        }
+
+        .tag-yellow {
+            background: #FFFBEB;
+            color: #92400E;
+            border-color: var(--yellow);
+        }
+
+        /* ── Rights Cards ── */
+        .rights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .right-card {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            padding: 18px;
+        }
+
+        .right-card .right-title {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .right-card p {
+            font-size: 0.85rem !important;
+            color: var(--ink-soft) !important;
+            line-height: 1.55 !important;
+            margin: 0 !important;
+        }
+
+        /* ── Placeholder ── */
+        .ph {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.85em;
+            border: 1.5px dashed var(--border);
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* ── CTA Box ── */
+        .cta-box {
+            background: var(--ink);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .cta-box .cta-text strong {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            color: #fff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .cta-box .cta-text p {
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.65);
+            margin: 0 !important;
+        }
+
+        .cta-email {
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 24px;
+            text-decoration: none;
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .cta-email:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px var(--border);
+        }
+
+        /* ── Footer ── */
+        .page-footer {
+            background: var(--ink);
+            border-top: 3px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .page-footer p {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.85rem;
+        }
+
+        .page-footer a {
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        .page-footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .page-footer .footer-links a {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.55);
+            transition: color 0.15s;
+        }
+
+        .page-footer .footer-links a:hover {
+            color: var(--yellow);
+        }
+
+        /* ── Print ── */
+        @media print {
+
+            .site-header,
+            .back-link,
+            .hero-badge {
+                display: none;
+            }
+
+            body {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ────────────────────── HEADER ────────────────────── -->
+    <header class="site-header">
+        <a href="/" class="logo">Winke<span>.</span></a>
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </header>
+
+    <!-- ────────────────────── HERO ────────────────────── -->
+    <div class="hero">
+        <div class="hero-badge">📋 Documento Legal</div>
+        <h1>Política de Privacidad</h1>
+        <p>Tu privacidad y la de los más pequeños son nuestra prioridad absoluta. Aquí te explicamos todo con claridad.
+        </p>
+        <div class="hero-meta">
+            <span>🌐 <strong>winke.fun</strong></span>
+            <span>📅 Última actualización: <strong><span class="ph">DD/MM/AAAA</span></strong></span>
+            <span>⚖️ Marco legal: <strong>RGPD · LOPDGDD · LSSI</strong></span>
+        </div>
+    </div>
+
+    <!-- ────────────────────── MAIN ────────────────────── -->
+    <main class="page-wrap">
+
+        <!-- Aviso importante -->
+        <div class="alert alert-yellow">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-body">
+                <strong>Aviso importante antes de continuar</strong>
+                <p>Esta plataforma genera contenido personalizado para menores de edad. Si eres padre, madre o tutor
+                    legal, la lectura de esta política es especialmente importante. El uso del servicio implica que eres
+                    mayor de 18 años y actúas en nombre del menor a tu cargo.</p>
+            </div>
+        </div>
+
+        <!-- Tabla de contenido -->
+        <nav class="toc" aria-label="Tabla de contenido">
+            <h2>📌 Contenido de este documento</h2>
+            <ol>
+                <li><a href="#responsable">Identidad del Responsable</a></li>
+                <li><a href="#dpd">Delegado de Protección de Datos</a></li>
+                <li><a href="#menores">Menores de Edad</a></li>
+                <li><a href="#datos">Datos que Tratamos</a></li>
+                <li><a href="#privacidad-diseno">Privacidad desde el Diseño</a></li>
+                <li><a href="#finalidad">Finalidad y Base Legitimadora</a></li>
+                <li><a href="#b2b">Relación con Tiendas Asociadas (B2B)</a></li>
+                <li><a href="#destinatarios">Proveedores y Transferencias</a></li>
+                <li><a href="#conservacion">Conservación de los Datos</a></li>
+                <li><a href="#derechos">Tus Derechos</a></li>
+                <li><a href="#seguridad">Medidas de Seguridad</a></li>
+                <li><a href="#decisiones-automatizadas">Decisiones Automatizadas</a></li>
+                <li><a href="#cookies">Cookies</a></li>
+                <li><a href="#cambios">Cambios en esta Política</a></li>
+                <li><a href="#contacto">Contacto y Reclamaciones</a></li>
+            </ol>
+        </nav>
+
+
+        <!-- ── 1. RESPONSABLE ── -->
+        <section class="section" id="responsable">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>Identidad del Responsable del Tratamiento</h2>
+            </div>
+
+            <p>En cumplimiento del artículo 13 del Reglamento (UE) 2016/679 (RGPD) y del artículo 10 de la Ley 34/2002,
+                de Servicios de la Sociedad de la Información (LSSI-CE), le informamos de los datos identificativos del
+                responsable:</p>
+
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td>Titular / Razón social</td>
+                        <td><span class="ph">[NOMBRE EMPRESA / AUTÓNOMO]</span></td>
+                    </tr>
+                    <tr>
+                        <td>NIF / CIF</td>
+                        <td><span class="ph">[NIF/CIF]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Domicilio social</td>
+                        <td><span class="ph">[DIRECCIÓN COMPLETA — no apartado de correos]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Número de inscripción en el Registro Mercantil</td>
+                        <td><span class="ph">[DATOS REGISTRALES, si aplica]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Correo electrónico de contacto</td>
+                        <td><span class="ph">hola@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dominio web</td>
+                        <td>winke.fun</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>En adelante, el titular será referido como <strong>"Winke"</strong>, <strong>"nosotros"</strong> o
+                <strong>"la Plataforma"</strong>.</p>
+        </section>
+
+
+        <!-- ── 2. DPD ── -->
+        <section class="section" id="dpd">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Delegado de Protección de Datos (DPD)</h2>
+            </div>
+
+            <div class="alert alert-purple">
+                <div class="alert-icon">🛡️</div>
+                <div class="alert-body">
+                    <strong>¿Por qué tenemos un DPD?</strong>
+                    <p>Dado que Winke trata de forma sistemática datos de menores de edad —categoría que exige especial
+                        diligencia bajo el RGPD y la LOPDGDD— hemos designado un Delegado de Protección de Datos
+                        responsable de supervisar el cumplimiento normativo y servir como punto de contacto
+                        independiente para los interesados y para la Agencia Española de Protección de Datos (AEPD).</p>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td>Nombre del DPD</td>
+                        <td><span class="ph">[NOMBRE DEL DPD]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Correo electrónico DPD</td>
+                        <td><span class="ph">privacidad@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dirección postal</td>
+                        <td><span class="ph">[MISMA DIRECCIÓN SOCIAL O APARTADO ESPECÍFICO]</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Puedes contactar con el DPD directamente para cualquier consulta relacionada con el tratamiento de tus
+                datos personales o los de los menores a tu cargo, especialmente en el ejercicio de los derechos
+                reconocidos en la sección 10 de esta política.</p>
+        </section>
+
+
+        <!-- ── 3. MENORES ── -->
+        <section class="section" id="menores">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Menores de Edad y Consentimiento Parental</h2>
+            </div>
+
+            <div class="alert alert-mint">
+                <div class="alert-icon">👶</div>
+                <div class="alert-body">
+                    <strong>Esta plataforma es operada exclusivamente por adultos</strong>
+                    <p>Winke no se dirige directamente a menores de edad. Los cuentos se generan para los niños, pero el
+                        servicio es contratado y gestionado íntegramente por sus padres o tutores legales, quienes son
+                        los únicos interlocutores de la plataforma.</p>
+                </div>
+            </div>
+
+            <h3>Umbral de edad y marco normativo</h3>
+            <p>De acuerdo con el artículo 8 del RGPD y el artículo 7 de la Ley Orgánica 3/2018 (LOPDGDD), <strong>en
+                    España la edad de consentimiento digital es de 14 años</strong>. Para el resto de países del Espacio
+                Económico Europeo, este umbral puede oscilar entre los 13 y los 16 años según la legislación nacional
+                aplicable.</p>
+
+            <p><strong>Menores de 14 años:</strong> El tratamiento de sus datos solo se realizará si contamos con el
+                consentimiento expreso, libre, inequívoco e informado de su padre, madre o tutor legal. Al crear una
+                cuenta o iniciar la generación de un cuento, el adulto declara expresamente y bajo su responsabilidad
+                ser el representante legal del menor cuyos datos proporciona.</p>
+
+            <p><strong>Entre 14 y 18 años:</strong> Aunque estos jóvenes podrían prestar consentimiento para algunos
+                servicios por sí mismos, Winke exige que toda interacción sea realizada por un adulto mayor de 18 años,
+                dada la naturaleza del servicio y la especial protección que merecen todos los menores.</p>
+
+            <h3>Verificación del consentimiento parental</h3>
+            <p>Dado que no es técnicamente posible verificar la edad de forma fehaciente en el entorno digital con los
+                medios actuales, Winke aplica las siguientes medidas proporcionales:</p>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 12px 0;">
+                <li style="display: flex; gap: 10px; align-items: flex-start;"><span>✅</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Checkbox de consentimiento explícito y
+                        desmarcado por defecto en el registro: <em>"Soy mayor de 18 años y soy el padre, madre o tutor
+                            legal del menor."</em></span></li>
+                <li style="display: flex; gap: 10px; align-items: flex-start;"><span>✅</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Aceptación expresa de esta Política de
+                        Privacidad antes de iniciar cualquier generación de contenido.</span></li>
+                <li style="display: flex; gap: 10px; align-items: flex-start;"><span>✅</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Verificación de mayoría de edad vinculada al
+                        proceso de pago (Stripe requiere una tarjeta a nombre del titular).</span></li>
+                <li style="display: flex; gap: 10px; align-items: flex-start;"><span>✅</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Correo electrónico de confirmación al adulto
+                        en cada alta de cuenta.</span></li>
+            </ul>
+
+            <p>Winke se reserva el derecho a suspender o eliminar cuentas que incumplan este requisito, sin perjuicio de
+                las acciones legales que pudieran derivarse.</p>
+        </section>
+
+
+        <!-- ── 4. DATOS ── -->
+        <section class="section" id="datos">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2>Datos que Tratamos</h2>
+            </div>
+
+            <h3>A. Datos del adulto (padre, madre, tutor o cliente empresarial)</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Datos específicos</th>
+                        <th>Origen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Identidad y contacto</td>
+                        <td>Dirección de correo electrónico, nombre de perfil (opcional)</td>
+                        <td>Proporcionado por el usuario en el registro</td>
+                    </tr>
+                    <tr>
+                        <td>Autenticación</td>
+                        <td>Hash de contraseña o token OAuth de Google; identificador de sesión</td>
+                        <td>Generado por Supabase Auth</td>
+                    </tr>
+                    <tr>
+                        <td>Datos de pago</td>
+                        <td>País de facturación, últimos 4 dígitos de tarjeta (visible en portal Stripe). <strong>Winke
+                                NO almacena datos de tarjeta.</strong></td>
+                        <td>Gestionado por Stripe (PCI-DSS Level 1)</td>
+                    </tr>
+                    <tr>
+                        <td>Datos de uso y navegación</td>
+                        <td>Historial de créditos adquiridos y consumidos, fecha/hora de generación de cuentos,
+                            identificador de sesión web</td>
+                        <td>Generado automáticamente por el uso del servicio</td>
+                    </tr>
+                    <tr>
+                        <td>Comunicaciones</td>
+                        <td>Contenido de correos enviados al soporte; datos del formulario de solicitud B2B</td>
+                        <td>Proporcionado voluntariamente por el usuario</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>B. Datos del menor (proporcionados por el adulto responsable)</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Dato</th>
+                        <th>Uso</th>
+                        <th>¿Se almacena?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nombre del protagonista</td>
+                        <td>Personalización del cuento generado</td>
+                        <td>Sí, asociado al cuento generado</td>
+                    </tr>
+                    <tr>
+                        <td>Grupo de edad (tramo)</td>
+                        <td>Ajuste del nivel lingüístico y pedagógico del cuento</td>
+                        <td>Sí, asociado al cuento generado</td>
+                    </tr>
+                    <tr>
+                        <td>Perfil de intereses / pedagógico (opcional)</td>
+                        <td>Enriquecer la narrativa con contenido relevante para el menor</td>
+                        <td>Sí, solo durante la sesión activa del cuento</td>
+                    </tr>
+                    <tr>
+                        <td>Fotografía del menor (opcional)</td>
+                        <td>Generación de ilustraciones personalizadas</td>
+                        <td><strong>NO — ver sección 5 "Privacidad desde el Diseño"</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Fotografía del producto/objeto (opcional)</td>
+                        <td>Incorporar el objeto en las ilustraciones del cuento</td>
+                        <td><strong>NO — ver sección 5 "Privacidad desde el Diseño"</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>C. Datos técnicos y de navegación</h3>
+            <p>Con carácter general, y como es habitual en todo servicio web, nuestros servidores pueden registrar de
+                forma automática: dirección IP (anonimizada siempre que sea posible), tipo y versión de navegador,
+                sistema operativo, páginas visitadas y tiempos de respuesta. Estos datos se utilizan exclusivamente para
+                la seguridad del servicio y la resolución de incidencias técnicas.</p>
+        </section>
+
+
+        <!-- ── 5. PRIVACIDAD POR DISEÑO ── -->
+        <section class="section" id="privacidad-diseno">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2>Privacidad desde el Diseño: Las Fotos Nunca Tocan Nuestros Servidores</h2>
+            </div>
+
+            <div class="alert alert-mint">
+                <div class="alert-icon">🏗️</div>
+                <div class="alert-body">
+                    <strong>Decisión Arquitectónica ADR-005 — Compromiso inquebrantable</strong>
+                    <p>Esta es la decisión de privacidad más importante de toda la arquitectura de Winke. No es una
+                        promesa de marketing: está implementada a nivel técnico y es verificable.</p>
+                </div>
+            </div>
+
+            <p>En cumplimiento del principio de <strong>minimización de datos</strong> (Art. 5.1.c RGPD) y
+                <strong>privacidad desde el diseño</strong> (Art. 25 RGPD), Winke ha adoptado la siguiente arquitectura:
+            </p>
+
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 20px 0;">
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px;">
+                    <span style="font-size: 1.4rem;">📱</span>
+                    <div>
+                        <strong
+                            style="font-family: 'Fredoka', sans-serif; display: block; margin-bottom: 4px;">Procesamiento
+                            local en el dispositivo</strong>
+                        <span style="font-size: 0.88rem; color: var(--ink-soft);">Las fotografías que el usuario sube
+                            (del niño o del producto) son procesadas exclusivamente dentro de la memoria temporal del
+                            navegador de su propio dispositivo. En ningún momento se transmiten a los servidores de
+                            Winke.</span>
+                    </div>
+                </li>
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px;">
+                    <span style="font-size: 1.4rem;">🔒</span>
+                    <div>
+                        <strong
+                            style="font-family: 'Fredoka', sans-serif; display: block; margin-bottom: 4px;">Transmisión
+                            cifrada directa a la IA</strong>
+                        <span style="font-size: 0.88rem; color: var(--ink-soft);">Si el usuario opta por generar
+                            ilustraciones basadas en la foto, la imagen se transmite de forma cifrada (TLS 1.3)
+                            directamente desde el navegador a la API de Google Gemini, exclusivamente para generar las
+                            ilustraciones. Winke no actúa como intermediario en esta transmisión.</span>
+                    </div>
+                </li>
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px;">
+                    <span style="font-size: 1.4rem;">🗑️</span>
+                    <div>
+                        <strong
+                            style="font-family: 'Fredoka', sans-serif; display: block; margin-bottom: 4px;">Eliminación
+                            inmediata tras el uso</strong>
+                        <span style="font-size: 0.88rem; color: var(--ink-soft);">Una vez generadas las ilustraciones,
+                            la referencia a la imagen se descarta automáticamente de la memoria del navegador. No quedan
+                            rastros de la fotografía en ningún sistema de Winke, ni en caché, ni en logs, ni en copias
+                            de seguridad.</span>
+                    </div>
+                </li>
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px;">
+                    <span style="font-size: 1.4rem;">✅</span>
+                    <div>
+                        <strong
+                            style="font-family: 'Fredoka', sans-serif; display: block; margin-bottom: 4px;">Resultado:
+                            riesgo cero de filtración en nuestros sistemas</strong>
+                        <span style="font-size: 0.88rem; color: var(--ink-soft);">Al no almacenar imágenes, es imposible
+                            que una vulnerabilidad en los servidores de Winke exponga fotografías de menores. Esta
+                            arquitectura cumple con los estándares más exigentes de privacidad infantil: RGPD, COPPA
+                            (EE.UU.) y GDPR-K.</span>
+                    </div>
+                </li>
+            </ul>
+
+            <p>Esta decisión ha sido documentada como <strong>Evaluación de Impacto relativa a la Protección de Datos
+                    (EIPD)</strong> en el registro interno de actividades de tratamiento de Winke.</p>
+        </section>
+
+
+        <!-- ── 6. FINALIDAD ── -->
+        <section class="section" id="finalidad">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2>Finalidad del Tratamiento y Base de Legitimación</h2>
+            </div>
+
+            <p>De conformidad con el artículo 13.1.c del RGPD, detallamos cada finalidad de tratamiento junto con su
+                base jurídica:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Finalidad</th>
+                        <th>Base jurídica (Art. 6 RGPD)</th>
+                        <th>Detalle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Prestación del servicio (generar cuentos)</td>
+                        <td>Art. 6.1.b — Ejecución de contrato</td>
+                        <td>Necesario para ejecutar el servicio contratado por el usuario</td>
+                    </tr>
+                    <tr>
+                        <td>Gestión de cuenta de usuario</td>
+                        <td>Art. 6.1.b — Ejecución de contrato</td>
+                        <td>Creación y mantenimiento de credenciales, sesiones y saldo de créditos</td>
+                    </tr>
+                    <tr>
+                        <td>Procesamiento de pagos y facturación</td>
+                        <td>Art. 6.1.b / Art. 6.1.c — Contrato y obligación legal</td>
+                        <td>Gestión de cobros via Stripe; conservación de facturas por obligación fiscal (4 años mínimo)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tratamiento de datos del menor</td>
+                        <td>Art. 6.1.a — Consentimiento (con control parental)</td>
+                        <td>Consentimiento explícito del padre/tutor legal al aceptar esta política</td>
+                    </tr>
+                    <tr>
+                        <td>Comunicaciones transaccionales</td>
+                        <td>Art. 6.1.b — Ejecución de contrato</td>
+                        <td>Emails de confirmación de compra, recibos y avisos del servicio</td>
+                    </tr>
+                    <tr>
+                        <td>Comunicaciones comerciales (newsletter)</td>
+                        <td>Art. 6.1.a — Consentimiento</td>
+                        <td>Solo si el usuario ha marcado expresamente la casilla correspondiente. Revocable en
+                            cualquier momento.</td>
+                    </tr>
+                    <tr>
+                        <td>Seguridad, prevención del fraude y logs técnicos</td>
+                        <td>Art. 6.1.f — Interés legítimo</td>
+                        <td>Protección de la integridad del servicio y de todos los usuarios</td>
+                    </tr>
+                    <tr>
+                        <td>Cumplimiento de obligaciones legales</td>
+                        <td>Art. 6.1.c — Obligación legal</td>
+                        <td>Respuesta a requerimientos de autoridades competentes</td>
+                    </tr>
+                    <tr>
+                        <td>Mejora del servicio (analítica agregada)</td>
+                        <td>Art. 6.1.f — Interés legítimo</td>
+                        <td>Estadísticas de uso agregadas y anonimizadas. Sin perfilado individual.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Winke no utilizará los datos para ninguna finalidad incompatible con las descritas anteriormente sin
+                informar previamente al usuario y, cuando sea requerido, recabar un nuevo consentimiento.</p>
+        </section>
+
+
+        <!-- ── 7. B2B ── -->
+        <section class="section" id="b2b">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <h2>Relación con Tiendas Asociadas (Modelo B2B)</h2>
+            </div>
+
+            <div class="alert alert-purple">
+                <div class="alert-icon">🏪</div>
+                <div class="alert-body">
+                    <strong>Si llegaste a Winke a través de una tienda o marca asociada</strong>
+                    <p>Es posible que hayas accedido a este servicio desde una tienda o comercio que tiene integrada la
+                        plataforma Winke. En ese caso, tanto la tienda como Winke tienen responsabilidades sobre tus
+                        datos.</p>
+                </div>
+            </div>
+
+            <h3>Doble responsabilidad de tratamiento</h3>
+            <p>Cuando una tienda o empresa (cliente B2B, en adelante "Tienda") integra Winke en su proceso de venta o
+                experiencia de cliente, se produce la siguiente estructura de responsabilidad:</p>
+
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 16px 0;">
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <strong style="font-family: 'Fredoka', sans-serif;">La Tienda</strong> actúa como <span
+                        class="tag">Responsable del tratamiento</span> respecto a los datos que comparte con Winke
+                    (nombre del cliente, correo electrónico, datos del producto). La Tienda es responsable de haber
+                    informado a sus clientes del uso de Winke antes de enviarles el enlace personalizado.
+                </li>
+                <li
+                    style="background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <strong style="font-family: 'Fredoka', sans-serif;">Winke</strong> actúa como <span
+                        class="tag">Encargado del tratamiento</span> de los datos transmitidos por la Tienda, y como
+                    <span class="tag">Responsable independiente</span> de los datos que recoge directamente del usuario
+                    final (nombre del menor, generación de contenido, posible registro posterior).
+                </li>
+            </ul>
+
+            <p>Winke formaliza esta relación mediante un <strong>Contrato de Encargo del Tratamiento (DPA)</strong> con
+                cada Tienda asociada, de conformidad con el artículo 28 del RGPD. Si eres una Tienda interesada en
+                integrarte, contacta con nosotros en <span class="ph">hola@winke.fun</span> para recibir el contrato y
+                la documentación técnica.</p>
+
+            <h3>Datos transmitidos por la Tienda a Winke</h3>
+            <p>Para generar el enlace personalizado one-time que activa el servicio, la Tienda puede enviar a Winke los
+                siguientes datos del comprador: correo electrónico del cliente (opcional), nombre del producto adquirido
+                y su imagen. Winke trata estos datos únicamente para la prestación del servicio en esa sesión concreta.
+            </p>
+        </section>
+
+
+        <!-- ── 8. DESTINATARIOS ── -->
+        <section class="section" id="destinatarios">
+            <div class="section-header">
+                <div class="section-number">8</div>
+                <h2>Proveedores de Servicios y Transferencias Internacionales</h2>
+            </div>
+
+            <p>Winke trabaja con los siguientes proveedores como <strong>encargados del tratamiento</strong> (Art. 28
+                RGPD). En ningún caso vendemos, alquilamos ni cedemos datos a terceros para fines publicitarios o de
+                marketing.</p>
+
+            <div class="provider-grid">
+                <div class="provider-card">
+                    <div class="provider-name">Supabase</div>
+                    <div class="provider-role">Base de datos · Auth · RAG</div>
+                    <p>Almacenamiento de cuentas, historiales de cuentos y sesiones de usuario. Servidores disponibles
+                        en la UE (Frankfurt).</p>
+                    <span class="tag tag-green">🇪🇺 EEE</span>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">Google LLC (Gemini API)</div>
+                    <div class="provider-role">Generación de contenido IA</div>
+                    <p>Motor de inteligencia artificial para generación de texto e ilustraciones. Los datos enviados no
+                        se usan para entrenar modelos públicos según el DPA de Google Cloud.</p>
+                    <span class="tag tag-yellow">🇺🇸 CCT aplicables</span>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">Stripe Inc.</div>
+                    <div class="provider-role">Pagos · Facturación</div>
+                    <p>Procesamiento seguro de pagos con tarjeta. Certificación PCI-DSS Level 1. Winke no almacena datos
+                        de tarjeta en ningún momento.</p>
+                    <span class="tag tag-yellow">🇺🇸 CCT aplicables</span>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">Vercel Inc.</div>
+                    <div class="provider-role">Alojamiento web</div>
+                    <p>Hospedaje de la aplicación web y ejecución de funciones serverless. Datos en tránsito cifrados.
+                        Infraestructura con presencia en la UE.</p>
+                    <span class="tag tag-yellow">🇺🇸 CCT aplicables</span>
+                </div>
+                <div class="provider-card">
+                    <div class="provider-name">Google LLC (OAuth)</div>
+                    <div class="provider-role">Autenticación social</div>
+                    <p>Inicio de sesión con cuenta de Google. Solo se solicitan datos mínimos: dirección de email e
+                        identificador único de Google.</p>
+                    <span class="tag tag-yellow">🇺🇸 CCT aplicables</span>
+                </div>
+            </div>
+
+            <h3>Transferencias internacionales</h3>
+            <p>Algunos de nuestros proveedores (Google, Stripe, Vercel) tienen su sede principal en los Estados Unidos.
+                Para estas transferencias fuera del Espacio Económico Europeo (EEE), Winke garantiza que se aplican las
+                <strong>Cláusulas Contractuales Tipo (CCT)</strong> aprobadas por la Comisión Europea mediante Decisión
+                de Ejecución (UE) 2021/914, u otro mecanismo de transferencia igualmente válido conforme al Capítulo V
+                del RGPD. Puedes solicitar una copia de dichas garantías al DPD.</p>
+        </section>
+
+
+        <!-- ── 9. CONSERVACIÓN ── -->
+        <section class="section" id="conservacion">
+            <div class="section-header">
+                <div class="section-number">9</div>
+                <h2>Conservación de los Datos</h2>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Dato</th>
+                        <th>Período de conservación</th>
+                        <th>Justificación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cuenta de usuario (email, perfil)</td>
+                        <td>Mientras la cuenta esté activa + 30 días tras su eliminación</td>
+                        <td>Prestación del servicio; margen para posible reactivación</td>
+                    </tr>
+                    <tr>
+                        <td>Cuentos generados (texto del cuento)</td>
+                        <td>Mientras la cuenta esté activa</td>
+                        <td>Permitir al usuario releer y descargar sus cuentos en PDF</td>
+                    </tr>
+                    <tr>
+                        <td>Datos de facturación y transacciones</td>
+                        <td>5 años desde la fecha de la transacción</td>
+                        <td>Obligación fiscal y mercantil (Art. 30 Código de Comercio; Ley 58/2003 General Tributaria)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Logs de seguridad</td>
+                        <td>12 meses</td>
+                        <td>Detección y respuesta ante incidentes de seguridad (interés legítimo)</td>
+                    </tr>
+                    <tr>
+                        <td>Fotografías del menor o del producto</td>
+                        <td><strong>No se almacenan</strong> — procesamiento efímero en sesión</td>
+                        <td>ADR-005: Privacidad desde el diseño</td>
+                    </tr>
+                    <tr>
+                        <td>Datos de menores (nombre, edad, perfil)</td>
+                        <td>Asociados al cuento; se eliminan junto con la cuenta</td>
+                        <td>Minimización de datos; derecho al olvido reforzado para menores</td>
+                    </tr>
+                    <tr>
+                        <td>Comunicaciones con soporte</td>
+                        <td>3 años desde la última comunicación</td>
+                        <td>Resolución de posibles reclamaciones</td>
+                    </tr>
+                    <tr>
+                        <td>Datos de leads B2B (formulario de solicitud)</td>
+                        <td>2 años si no se convierte en cliente; mientras dure la relación comercial</td>
+                        <td>Interés legítimo en la gestión comercial</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Una vez transcurridos los plazos indicados, los datos serán eliminados de forma segura o anonimizados de
+                manera irreversible para su posible uso estadístico agregado.</p>
+        </section>
+
+
+        <!-- ── 10. DERECHOS ── -->
+        <section class="section" id="derechos">
+            <div class="section-header">
+                <div class="section-number">10</div>
+                <h2>Tus Derechos (Derechos ARCO+)</h2>
+            </div>
+
+            <p>De conformidad con los artículos 15 a 22 del RGPD y el Título III de la LOPDGDD, puedes ejercer en
+                cualquier momento los siguientes derechos:</p>
+
+            <div class="rights-grid">
+                <div class="right-card">
+                    <div class="right-title">🔍 Acceso</div>
+                    <p>Obtener confirmación de si tratamos tus datos y recibir una copia de los mismos, junto con
+                        información sobre las finalidades y destinatarios.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">✏️ Rectificación</div>
+                    <p>Corregir datos inexactos o incompletos que tengamos sobre ti o sobre el menor a tu cargo.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">🗑️ Supresión</div>
+                    <p>"Derecho al olvido": solicitar la eliminación de todos tus datos y los de los menores cuando ya
+                        no sean necesarios o retires el consentimiento.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">⏸️ Limitación</div>
+                    <p>Solicitar que suspendamos temporalmente el tratamiento de tus datos mientras se verifica una
+                        reclamación o impugnación.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">📦 Portabilidad</div>
+                    <p>Recibir tus datos en un formato estructurado, de uso común y lectura mecánica (JSON o CSV), para
+                        transferirlos a otro proveedor.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">🚫 Oposición</div>
+                    <p>Oponerte al tratamiento basado en interés legítimo o al envío de comunicaciones comerciales. El
+                        tratamiento cesará salvo motivos imperiosos o ejercicio de acciones legales.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">🤖 Decisiones automatizadas</div>
+                    <p>No ser objeto de decisiones basadas exclusivamente en tratamiento automatizado que produzcan
+                        efectos jurídicos significativos. Ver sección 12.</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-title">↩️ Retirada del consentimiento</div>
+                    <p>Revocar en cualquier momento el consentimiento otorgado, sin que ello afecte a la licitud del
+                        tratamiento previo a su retirada.</p>
+                </div>
+            </div>
+
+            <h3>¿Cómo ejercer estos derechos?</h3>
+            <div class="cta-box">
+                <div class="cta-text">
+                    <strong>Escríbenos al DPD</strong>
+                    <p>Envía tu solicitud indicando tu nombre, email de la cuenta, el derecho que deseas ejercer y, si
+                        lo solicitas en nombre de un menor, acreditando tu condición de representante legal.</p>
+                </div>
+                <a href="mailto:privacidad@winke.fun" class="cta-email">✉️ privacidad@winke.fun</a>
+            </div>
+
+            <p style="margin-top: 16px;">Responderemos en el plazo máximo de <strong>1 mes</strong> desde la recepción
+                de la solicitud (prorrogable otros 2 meses en casos de especial complejidad). Si el ejercicio de
+                derechos afecta a datos de un menor de 14 años, la solicitud deberá ser realizada por sus representantes
+                legales.</p>
+
+            <h3>Reclamación ante la AEPD</h3>
+            <p>Si consideras que el tratamiento de tus datos no se ajusta a la normativa vigente, tienes derecho a
+                presentar una reclamación ante la <strong>Agencia Española de Protección de Datos (AEPD)</strong>,
+                autoridad de control competente en España:</p>
+            <p><strong>Web:</strong> <a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer"
+                    style="color: var(--magic-purple); font-weight: 600;">www.aepd.es</a> · <strong>Teléfono:</strong>
+                901 100 099 · <strong>Dirección:</strong> C/ Jorge Juan, 6, 28001 Madrid</p>
+            <p>Te animamos a contactarnos primero; intentaremos resolver cualquier incidencia de forma directa y
+                satisfactoria.</p>
+        </section>
+
+
+        <!-- ── 11. SEGURIDAD ── -->
+        <section class="section" id="seguridad">
+            <div class="section-header">
+                <div class="section-number">11</div>
+                <h2>Medidas de Seguridad Técnicas y Organizativas</h2>
+            </div>
+
+            <p>De conformidad con el artículo 32 del RGPD, Winke aplica medidas técnicas y organizativas apropiadas para
+                garantizar un nivel de seguridad adecuado al riesgo del tratamiento, incluyendo:</p>
+
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 16px 0;">
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">🔐</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Cifrado en tránsito y en reposo:</strong>
+                        <span style="font-size: 0.9rem; color: var(--ink-soft);">Todas las comunicaciones utilizan TLS
+                            1.3. Los datos en base de datos están cifrados en reposo por Supabase.</span></div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">🏛️</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Row Level Security (RLS):</strong> <span
+                            style="font-size: 0.9rem; color: var(--ink-soft);">Control de acceso a nivel de fila en la
+                            base de datos. Cada usuario solo puede acceder a sus propios datos. Técnicamente imposible
+                            acceder a datos de otro usuario sin privilegios explícitos.</span></div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">🔑</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Tokens one-time para sesiones B2B:</strong>
+                        <span style="font-size: 0.9rem; color: var(--ink-soft);">Los enlaces de activación para
+                            compradores finales son de uso único. Una vez consumidos, caducan automáticamente.</span>
+                    </div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">📵</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">No persistencia de imágenes
+                            sensibles:</strong> <span style="font-size: 0.9rem; color: var(--ink-soft);">Las fotografías
+                            del menor o del producto nunca son almacenadas en los servidores de Winke (ADR-005).</span>
+                    </div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">📋</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Evaluación de Impacto (EIPD):</strong>
+                        <span style="font-size: 0.9rem; color: var(--ink-soft);">Hemos realizado una Evaluación de
+                            Impacto relativa a la Protección de Datos específica para el tratamiento de datos de
+                            menores, documentando los riesgos identificados y las medidas adoptadas para
+                            mitigarlos.</span></div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">🚨</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Protocolo de respuesta a brechas de
+                            seguridad:</strong> <span style="font-size: 0.9rem; color: var(--ink-soft);">En caso de
+                            violación de la seguridad de los datos, Winke notificará a la AEPD en el plazo máximo de 72
+                            horas (Art. 33 RGPD) y a los afectados sin dilación indebida cuando sea probable que suponga
+                            un alto riesgo para sus derechos (Art. 34 RGPD).</span></div>
+                </li>
+                <li
+                    style="display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px;">
+                    <span style="font-size: 1.2rem;">👥</span>
+                    <div><strong style="font-family: 'Fredoka', sans-serif;">Acceso interno limitado:</strong> <span
+                            style="font-size: 0.9rem; color: var(--ink-soft);">Solo el personal estrictamente necesario
+                            tiene acceso a datos personales, bajo obligación de confidencialidad.</span></div>
+                </li>
+            </ul>
+        </section>
+
+
+        <!-- ── 12. AUTOMATIZACIÓN ── -->
+        <section class="section" id="decisiones-automatizadas">
+            <div class="section-header">
+                <div class="section-number">12</div>
+                <h2>Decisiones Automatizadas y Elaboración de Perfiles</h2>
+            </div>
+
+            <p>Winke utiliza sistemas de inteligencia artificial (concretamente, los modelos de la familia Gemini de
+                Google) para generar de forma automatizada el texto narrativo y las ilustraciones de los cuentos
+                personalizados.</p>
+
+            <p>Es importante aclarar el alcance de esta automatización:</p>
+
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 16px 0;">
+                <li style="display: flex; gap: 10px;"><span>✅</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">La IA de Winke <strong>sí genera contenido
+                            creativo personalizado</strong> basándose en los parámetros que el padre o tutor introduce
+                        (nombre, edad, intereses del menor y, opcionalmente, el producto).</span></li>
+                <li style="display: flex; gap: 10px;"><span>🚫</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">La IA de Winke <strong>no toma decisiones que
+                            produzcan efectos jurídicos</strong> sobre las personas, ni realiza perfilado que afecte de
+                        forma significativa a los derechos de los menores.</span></li>
+                <li style="display: flex; gap: 10px;"><span>🚫</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Winke <strong>no utiliza los datos de menores
+                            para entrenar modelos de IA</strong> propios ni permite que sus proveedores lo hagan para
+                        fines distintos a la prestación del servicio.</span></li>
+                <li style="display: flex; gap: 10px;"><span>🚫</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Winke <strong>no realiza publicidad
+                            comportamental</strong> ni segmentación de usuarios basada en perfiles psicológicos o
+                        inferidos.</span></li>
+            </ul>
+
+            <p>El contenido generado por la IA es de naturaleza creativa y lúdica. En ningún caso debe interpretarse
+                como asesoramiento pedagógico, psicológico o médico. Los padres o tutores son libres de no continuar con
+                el cuento generado si este no les parece adecuado.</p>
+        </section>
+
+
+        <!-- ── 13. COOKIES ── -->
+        <section class="section" id="cookies">
+            <div class="section-header">
+                <div class="section-number">13</div>
+                <h2>Cookies y Tecnologías de Rastreo</h2>
+            </div>
+
+            <p>Winke utiliza únicamente cookies <strong>estrictamente necesarias</strong> para el funcionamiento del
+                servicio, que no requieren consentimiento previo del usuario conforme al artículo 22.2 de la LSSI-CE y
+                las directrices de la AEPD:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Cookie / tecnología</th>
+                        <th>Proveedor</th>
+                        <th>Finalidad</th>
+                        <th>Duración</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Token de sesión de autenticación</td>
+                        <td>Supabase</td>
+                        <td>Mantener la sesión del usuario iniciada</td>
+                        <td>Sesión / 7 días (recordar sesión)</td>
+                    </tr>
+                    <tr>
+                        <td>Estado del creador de cuentos</td>
+                        <td>Winke (localStorage)</td>
+                        <td>Preservar el progreso en el asistente durante la sesión activa</td>
+                        <td>Sesión</td>
+                    </tr>
+                    <tr>
+                        <td>Preferencias de idioma</td>
+                        <td>Winke</td>
+                        <td>Recordar el idioma seleccionado</td>
+                        <td>1 año</td>
+                    </tr>
+                    <tr>
+                        <td>Stripe (\_\_stripe_mid, \_\_stripe_sid)</td>
+                        <td>Stripe Inc.</td>
+                        <td>Seguridad del proceso de pago y prevención del fraude</td>
+                        <td>Sesión / 1 año</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Actualmente, Winke <strong>no utiliza cookies analíticas, publicitarias o de rastreo de
+                    terceros</strong>. Si en el futuro incorporásemos este tipo de cookies, actualizaríamos esta
+                política e implementaríamos un banner de consentimiento previo conforme a la normativa vigente.</p>
+
+            <p>Consulta nuestra <a href="/politica-cookies.html"
+                    style="color: var(--magic-purple); font-weight: 600;">Política de Cookies completa</a> para más
+                detalles.</p>
+        </section>
+
+
+        <!-- ── 14. CAMBIOS ── -->
+        <section class="section" id="cambios">
+            <div class="section-header">
+                <div class="section-number">14</div>
+                <h2>Cambios en esta Política</h2>
+            </div>
+
+            <p>Winke podrá modificar la presente Política de Privacidad para adaptarla a cambios normativos, criterios
+                jurisprudenciales, nuevas directrices de las autoridades de control o evoluciones del propio servicio.
+            </p>
+
+            <p>Ante cambios <strong>sustanciales</strong> que afecten al tratamiento de datos de menores o que requieran
+                un nuevo consentimiento, Winke:</p>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 12px 0 20px;">
+                <li style="display: flex; gap: 10px;"><span>📧</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Notificará el cambio por correo electrónico a
+                        todos los usuarios registrados con al menos <strong>30 días de antelación</strong> a su entrada
+                        en vigor.</span></li>
+                <li style="display: flex; gap: 10px;"><span>🔔</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Mostrará un aviso destacado al acceder a la
+                        plataforma, solicitando la confirmación de los nuevos términos.</span></li>
+                <li style="display: flex; gap: 10px;"><span>📂</span><span
+                        style="font-size: 0.9rem; color: var(--ink-soft);">Mantendrá disponibles las versiones
+                        anteriores de la política para su consulta.</span></li>
+            </ul>
+
+            <p>Los cambios <strong>menores</strong> (corrección de erratas, actualización de datos de contacto, etc.) se
+                publicarán con la fecha de actualización visible en el encabezado de esta página.</p>
+
+            <p>El uso continuado del servicio tras la entrada en vigor de los cambios implica la aceptación de la
+                política actualizada.</p>
+        </section>
+
+
+        <!-- ── 15. CONTACTO ── -->
+        <section class="section" id="contacto">
+            <div class="section-header">
+                <div class="section-number">15</div>
+                <h2>Contacto</h2>
+            </div>
+
+            <p>Para cualquier consulta relacionada con esta Política de Privacidad, el tratamiento de tus datos o el
+                ejercicio de tus derechos, puedes contactar con nosotros a través de los siguientes canales:</p>
+
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td>Email general</td>
+                        <td><span class="ph">hola@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Email DPD / Privacidad</td>
+                        <td><span class="ph">privacidad@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Dirección postal</td>
+                        <td><span class="ph">[DIRECCIÓN COMPLETA]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Horario de atención</td>
+                        <td><span class="ph">[HORARIO]</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-purple" style="margin-top: 24px;">
+                <div class="alert-icon">⚖️</div>
+                <div class="alert-body">
+                    <strong>Nota legal</strong>
+                    <p>Este documento ha sido elaborado conforme al Reglamento (UE) 2016/679 (RGPD), la Ley Orgánica
+                        3/2018 (LOPDGDD) y la Ley 34/2002 (LSSI-CE). Se recomienda la revisión periódica por un
+                        profesional jurídico especializado en protección de datos antes de su publicación definitiva y
+                        tras cada actualización normativa relevante.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ────────────────────── FOOTER ────────────────────── -->
+    <footer class="page-footer">
+        <p>© <span id="year"></span> Winke · <span class="ph">[NOMBRE EMPRESA]</span> · winke.fun</p>
+        <p style="margin-top: 6px;">Todos los derechos reservados · Operado desde España · Marco legal UE</p>
+        <div class="footer-links">
+            <a href="/aviso-legal.html">Aviso Legal</a>
+            <a href="/politica-privacidad.html">Privacidad</a>
+            <a href="/politica-cookies.html">Cookies</a>
+            <a href="/condiciones-servicio.html">Condiciones de Servicio</a>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+
+</html>

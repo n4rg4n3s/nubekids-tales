@@ -5,6 +5,7 @@
  * Usa imágenes de referencia (hero, item) para mantener consistencia visual.
  */
 
+import type { GenerateContentResponse, Part } from '@google/genai';
 import type { AgentDependencies } from './dependencies';
 
 // ============================================
@@ -40,6 +41,10 @@ const IMAGE_ASPECT_RATIO = '4:5';
 
 // Prefijo para mejorar la calidad de generación
 const STYLE_PREFIX = `Children's book illustration, high quality, vibrant colors, safe for children, no text or letters in the image. `;
+
+type GenerateImageResponse = GenerateContentResponse & {
+    parts?: Part[];
+};
 
 // ============================================
 // MAIN FUNCTION
@@ -199,7 +204,7 @@ function buildImagePrompt(input: ImageGenerationInput): string {
 /**
  * Extrae la imagen base64 de la respuesta de Gemini.
  */
-function extractImageFromResponse(response: any): string | null {
+function extractImageFromResponse(response: GenerateImageResponse): string | null {
     try {
         // La respuesta puede tener múltiples partes
         const parts = response.candidates?.[0]?.content?.parts || [];

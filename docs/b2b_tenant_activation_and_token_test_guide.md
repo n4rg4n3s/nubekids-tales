@@ -36,11 +36,13 @@ Ejemplo de tenant de test ya usado:
 - `tenant_id`: `tenant-b2b-test`
 - `brand_name`: `PequeModa Test`
 - `integration_level`: `premium`
+- `item_interaction_mode`: `wearable`
 
 El tenant necesita:
 
 - `tenant_id` publico
 - branding
+- `item_interaction_mode`
 - `integration_secret_hash`
 
 ---

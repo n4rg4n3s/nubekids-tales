@@ -1,26 +1,48 @@
 // src/hooks/useAuth.ts
 // React hook for authentication state management
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import type { UserProfile } from '../types';
-import {
-  getCurrentSession,
-  getCurrentUser,
-  getUserProfile,
-  signInWithEmail as authSignIn,
-  signUpWithEmail as authSignUp,
-  signInWithGoogle as authGoogleSignIn,
-  signOut as authSignOut,
-  onAuthStateChange,
-} from '../services/authService';
-import { isSupabaseConfigured } from '../lib/supabase';
+
+type AuthServiceModule = typeof import('../services/authService');
+
+let authServicePromise: Promise<AuthServiceModule> | null = null;
+
+function loadAuthService(): Promise<AuthServiceModule> {
+  if (!authServicePromise) {
+    authServicePromise = import('../services/authService');
+  }
+
+  return authServicePromise;
+}
+
+function hasSupabaseConfig(): boolean {
+  return Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+}
+
+function shouldBootstrapAuthOnLoad(): boolean {
+  if (typeof window === 'undefined') return false;
+
+  const params = new URLSearchParams(window.location.search);
+  const hasTokenFlow = params.has('token');
+  const hasB2BDemoFlow = params.get('demo') === '1' && params.has('tenant');
+  const hasOAuthHash = window.location.hash.includes('access_token');
+  const isCallbackPath = window.location.pathname === '/auth/callback';
+
+  if (hasOAuthHash || isCallbackPath) {
+    return true;
+  }
+
+  return !hasTokenFlow && !hasB2BDemoFlow;
+}
 
 export interface UseAuthReturn {
   user: User | null;
   session: Session | null;
   profile: UserProfile | null;
   loading: boolean;
+  ensureInitialized: () => Promise<void>;
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, displayName: string) => Promise<void>;
@@ -36,11 +58,18 @@ export function useAuth(): UseAuthReturn {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const initializedRef = useRef(false);
+  const initPromiseRef = useRef<Promise<void> | null>(null);
+  const subscriptionRef = useRef<{ unsubscribe: () => void } | null>(null);
+  const mountedRef = useRef(false);
 
-  // Fetch profile when user changes
-  const fetchProfile = useCallback(async (userId: string) => {
+  const fetchProfile = useCallback(async (
+    userId: string,
+    authService?: AuthServiceModule
+  ) => {
     try {
-      const userProfile = await getUserProfile(userId);
+      const service = authService ?? await loadAuthService();
+      const userProfile = await service.getUserProfile(userId);
       setProfile(userProfile);
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -48,110 +77,154 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  // Initialize: check existing session
-  useEffect(() => {
-    if (!isSupabaseConfigured()) {
+  const ensureInitialized = useCallback(async () => {
+    if (!hasSupabaseConfig()) {
       setLoading(false);
       return;
     }
 
-    let mounted = true;
+    if (initializedRef.current) {
+      return;
+    }
 
-    async function initialize() {
+    if (initPromiseRef.current) {
+      return initPromiseRef.current;
+    }
+
+    initPromiseRef.current = (async () => {
+      const authService = await loadAuthService();
+
       try {
-        // Llamadas independientes para que un fallo no bloquee la otra
-        const currentSession = await getCurrentSession().catch(() => null);
-        const currentUser = await getCurrentUser().catch(() => null);
+        if (mountedRef.current) {
+          setLoading(true);
+        }
 
-        if (!mounted) return;
+        const [currentSession, currentUser] = await Promise.all([
+          authService.getCurrentSession().catch(() => null),
+          authService.getCurrentUser().catch(() => null),
+        ]);
+
+        if (!mountedRef.current) return;
 
         setSession(currentSession);
         setUser(currentUser);
 
         if (currentUser) {
-          await fetchProfile(currentUser.id).catch(() => null);
+          await fetchProfile(currentUser.id, authService).catch(() => null);
+        } else {
+          setProfile(null);
         }
+
+        if (!subscriptionRef.current) {
+          subscriptionRef.current = await authService.onAuthStateChange(async (event, newSession) => {
+            if (!mountedRef.current) return;
+
+            setSession(newSession);
+            const nextUser = newSession?.user ?? null;
+            setUser(nextUser);
+
+            if (nextUser) {
+              await fetchProfile(nextUser.id, authService);
+            } else {
+              setProfile(null);
+            }
+
+            if (event === 'SIGNED_OUT') {
+              setUser(null);
+              setSession(null);
+              setProfile(null);
+            }
+          });
+        }
+
+        initializedRef.current = true;
       } catch (err) {
         console.error('Auth initialization error:', err);
       } finally {
-        if (mounted) setLoading(false);
+        if (mountedRef.current) {
+          setLoading(false);
+        }
+        initPromiseRef.current = null;
       }
-    }
+    })();
 
-    initialize();
-
-    // Listen for auth state changes (login, logout, token refresh)
-    const { unsubscribe } = onAuthStateChange(async (event, newSession) => {
-      if (!mounted) return;
-
-      setSession(newSession);
-      const newUser = newSession?.user ?? null;
-      setUser(newUser);
-
-      if (newUser) {
-        await fetchProfile(newUser.id);
-      } else {
-        setProfile(null);
-      }
-
-      // On sign-out, clear everything
-      if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setSession(null);
-        setProfile(null);
-      }
-    });
-
-    return () => {
-      mounted = false;
-      unsubscribe();
-    };
+    return initPromiseRef.current;
   }, [fetchProfile]);
 
-  // Actions
+  useEffect(() => {
+    mountedRef.current = true;
+
+    if (!hasSupabaseConfig()) {
+      setLoading(false);
+      return () => {
+        mountedRef.current = false;
+      };
+    }
+
+    if (shouldBootstrapAuthOnLoad()) {
+      void ensureInitialized();
+    } else {
+      setLoading(false);
+    }
+
+    return () => {
+      mountedRef.current = false;
+      subscriptionRef.current?.unsubscribe();
+      subscriptionRef.current = null;
+    };
+  }, [ensureInitialized]);
+
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null);
     try {
-      await authSignIn(email, password);
+      await ensureInitialized();
+      const authService = await loadAuthService();
+      await authService.signInWithEmail(email, password);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al iniciar sesión';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [ensureInitialized]);
 
   const signUp = useCallback(async (email: string, password: string, displayName: string) => {
     setError(null);
     try {
-      await authSignUp(email, password, displayName);
+      await ensureInitialized();
+      const authService = await loadAuthService();
+      await authService.signUpWithEmail(email, password, displayName);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al crear la cuenta';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [ensureInitialized]);
 
   const signInWithGoogle = useCallback(async () => {
     setError(null);
     try {
-      await authGoogleSignIn();
+      await ensureInitialized();
+      const authService = await loadAuthService();
+      await authService.signInWithGoogle();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error con Google';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [ensureInitialized]);
 
   const signOut = useCallback(async () => {
     setError(null);
     try {
-      await authSignOut();
+      await ensureInitialized();
+      const authService = await loadAuthService();
+      await authService.signOut();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al cerrar sesión';
       setError(message);
       throw err;
     }
-  }, []);
+  }, [ensureInitialized]);
 
   const clearError = useCallback(() => setError(null), []);
 
@@ -160,6 +233,7 @@ export function useAuth(): UseAuthReturn {
     session,
     profile,
     loading,
+    ensureInitialized,
     isAuthenticated: !!user,
     signIn,
     signUp,

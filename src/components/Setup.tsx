@@ -7,14 +7,16 @@ import type { TenantConfig, AgeGroup, Genre, Language } from '../types';
 
 import WizardProgress from './wizard/WizardProgress';
 import WizardNavigation from './wizard/WizardNavigation';
-import StepHero, { formatHeroDescription, mapAgeRangeToAgeGroup } from './wizard/StepHero';
+import StepHero from './wizard/StepHero';
 import type { HeroData } from './wizard/StepHero';
+import { formatHeroDescription, mapAgeRangeToAgeGroup } from './wizard/stepHeroUtils';
 import StepPedagogy from './wizard/StepPedagogy';
 import type { PedagogyData } from './wizard/StepPedagogy';
 import StepItem from './wizard/StepItem';
 import type { ItemData } from './wizard/StepItem';
 import StepStory from './wizard/StepStory';
 import type { StoryData } from './wizard/StepStory';
+import LegalLinks from './LegalLinks';
 
 // Output del Setup hacia App.tsx
 export interface SetupData {
@@ -248,6 +250,11 @@ export default function Setup({
           accentColor={tenantConfig.brandColors.accent}
         />
       </div>
+
+      <LegalLinks
+        className="mt-5 px-4"
+        linkColor={tenantConfig.brandColors.primary}
+      />
     </motion.div>
   );
 }

@@ -1,46 +1,161 @@
 // src/App.tsx
 // NubeKids - App principal con validación de token y flujo Auth → Setup → Orchestrator → Book
 
-import { useEffect, useState, useCallback } from 'react';
-import { validateToken, getTokenFromUrl, consumeB2BToken } from './services/tokenService';
+import { useEffect, useState, useCallback, Suspense, lazy, startTransition } from 'react';
 import type { TenantData, TokenData } from './services/tokenService';
 import type { TenantConfig, AgentBrief, ComicFace, B2BSession } from './types';
-import Setup from './components/Setup';
 import type { SetupData } from './components/Setup';
-import Book from './components/Book';
-import { loadTenantConfig, getTenantIdFromUrl } from './config/tenantLoader';
+import { DEV_CONFIG, isDevMockMode } from './dev/mockConfig';
 
 // Auth
-import { useAuthContext } from './context/AuthContext';
-import LoginPage from './components/auth/LoginPage';
-import SignUpPage from './components/auth/SignUpPage';
-import { AuthCallback } from './components/auth/AuthCallback';
-
-// Créditos
-import { CreditBalance } from './components/credits/CreditBalance';
-// Stripe
-import BuyCredits from './components/credits/BuyCredits';
-import BuyCreditsB2B from './components/credits/BuyCreditsB2B';
-import CreditsSuccess from './components/credits/CreditsSuccess';
-import { consumeCredit } from './services/creditService';
+import { useAuthContext } from './context/useAuthContext';
 
 // Sistema multiagente
-import { agentDeps } from './services/dependencies';
 import type { SessionContext } from './services/dependencies';
-import { orchestrate } from './services/agents';
 import type { OrchestratorResult } from './services/agents';
 
-// Servicio de generación de imágenes
-import { generateStoryImage } from './services/imageGenerationService';
+const Setup = lazy(() => import('./components/Setup'));
+const LoginPage = lazy(() => import('./components/auth/LoginPage'));
+const SignUpPage = lazy(() => import('./components/auth/SignUpPage'));
+const Book = lazy(() => import('./components/Book'));
+const PostStoryActions = lazy(() => import('./components/PostStoryActions'));
+const BuyCredits = lazy(() => import('./components/credits/BuyCredits'));
+const BuyCreditsB2B = lazy(() => import('./components/credits/BuyCreditsB2B'));
+const CreditsSuccess = lazy(() => import('./components/credits/CreditsSuccess'));
+const CreditBalance = lazy(() =>
+  import('./components/credits/CreditBalance').then((module) => ({
+    default: module.CreditBalance,
+  }))
+);
+const AuthCallback = lazy(() =>
+  import('./components/auth/AuthCallback').then((module) => ({
+    default: module.AuthCallback,
+  }))
+);
 
-// ── FASE 10: Flujo B2B → B2C ────────────────────────────────────────────────
-import { parseB2BParams, clearQueryParams } from './services/queryParamsService';
-import { loadItemImage } from './utils/itemImageLoader';
-import PostStoryActions from './components/PostStoryActions';
+type GenerationModules = {
+  agentDeps: (typeof import('./services/dependencies'))['agentDeps'];
+  orchestrate: (typeof import('./services/agents'))['orchestrate'];
+  generateStoryImage: (typeof import('./services/imageGenerationService'))['generateStoryImage'];
+};
 
-// Mock / Dev
-import { DEV_CONFIG, isDevMockMode } from './dev';
-import { getMockImages } from './dev';
+type TokenServiceModule = typeof import('./services/tokenService');
+type CreditServiceModule = typeof import('./services/creditService');
+type TenantLoaderModule = typeof import('./config/tenantLoader');
+type QueryParamsServiceModule = typeof import('./services/queryParamsService');
+type ItemImageLoaderModule = typeof import('./utils/itemImageLoader');
+type MockBriefModule = Pick<typeof import('./dev/mockAgentBrief'), 'getMockBrief'>;
+type MockImagesModule = Pick<typeof import('./dev/mockImages'), 'getMockImages'>;
+
+let generationModulesPromise: Promise<GenerationModules> | null = null;
+let tokenServicePromise: Promise<TokenServiceModule> | null = null;
+let creditServicePromise: Promise<CreditServiceModule> | null = null;
+let supabaseModulePromise: Promise<typeof import('./lib/supabase')> | null = null;
+let tenantLoaderPromise: Promise<TenantLoaderModule> | null = null;
+let queryParamsServicePromise: Promise<QueryParamsServiceModule> | null = null;
+let itemImageLoaderPromise: Promise<ItemImageLoaderModule> | null = null;
+let mockBriefModulePromise: Promise<MockBriefModule> | null = null;
+let mockImagesModulePromise: Promise<MockImagesModule> | null = null;
+
+function loadGenerationModules(): Promise<GenerationModules> {
+  if (!generationModulesPromise) {
+    generationModulesPromise = Promise.all([
+      import('./services/dependencies'),
+      import('./services/agents'),
+      import('./services/imageGenerationService'),
+    ]).then(([dependenciesModule, agentsModule, imageModule]) => ({
+      agentDeps: dependenciesModule.agentDeps,
+      orchestrate: agentsModule.orchestrate,
+      generateStoryImage: imageModule.generateStoryImage,
+    }));
+  }
+
+  return generationModulesPromise;
+}
+
+function loadTokenService(): Promise<TokenServiceModule> {
+  if (!tokenServicePromise) {
+    tokenServicePromise = import('./services/tokenService');
+  }
+
+  return tokenServicePromise;
+}
+
+function loadCreditService(): Promise<CreditServiceModule> {
+  if (!creditServicePromise) {
+    creditServicePromise = import('./services/creditService');
+  }
+
+  return creditServicePromise;
+}
+
+function loadSupabaseModule(): Promise<typeof import('./lib/supabase')> {
+  if (!supabaseModulePromise) {
+    supabaseModulePromise = import('./lib/supabase');
+  }
+
+  return supabaseModulePromise;
+}
+
+function loadTenantLoader(): Promise<TenantLoaderModule> {
+  if (!tenantLoaderPromise) {
+    tenantLoaderPromise = import('./config/tenantLoader');
+  }
+
+  return tenantLoaderPromise;
+}
+
+function loadQueryParamsService(): Promise<QueryParamsServiceModule> {
+  if (!queryParamsServicePromise) {
+    queryParamsServicePromise = import('./services/queryParamsService');
+  }
+
+  return queryParamsServicePromise;
+}
+
+function loadItemImageLoader(): Promise<ItemImageLoaderModule> {
+  if (!itemImageLoaderPromise) {
+    itemImageLoaderPromise = import('./utils/itemImageLoader');
+  }
+
+  return itemImageLoaderPromise;
+}
+
+function loadMockBriefModule(): Promise<MockBriefModule> {
+  if (!mockBriefModulePromise) {
+    mockBriefModulePromise = import('./dev/mockAgentBrief').then(({ getMockBrief }) => ({
+      getMockBrief,
+    }));
+  }
+
+  return mockBriefModulePromise;
+}
+
+function loadMockImagesModule(): Promise<MockImagesModule> {
+  if (!mockImagesModulePromise) {
+    mockImagesModulePromise = import('./dev/mockImages').then(({ getMockImages }) => ({
+      getMockImages,
+    }));
+  }
+
+  return mockImagesModulePromise;
+}
+
+function getTokenCodeFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get('token');
+}
+
+function ChunkFallback() {
+  return (
+    <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-5xl mb-4 animate-pulse">✨</div>
+        <p className="text-[#8B5CF6] text-lg font-medium">Cargando módulo...</p>
+      </div>
+    </div>
+  );
+}
 
 // Estados de la aplicación
 type AppState =
@@ -80,6 +195,7 @@ function App() {
 
   // Auth
   const auth = useAuthContext();
+  const { ensureInitialized } = auth;
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const [isAnonymousSession, setIsAnonymousSession] = useState(false);
 
@@ -87,7 +203,9 @@ function App() {
   const [tenantData, setTenantData] = useState<TenantData | null>(null);
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
-  // Config completa del tenant (desde tenantLoader)
+  // Config completa del tenant.
+  // - Demo/B2C local: tenantLoader
+  // - B2B real por token: adaptador desde datos reales del tenant
   const [tenantConfig, setTenantConfig] = useState<TenantConfig | null>(null);
 
   // ── Sesión B2B demo/testing via ?tenant=...&demo=1 ──────────────────────
@@ -97,8 +215,8 @@ function App() {
   const [setupData, setSetupData] = useState<SetupData | null>(null);
 
   // Resultado del orchestrator
-  const [_agentBrief, setAgentBrief] = useState<AgentBrief | null>(null);
-  const [_orchestratorTiming, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
+  const [, setAgentBrief] = useState<AgentBrief | null>(null);
+  const [, setOrchestratorTiming] = useState<OrchestratorResult['timing'] | null>(null);
 
   // Páginas generadas para el Book
   const [pages, setPages] = useState<ComicFace[]>([]);
@@ -133,6 +251,18 @@ function App() {
   useEffect(() => {
     if (appState === 'auth-callback' && !auth.loading && auth.isAuthenticated) {
       console.log('[Auth] OAuth completado, avanzando a setup...');
+      setAppState('setup');
+    }
+  }, [appState, auth.loading, auth.isAuthenticated]);
+
+  useEffect(() => {
+    if (appState === 'auth' || appState === 'auth-callback') {
+      void ensureInitialized();
+    }
+  }, [appState, ensureInitialized]);
+
+  useEffect(() => {
+    if (appState === 'auth' && !auth.loading && auth.isAuthenticated) {
       setAppState('setup');
     }
   }, [appState, auth.loading, auth.isAuthenticated]);
@@ -185,18 +315,18 @@ function App() {
         }
 
         // ── Modo B2B real via ?token=... (one-time) ─────────────────────────
-        const tokenCode = getTokenFromUrl();
+        const tokenCode = getTokenCodeFromUrl();
 
         if (tokenCode) {
           setIsAnonymousSession(true);
-          const result = await validateToken(tokenCode);
+          const tokenService = await loadTokenService();
+          const result = await tokenService.validateToken(tokenCode);
 
-          if (result.valid && result.tenant && result.token) {
+          if (result.valid && result.tenant && result.token && result.tenantConfig) {
             console.log('🔐 [B2B] Token one-time válido para tenant:', result.tenant.tenantId);
             setTenantData(result.tenant);
             setTokenData(result.token);
-            const config = loadTenantConfig(result.tenant.tenantId);
-            setTenantConfig(config);
+            setTenantConfig(result.tenantConfig);
           } else {
             if (result.code === 'no_credits') {
               setAppState('promo-unavailable');
@@ -209,93 +339,86 @@ function App() {
           }
         } else {
           // ── FASE 10: Modo B2B demo/testing via ?tenant=...&demo=1 ─────────
-        const b2bParams = parseB2BParams();
+          const queryParamsService = await loadQueryParamsService();
+          const b2bParams = queryParamsService.parseB2BParams();
 
-        if (b2bParams) {
-          console.log('🧪 [B2B Demo] Detectado link demo de tenant:', b2bParams.tenant);
-          clearQueryParams();
+          if (b2bParams) {
+            console.log('🧪 [B2B Demo] Detectado link demo de tenant:', b2bParams.tenant);
+            queryParamsService.clearQueryParams();
 
-          const config = loadTenantConfig(b2bParams.tenant);
-          setTenantConfig(config);
-          setIsAnonymousSession(true);
+            const tenantLoader = await loadTenantLoader();
+            const config = tenantLoader.loadTenantConfig(b2bParams.tenant);
+            setTenantConfig(config);
+            setIsAnonymousSession(true);
 
-          // Verificar si el tenant tiene créditos disponibles
-          // (consulta directa para no consumir aún — solo verificar saldo)
-          const { supabase } = await import('./lib/supabase');
-          if (!supabase) {
-            setError('Error de configuración: Base de datos no disponible.');
-            setAppState('error');
-            return;
-          }
-          const { data: creditAccount } = await supabase
-            .from('credit_accounts')
-            .select('balance')
-            .eq('tenant_id', b2bParams.tenant)
-            .maybeSingle();
-
-          const tenantBalance = creditAccount?.balance ?? 0;
-
-          if (tenantBalance <= 0) {
-            console.warn('[B2B] Tenant sin créditos:', b2bParams.tenant);
-            setAppState('promo-unavailable');
-            return;
-          }
-
-          console.log('[B2B] Tenant con saldo:', tenantBalance, 'créditos');
-
-          // Cargar imagen del producto si es plan Premium
-          let itemImageBase64: string | undefined;
-          let itemImageUrl: string | undefined;
-
-          if (b2bParams.item_image) {
-            console.log('[B2B] Descargando imagen del producto...');
-            const imageResult = await loadItemImage(b2bParams.item_image);
-
-            if (imageResult.base64) {
-              itemImageBase64 = imageResult.base64;
-              console.log('[B2B] ✅ Imagen cargada via', imageResult.loadMethod);
-            } else if (imageResult.loadMethod === 'url-only') {
-              itemImageUrl = imageResult.url;
-              console.warn('[B2B] ⚠️ Solo URL disponible — el wizard mostrará la imagen pero no se enviará a Gemini');
-            } else {
-              console.warn('[B2B] ❌ No se pudo cargar la imagen del producto');
+            // Verificar si el tenant tiene créditos disponibles
+            // (consulta directa para no consumir aún — solo verificar saldo)
+            const { supabase } = await loadSupabaseModule();
+            if (!supabase) {
+              setError('Error de configuración: Base de datos no disponible.');
+              setAppState('error');
+              return;
             }
-          }
+            const { data: creditAccount } = await supabase
+              .from('credit_accounts')
+              .select('balance')
+              .eq('tenant_id', b2bParams.tenant)
+              .maybeSingle();
 
-          // Construir sesión B2B
-          const session: B2BSession = {
-            tenantId: b2bParams.tenant,
-            tenantConfig: config,
-            itemName: b2bParams.item,
-            itemImageBase64,
-            itemImageUrl,
-            customerEmail: b2bParams.customer_email,
-            ref: b2bParams.ref,
-            storyGenerated: false,
-          };
+            const tenantBalance = creditAccount?.balance ?? 0;
 
-          setB2BSession(session);
+            if (tenantBalance <= 0) {
+              console.warn('[B2B] Tenant sin créditos:', b2bParams.tenant);
+              setAppState('promo-unavailable');
+              return;
+            }
 
-          // Inicializar Gemini
-          const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
-          if (geminiKey) {
-            agentDeps.initialize(geminiKey);
-            console.log('🔑 Gemini API inicializada');
-          } else if (!isDevMockMode()) {
-            setError('Error de configuración: API Key no disponible.');
-            setAppState('error');
+            console.log('[B2B] Tenant con saldo:', tenantBalance, 'créditos');
+
+            // Cargar imagen del producto si es plan Premium
+            let itemImageBase64: string | undefined;
+            let itemImageUrl: string | undefined;
+
+            if (b2bParams.item_image) {
+              console.log('[B2B] Descargando imagen del producto...');
+              const itemImageLoader = await loadItemImageLoader();
+              const imageResult = await itemImageLoader.loadItemImage(b2bParams.item_image);
+
+              if (imageResult.base64) {
+                itemImageBase64 = imageResult.base64;
+                console.log('[B2B] ✅ Imagen cargada via', imageResult.loadMethod);
+              } else if (imageResult.loadMethod === 'url-only') {
+                itemImageUrl = imageResult.url;
+                console.warn('[B2B] ⚠️ Solo URL disponible — el wizard mostrará la imagen pero no se enviará a Gemini');
+              } else {
+                console.warn('[B2B] ❌ No se pudo cargar la imagen del producto');
+              }
+            }
+
+            // Construir sesión B2B
+            const session: B2BSession = {
+              tenantId: b2bParams.tenant,
+              tenantConfig: config,
+              itemName: b2bParams.item,
+              itemImageBase64,
+              itemImageUrl,
+              customerEmail: b2bParams.customer_email,
+              ref: b2bParams.ref,
+              storyGenerated: false,
+            };
+
+            setB2BSession(session);
+
+            setAppState('setup');
             return;
           }
-
-          setAppState('setup');
-          return;
-        }
         }
 
         // ── Modo B2C directo ────────────────────────────────────────────────
         if (!tokenCode) {
-          const tenantId = getTenantIdFromUrl();
-          const config = loadTenantConfig(tenantId);
+          const tenantLoader = await loadTenantLoader();
+          const tenantId = tenantLoader.getTenantIdFromUrl();
+          const config = tenantLoader.loadTenantConfig(tenantId);
           setTenantConfig(config);
 
           if (!auth.isAuthenticated) {
@@ -304,12 +427,9 @@ function App() {
           }
         }
 
-        // ── Inicializar Gemini con variable de entorno ────────────────────────
+        // ── Validar configuración de Gemini sin cargar aún la pila de generación ──
         const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (geminiKey) {
-          agentDeps.initialize(geminiKey);
-          console.log('🔑 Gemini API inicializada desde variable de entorno');
-        } else if (!isDevMockMode()) {
+        if (!geminiKey && !isDevMockMode()) {
           console.error('❌ VITE_GEMINI_API_KEY no configurada');
           setError('Error de configuración: API Key no disponible. Contacta al administrador.');
           setAppState('error');
@@ -352,6 +472,17 @@ function App() {
   ): Promise<ComicFace[]> => {
     const totalPages = brief.storyBeats.length;
     const generatedPages: ComicFace[] = [];
+    const isMockMode = isDevMockMode();
+    const generationModules = !isMockMode ? await loadGenerationModules() : null;
+    const mockImagesModule = isMockMode ? await loadMockImagesModule() : null;
+    let fallbackImagesPromise: Promise<string[]> | null = isMockMode
+      ? mockImagesModule!.getMockImages(totalPages)
+      : null;
+
+    const getFallbackImages = async () => {
+      fallbackImagesPromise ??= mockImagesModule!.getMockImages(totalPages);
+      return fallbackImagesPromise;
+    };
 
     console.log(`🎨 [App] Generando ${totalPages} imágenes...`);
 
@@ -367,14 +498,14 @@ function App() {
 
       let imageUrl: string;
 
-      if (isDevMockMode()) {
-        const mockImages = await getMockImages(totalPages);
+      if (isMockMode) {
+        const mockImages = await getFallbackImages();
         imageUrl = mockImages[i];
         await new Promise(resolve => setTimeout(resolve, DEV_CONFIG.MOCK_IMAGE_DELAY_MS));
       } else {
         console.log(`🎨 [App] Generando imagen ${i + 1}/${totalPages}...`);
 
-        const imageResult = await generateStoryImage(
+        const imageResult = await generationModules!.generateStoryImage(
           {
             visualPrompt,
             heroPhoto: setupDataRef.heroPhoto || undefined,
@@ -382,7 +513,7 @@ function App() {
             heroDescription: setupDataRef.heroDescription || undefined,
             pageIndex: i,
           },
-          agentDeps
+          generationModules!.agentDeps
         );
 
         if (imageResult.success && imageResult.imageBase64) {
@@ -390,7 +521,7 @@ function App() {
           console.log(`   ✅ Imagen ${i + 1} generada exitosamente (${imageResult.durationMs}ms)`);
         } else {
           console.error(`   ❌ Error generando imagen ${i + 1}:`, imageResult.error);
-          const mockImages = await getMockImages(totalPages);
+          const mockImages = await getFallbackImages();
           imageUrl = mockImages[i];
         }
       }
@@ -418,16 +549,26 @@ function App() {
       return;
     }
 
-    if (!agentDeps.isInitialized) {
-      setError('Gemini API no inicializada. Verifica la configuración.');
-      setAppState('error');
-      return;
+    const isMockMode = isDevMockMode();
+    const generationModules = !isMockMode ? await loadGenerationModules() : null;
+    const mockBriefModule = isMockMode ? await loadMockBriefModule() : null;
+    if (generationModules && !generationModules.agentDeps.isInitialized) {
+      const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!geminiKey) {
+        setError('Gemini API no inicializada. Verifica la configuración.');
+        setAppState('error');
+        return;
+      }
+
+      await generationModules.agentDeps.initialize(geminiKey);
+      console.log('🔑 Gemini API inicializada bajo demanda');
     }
 
     // ── Resolver fuente de crédito ────────────────────────────────────────
     // Prioridad: token B2B one-time > sesión demo B2B > usuario B2C
     if (tokenData?.token) {
-      const tokenConsumption = await consumeB2BToken(tokenData.token);
+      const tokenService = await loadTokenService();
+      const tokenConsumption = await tokenService.consumeB2BToken(tokenData.token);
       if (!tokenConsumption.success) {
         if (tokenConsumption.code === 'no_credits') {
           setAppState('promo-unavailable');
@@ -441,7 +582,8 @@ function App() {
     } else {
       const creditTenantId = b2bSession?.tenantId;
       const creditUserId = auth.user?.id;
-      const creditConsumed = await consumeCredit(creditTenantId, creditUserId);
+      const creditService = await loadCreditService();
+      const creditConsumed = await creditService.consumeCredit(creditTenantId, creditUserId);
       if (!creditConsumed) {
         setAppState('no-credits');
         return;
@@ -456,7 +598,19 @@ function App() {
       const sessionContext = buildSessionContext(data, tenantConfig);
       console.log('🎭 Iniciando orchestración...');
 
-      const orchestratorResult = await orchestrate(sessionContext, agentDeps);
+      const orchestratorResult: OrchestratorResult = isMockMode
+        ? {
+            success: true,
+            agentBrief: mockBriefModule!.getMockBrief(10),
+            timing: {
+              ragMs: 0,
+              narrativeMs: 0,
+              storytellingMs: 0,
+              visualBriefMs: 0,
+              totalMs: 0,
+            },
+          }
+        : await generationModules!.orchestrate(sessionContext, generationModules!.agentDeps);
 
       if (!orchestratorResult.success || !orchestratorResult.agentBrief) {
         throw new Error(orchestratorResult.error || 'Error en orchestración');
@@ -481,8 +635,10 @@ function App() {
       }
 
       console.log('✅ Generación completada');
-      setPages(generatedPages);
-      setAppState('reading');
+      startTransition(() => {
+        setPages(generatedPages);
+        setAppState('reading');
+      });
 
     } catch (err) {
       console.error('Error en generación:', err);
@@ -507,7 +663,11 @@ function App() {
     setPages([]);
     setError(null);
     setGenerationProgress({ current: 0, total: 0, message: '' });
-    agentDeps.cleanup();
+    if (generationModulesPromise) {
+      void generationModulesPromise.then(({ agentDeps }) => {
+        agentDeps.cleanup();
+      });
+    }
     setAppState('setup');
   }, [b2bSession, tokenData]);
 
@@ -662,9 +822,11 @@ function App() {
               setTokenData(null);
               setTenantData(null);
               setIsAnonymousSession(false);
-              const config = loadTenantConfig(undefined);
-              setTenantConfig(config);
-              setAppState('auth');
+              void loadTenantLoader().then((tenantLoader) => {
+                const config = tenantLoader.loadTenantConfig(undefined);
+                setTenantConfig(config);
+                setAppState('auth');
+              });
             }}
             className="w-full px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B] hover:shadow-[1px_1px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
@@ -680,30 +842,36 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        {authView === 'login' ? (
-          <LoginPage
-            tenantConfig={tenantConfig}
-            onLogin={auth.signIn}
-            onGoogleLogin={auth.signInWithGoogle}
-            onSwitchToSignUp={() => setAuthView('signup')}
-            error={auth.error}
-          />
-        ) : (
-          <SignUpPage
-            tenantConfig={tenantConfig}
-            onSignUp={auth.signUp}
-            onSwitchToLogin={() => setAuthView('login')}
-            error={auth.error}
-            initialEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
-          />
-        )}
+        <Suspense fallback={<ChunkFallback />}>
+          {authView === 'login' ? (
+            <LoginPage
+              tenantConfig={tenantConfig}
+              onLogin={auth.signIn}
+              onGoogleLogin={auth.signInWithGoogle}
+              onSwitchToSignUp={() => setAuthView('signup')}
+              error={auth.error}
+            />
+          ) : (
+            <SignUpPage
+              tenantConfig={tenantConfig}
+              onSignUp={auth.signUp}
+              onSwitchToLogin={() => setAuthView('login')}
+              error={auth.error}
+              initialEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
+            />
+          )}
+        </Suspense>
       </>
     );
   }
 
   // ── OAuth callback ───────────────────────────────────────────────────────────
   if (appState === 'auth-callback') {
-    return <AuthCallback />;
+    return (
+      <Suspense fallback={<ChunkFallback />}>
+        <AuthCallback />
+      </Suspense>
+    );
   }
 
   // ── Setup ────────────────────────────────────────────────────────────────────
@@ -713,10 +881,12 @@ function App() {
         {renderDevBanner()}
         {(auth.isAuthenticated || isAnonymousSession) && (
           <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
-            <CreditBalance
-              tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
-              userId={auth.user?.id}
-            />
+            <Suspense fallback={null}>
+              <CreditBalance
+                tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
+                userId={auth.user?.id}
+              />
+            </Suspense>
             <span className="text-xs font-medium" style={{ color: '#1E293B99' }}>
               {auth.profile?.displayName || auth.user?.email}
             </span>
@@ -736,13 +906,15 @@ function App() {
             )}
           </div>
         )}
-        <Setup
-          tenantConfig={tenantConfig}
-          initialItemModel={b2bSession?.itemName ?? tokenData?.itemName ?? ''}
-          initialItemImage={b2bSession?.itemImageBase64}
-          initialItemImageUrl={b2bSession?.itemImageUrl}
-          onComplete={handleStartAdventure}
-        />
+        <Suspense fallback={<ChunkFallback />}>
+          <Setup
+            tenantConfig={tenantConfig}
+            initialItemModel={b2bSession?.itemName ?? tokenData?.itemName ?? ''}
+            initialItemImage={b2bSession?.itemImageBase64}
+            initialItemImageUrl={b2bSession?.itemImageUrl}
+            onComplete={handleStartAdventure}
+          />
+        </Suspense>
       </>
     );
   }
@@ -772,12 +944,14 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        <Book
-          pages={pages}
-          tenantConfig={tenantConfig}
-          heroName={setupData.heroName}
-          onReset={handleReset}
-        />
+        <Suspense fallback={<ChunkFallback />}>
+          <Book
+            pages={pages}
+            tenantConfig={tenantConfig}
+            heroName={setupData.heroName}
+            onReset={handleReset}
+          />
+        </Suspense>
       </>
     );
   }
@@ -787,16 +961,18 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        <PostStoryActions
-          heroName={setupData.heroName}
-          tenantConfig={tenantConfig}
-          customerEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
-          onCreateAnother={() => {
-            setAuthView('signup');
-            setAppState('auth');
-          }}
-          onBackToStory={() => setAppState('reading')}
-        />
+        <Suspense fallback={<ChunkFallback />}>
+          <PostStoryActions
+            heroName={setupData.heroName}
+            tenantConfig={tenantConfig}
+            customerEmail={b2bSession?.customerEmail ?? tokenData?.customerEmail}
+            onCreateAnother={() => {
+              setAuthView('signup');
+              setAppState('auth');
+            }}
+            onBackToStory={() => setAppState('reading')}
+          />
+        </Suspense>
       </>
     );
   }
@@ -814,12 +990,14 @@ function App() {
     return (
       <>
         {renderDevBanner()}
-        <BuyCredits
-          channel={channel}
-          userId={auth.user?.id}
-          tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
-          onClose={() => setAppState('setup')}
-        />
+        <Suspense fallback={<ChunkFallback />}>
+          <BuyCredits
+            channel={channel}
+            userId={auth.user?.id}
+            tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
+            onClose={() => setAppState('setup')}
+          />
+        </Suspense>
       </>
     );
   }
@@ -827,22 +1005,26 @@ function App() {
   // ── Catálogo B2B standalone ────────────────────────────────────────────────
   if (appState === 'buy-credits-b2b') {
     return (
-      <BuyCreditsB2B
-        tenantId={auth.profile?.tenantId ?? tenantData?.tenantId ?? b2bSession?.tenantId}
-        defaultPlan={getB2BStandalonePlan()}
-        onClose={() => {
-          window.location.href = '/b2b.html';
-        }}
-      />
+      <Suspense fallback={<ChunkFallback />}>
+        <BuyCreditsB2B
+          tenantId={auth.profile?.tenantId ?? tenantData?.tenantId ?? b2bSession?.tenantId}
+          defaultPlan={getB2BStandalonePlan()}
+          onClose={() => {
+            window.location.href = '/b2b.html';
+          }}
+        />
+      </Suspense>
     );
   }
 
   // ── Stripe success ───────────────────────────────────────────────────────────
   if (appState === 'credits-success') {
     return (
-      <CreditsSuccess
-        onContinue={() => setAppState('setup')}
-      />
+      <Suspense fallback={<ChunkFallback />}>
+        <CreditsSuccess
+          onContinue={() => setAppState('setup')}
+        />
+      </Suspense>
     );
   }
 

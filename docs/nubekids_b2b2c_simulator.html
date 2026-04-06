@@ -317,8 +317,11 @@
       </div>
       <div class="field">
         <label>TENANT ID (por defecto)</label>
-        <input type="text" id="tenantId" value="shoe-store-default" placeholder="shoe-store-default" oninput="refreshPreviews()">
+        <input type="text" id="tenantId" value="wearable-demo-default" placeholder="wearable-demo-default" oninput="refreshPreviews()">
       </div>
+    </div>
+    <div class="info-box" style="margin-top: 1rem;">
+      Demo recomendada `wearable`: <strong>wearable-demo-default</strong>. Demo recomendada `interactive`: <strong>interactive-demo-default</strong>.
     </div>
   </div>
 
@@ -340,7 +343,7 @@
       <hr class="divider">
       <div class="field">
         <label>Tenant ID</label>
-        <input type="text" id="s1_tenant" value="shoe-store-default" oninput="refreshPreviews()">
+        <input type="text" id="s1_tenant" value="wearable-demo-default" oninput="refreshPreviews()">
       </div>
       <div class="url-preview" id="prev_standard">—</div>
       <button class="btn btn-yellow" onclick="openTest('standard')">
@@ -361,11 +364,11 @@
       <hr class="divider">
       <div class="field">
         <label>Nombre del producto</label>
-        <input type="text" id="s2_item" value="Nike Air Max 90 Kids Rojo" oninput="refreshPreviews()">
+        <input type="text" id="s2_item" value="Chaqueta brillante con estrellas" oninput="refreshPreviews()">
       </div>
       <div class="field">
         <label>URL imagen del producto</label>
-        <input type="text" id="s2_img" value="https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Nike+Shoes" oninput="refreshPreviews()">
+        <input type="text" id="s2_img" value="https://via.placeholder.com/400x400/0F766E/FFFFFF?text=Wearable+Demo" oninput="refreshPreviews()">
       </div>
       <div class="field">
         <label>Email del cliente</label>
@@ -390,7 +393,7 @@
       <hr class="divider">
       <div class="field">
         <label>Tenant ID (debe tener balance=0)</label>
-        <input type="text" id="s3_tenant" value="shoe-store-default" oninput="refreshPreviews()">
+        <input type="text" id="s3_tenant" value="wearable-demo-default" oninput="refreshPreviews()">
       </div>
       <div class="info-box">
         ⚠️ Para este test, ve a <strong>Supabase → credit_accounts</strong> y pon <strong>balance = 0</strong> en el tenant. Recuerda restaurarlo después.
@@ -453,7 +456,7 @@
 
   <!-- WARN -->
   <div class="warn-box">
-    ⚡ <strong>Recuerda:</strong> Para los tests B2B (Standard, Premium, CORS) el tenant <code>shoe-store-default</code> debe tener <strong>balance ≥ 1</strong> en Supabase. Para el test "Sin créditos" ponlo en 0 y luego restáuralo.
+    ⚡ <strong>Recuerda:</strong> Para los tests B2B (Standard, Premium, CORS) el tenant <code>wearable-demo-default</code> debe tener <strong>balance ≥ 1</strong> en Supabase. Para el test "Sin créditos" ponlo en 0 y luego restáuralo.
   </div>
 
   <!-- CHECKLIST -->

@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Política de Cookies · Winke</title>
+    <meta name="description"
+        content="Política de Cookies de Winke (winke.fun). Qué tecnologías de almacenamiento usamos, por qué, y cómo gestionarlas." />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --magic-purple: #8B5CF6;
+            --purple-dark: #6D28D9;
+            --purple-light: #EDE9FE;
+            --yellow: #FBBF24;
+            --cream: #FDFBF7;
+            --ink: #1E293B;
+            --ink-soft: #475569;
+            --border: #1E293B;
+            --shadow: 4px 4px 0px #1E293B;
+            --shadow-sm: 2px 2px 0px #1E293B;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --green: #10B981;
+            --green-light: #ECFDF5;
+            --green-border: #A7F3D0;
+            --sky: #38BDF8;
+            --sky-light: #F0F9FF;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        /* ── Header ── */
+        .site-header {
+            background: var(--ink);
+            border-bottom: 3px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--yellow);
+        }
+
+        .back-link {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 6px 16px;
+            transition: background 0.15s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: var(--green);
+            border-bottom: 3px solid var(--border);
+            padding: 48px 24px 56px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '🍪';
+            position: absolute;
+            font-size: 220px;
+            opacity: 0.07;
+            bottom: -30px;
+            right: -20px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 4px 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 1.05rem;
+            max-width: 640px;
+            margin: 0 auto 20px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-meta span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .hero-meta span strong {
+            color: #fff;
+        }
+
+        /* ── Status Banner ── */
+        .status-banner {
+            background: var(--green);
+            border-bottom: 3px solid var(--border);
+            padding: 0;
+        }
+
+        .status-inner {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── Layout ── */
+        .page-wrap {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ── TOC ── */
+        .toc {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-bottom: 48px;
+        }
+
+        .toc-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: toc;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 32px;
+        }
+
+        @media (max-width: 600px) {
+            .toc ol {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .toc li {
+            counter-increment: toc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .toc li::before {
+            content: counter(toc) ". ";
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .toc li a {
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .toc li a:hover {
+            color: var(--green);
+            text-decoration: underline;
+        }
+
+        /* ── Sections ── */
+        .section {
+            margin-bottom: 56px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-number {
+            background: var(--green);
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--purple-dark);
+            margin: 24px 0 12px;
+            padding-left: 12px;
+            border-left: 4px solid var(--green);
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section a {
+            color: var(--magic-purple);
+            font-weight: 600;
+        }
+
+        /* ── Alerts ── */
+        .alert {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .alert-green {
+            background: var(--green-light);
+            border-left: 6px solid var(--green);
+        }
+
+        .alert-purple {
+            background: var(--purple-light);
+            border-left: 6px solid var(--magic-purple);
+        }
+
+        .alert-yellow {
+            background: #FFFBEB;
+            border-left: 6px solid var(--yellow);
+        }
+
+        .alert-red {
+            background: #FEF2F2;
+            border-left: 6px solid #EF4444;
+        }
+
+        .alert-sky {
+            background: var(--sky-light);
+            border-left: 6px solid var(--sky);
+        }
+
+        .alert-ink {
+            background: #F8FAFC;
+            border-left: 6px solid var(--ink);
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-body {
+            flex: 1;
+        }
+
+        .alert-body strong {
+            display: block;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .alert-body p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+
+        .alert-body p+p {
+            margin-top: 6px;
+        }
+
+        /* ── Big status card ── */
+        .status-card {
+            background: var(--ink);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .status-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .status-body h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+
+        .status-body p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            background: var(--green);
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.82rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 3px 14px;
+        }
+
+        /* ── Cookie inventory table ── */
+        .cookie-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 20px 0;
+            font-size: 0.85rem;
+        }
+
+        .cookie-table thead tr {
+            background: var(--ink);
+        }
+
+        .cookie-table thead th {
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            padding: 11px 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .cookie-table tbody tr {
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .cookie-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .cookie-table tbody tr:nth-child(even) {
+            background: #F8FAFC;
+        }
+
+        .cookie-table tbody td {
+            padding: 11px 14px;
+            color: var(--ink-soft);
+            vertical-align: top;
+        }
+
+        .cookie-table tbody td:first-child {
+            font-family: 'Courier New', monospace;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        .cookie-table tbody td:nth-child(2) {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 4px;
+            padding: 2px 8px;
+            border: 1.5px solid;
+        }
+
+        .badge-tech {
+            background: var(--green-light);
+            color: #065F46;
+            border-color: var(--green);
+        }
+
+        .badge-pref {
+            background: var(--sky-light);
+            color: #1E40AF;
+            border-color: var(--sky);
+        }
+
+        .badge-analyt {
+            background: #FFFBEB;
+            color: #92400E;
+            border-color: var(--yellow);
+        }
+
+        .badge-session {
+            background: #F5F3FF;
+            color: #5B21B6;
+            border-color: #C4B5FD;
+        }
+
+        .badge-persist {
+            background: #F0F9FF;
+            color: #075985;
+            border-color: #BAE6FD;
+        }
+
+        .badge-eu {
+            background: var(--green-light);
+            color: #065F46;
+            border-color: var(--green);
+        }
+
+        .badge-us {
+            background: #FFFBEB;
+            color: #92400E;
+            border-color: var(--yellow);
+        }
+
+        /* ── localStorage distinct block ── */
+        .storage-section {
+            background: #F5F3FF;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin: 20px 0;
+        }
+
+        .storage-section h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--purple-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Banner mockup ── */
+        .banner-mockup {
+            background: var(--ink);
+            border: 3px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin: 24px 0;
+        }
+
+        .banner-top {
+            padding: 20px 24px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .banner-top p {
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .banner-top p a {
+            color: var(--yellow);
+        }
+
+        .banner-buttons {
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-accept {
+            background: var(--green);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 10px 22px;
+            cursor: default;
+        }
+
+        .btn-reject {
+            background: transparent;
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 10px 22px;
+            cursor: default;
+        }
+
+        .btn-config {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.65);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 10px 18px;
+            cursor: default;
+        }
+
+        .banner-rule {
+            padding: 10px 24px 14px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+
+        .banner-rule span {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.5;
+        }
+
+        /* ── Browser cards ── */
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .browser-card {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            padding: 16px;
+        }
+
+        .browser-name {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .browser-path {
+            font-size: 0.8rem;
+            color: var(--ink-soft);
+            line-height: 1.55;
+        }
+
+        .browser-path code {
+            background: #F1F5F9;
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-family: monospace;
+            font-size: 0.78rem;
+            color: var(--purple-dark);
+        }
+
+        /* ── Placeholder ── */
+        .ph {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.85em;
+            border: 1.5px dashed var(--border);
+            border-radius: 4px;
+            padding: 1px 8px;
+        }
+
+        /* ── Tag ── */
+        .tag {
+            display: inline-block;
+            font-size: 0.73rem;
+            font-weight: 700;
+            border-radius: 50px;
+            padding: 2px 10px;
+            border: 1.5px solid;
+        }
+
+        .tag-new {
+            background: var(--green-light);
+            color: #065F46;
+            border-color: var(--green);
+        }
+
+        .tag-warn {
+            background: #FEF2F2;
+            color: #991B1B;
+            border-color: #FCA5A5;
+        }
+
+        /* ── Check list ── */
+        .check-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 14px 0;
+        }
+
+        .check-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+        }
+
+        .check-list li span:first-child {
+            flex-shrink: 0;
+        }
+
+        /* ── Future table ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 20px 0;
+            font-size: 0.88rem;
+        }
+
+        .data-table thead tr {
+            background: var(--ink);
+        }
+
+        .data-table thead th {
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            padding: 11px 16px;
+            text-align: left;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: #F8FAFC;
+        }
+
+        .data-table tbody td {
+            padding: 11px 16px;
+            color: var(--ink-soft);
+            vertical-align: top;
+        }
+
+        .data-table tbody td:first-child {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        /* ── Footer ── */
+        .page-footer {
+            background: var(--ink);
+            border-top: 3px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .page-footer p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .footer-links a:hover {
+            color: var(--yellow);
+        }
+
+        @media (max-width: 680px) {
+            .cookie-table {
+                font-size: 0.78rem;
+            }
+
+            .cookie-table thead th,
+            .cookie-table tbody td {
+                padding: 9px 10px;
+            }
+        }
+
+        @media print {
+
+            .site-header,
+            .back-link {
+                display: none;
+            }
+
+            body {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─────────── HEADER ─────────── -->
+    <header class="site-header">
+        <a href="/" class="logo">Winke<span>.</span></a>
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </header>
+
+    <!-- ─────────── HERO ─────────── -->
+    <div class="hero">
+        <div class="hero-badge">🍪 Documento Legal</div>
+        <h1>Política de Cookies</h1>
+        <p>Te explicamos exactamente qué tecnologías de almacenamiento usa Winke, por qué las necesitamos y cómo tienes
+            el control total sobre ellas.</p>
+        <div class="hero-meta">
+            <span>🌐 <strong>winke.fun</strong></span>
+            <span>📅 Última actualización: <strong><span class="ph"
+                        style="background:rgba(251,191,36,0.5);border-color:rgba(255,255,255,0.4);">DD/MM/AAAA</span></strong></span>
+            <span>⚖️ <strong>LSSI-CE · RGPD · Directrices AEPD 2025</strong></span>
+        </div>
+    </div>
+
+    <!-- ─────────── MAIN ─────────── -->
+    <main class="page-wrap">
+
+        <!-- Estado actual — tarjeta destacada -->
+        <div class="status-card">
+            <div class="status-icon">✅</div>
+            <div class="status-body">
+                <h3>Winke solo usa cookies estrictamente necesarias</h3>
+                <p>En este momento, winke.fun no utiliza cookies de seguimiento, publicidad comportamental, analítica de
+                    terceros ni perfilado de ningún tipo. Todas las tecnologías de almacenamiento que empleamos son
+                    técnicamente imprescindibles para que el servicio funcione: tu sesión, la seguridad del pago y el
+                    estado del creador de cuentos mientras navegas.</p>
+                <p>Esto significa que, a día de hoy, <strong style="color:rgba(255,255,255,0.9);">el consentimiento
+                        previo para cookies no es legalmente requerido</strong> en Winke, según el artículo 22.2 de la
+                    LSSI-CE y las directrices de la AEPD. Aun así, te lo explicamos todo con transparencia total.</p>
+                <span class="status-badge">🔒 Sin cookies no esenciales activas</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <nav class="toc" aria-label="Índice">
+            <div class="toc-title">📌 Índice</div>
+            <ol>
+                <li><a href="#que-son">¿Qué son las cookies?</a></li>
+                <li><a href="#tecnologias">Tecnologías de almacenamiento</a></li>
+                <li><a href="#inventario">Inventario completo</a></li>
+                <li><a href="#localStorage">Almacenamiento local (localStorage)</a></li>
+                <li><a href="#terceros">Cookies de terceros</a></li>
+                <li><a href="#menores">Cookies y menores de edad</a></li>
+                <li><a href="#banner">El banner de cookies</a></li>
+                <li><a href="#consentimiento">Gestión del consentimiento</a></li>
+                <li><a href="#navegador">Control desde el navegador</a></li>
+                <li><a href="#futuro">Si añadimos nuevas cookies</a></li>
+                <li><a href="#cambios">Actualizaciones de esta política</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ol>
+        </nav>
+
+
+        <!-- ── 1. QUÉ SON ── -->
+        <section class="section" id="que-son">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>¿Qué son las cookies y tecnologías similares?</h2>
+            </div>
+
+            <p>Las <strong>cookies</strong> son pequeños ficheros de texto que un sitio web envía al navegador del
+                usuario y que se almacenan en su dispositivo (ordenador, teléfono, tablet). Cuando el usuario vuelve al
+                sitio, el navegador devuelve ese fichero al servidor, permitiendo que el sitio recuerde información
+                sobre la visita anterior.</p>
+
+            <p>Además de las cookies, existen otras tecnologías de almacenamiento en el navegador que funcionan de forma
+                similar y están sujetas a la misma regulación:</p>
+
+            <ul class="check-list">
+                <li><span>🗂️</span><strong>localStorage:</strong> almacenamiento persistente en el navegador, no
+                    enviado al servidor automáticamente, que persiste hasta que es borrado explícitamente.</li>
+                <li><span>⏱️</span><strong>sessionStorage:</strong> similar al localStorage pero limitado a la duración
+                    de la pestaña o ventana del navegador. Se borra al cerrar la sesión.</li>
+                <li><span>🔑</span><strong>IndexedDB:</strong> base de datos local del navegador para datos
+                    estructurados más complejos.</li>
+                <li><span>📡</span><strong>Web Beacons / píxeles:</strong> imágenes invisibles de 1×1 píxel usadas para
+                    rastrear aperturas o clics (Winke no usa actualmente).</li>
+            </ul>
+
+            <p>La presente política cubre todas las tecnologías de almacenamiento utilizadas en winke.fun, no solo las
+                cookies estrictas, en cumplimiento de las directrices del Comité Europeo de Protección de Datos (CEPD) y
+                la AEPD.</p>
+        </section>
+
+
+        <!-- ── 2. TIPOS ── -->
+        <section class="section" id="tecnologias">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Tipos de tecnologías de almacenamiento</h2>
+            </div>
+
+            <p>Según su finalidad, las cookies y tecnologías similares se clasifican en las siguientes categorías. Winke
+                indica en cuáles está presente actualmente:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Consentimiento</th>
+                        <th>Winke ahora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Técnicas / Estrictamente necesarias</td>
+                        <td>Imprescindibles para el funcionamiento básico del servicio. Sin ellas el sitio no funciona.
+                        </td>
+                        <td><span class="badge badge-tech">No requerido</span></td>
+                        <td>✅ Sí usa</td>
+                    </tr>
+                    <tr>
+                        <td>Personalización / Preferencias</td>
+                        <td>Recuerdan opciones elegidas por el usuario (idioma, tema). Exentas si las activa el usuario.
+                        </td>
+                        <td><span class="badge badge-pref">Exentas si usuario las activa</span></td>
+                        <td>✅ Sí usa (idioma)</td>
+                    </tr>
+                    <tr>
+                        <td>Analíticas / Medición</td>
+                        <td>Miden el uso de la plataforma para mejorar el servicio. Pueden ser propias o de terceros.
+                        </td>
+                        <td><span class="badge badge-analyt">Consentimiento previo</span></td>
+                        <td>🔵 No usa actualmente</td>
+                    </tr>
+                    <tr>
+                        <td>Publicidad comportamental</td>
+                        <td>Rastrean al usuario entre sitios para mostrarle anuncios personalizados.</td>
+                        <td><span class="badge badge-analyt">Consentimiento previo</span></td>
+                        <td>🔵 No usa actualmente</td>
+                    </tr>
+                    <tr>
+                        <td>Redes sociales</td>
+                        <td>Botones de compartir o píxeles de plataformas como Meta, LinkedIn, X.</td>
+                        <td><span class="badge badge-analyt">Consentimiento previo</span></td>
+                        <td>🔵 No usa actualmente</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-green" style="margin-top:4px;">
+                <div class="alert-icon">🌿</div>
+                <div class="alert-body">
+                    <strong>Privacidad por defecto desde el día uno</strong>
+                    <p>La ausencia de cookies analíticas y publicitarias es una decisión de diseño deliberada, coherente
+                        con el principio de minimización de datos del RGPD (Art. 5.1.c) y nuestra arquitectura orientada
+                        a la protección de menores. Si en el futuro incorporamos cookies no esenciales, lo comunicaremos
+                        con antelación y solicitaremos tu consentimiento explícito — ver <a href="#futuro">sección
+                            10</a>.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── 3. INVENTARIO ── -->
+        <section class="section" id="inventario">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Inventario completo de cookies activas</h2>
+            </div>
+
+            <p>A continuación se detallan todas las cookies establecidas por winke.fun o por sus proveedores de
+                servicios en el navegador del usuario. El inventario se revisa y actualiza en cada despliegue.</p>
+
+            <h3>🔐 Autenticación y sesión — Supabase</h3>
+            <div style="overflow-x:auto;">
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Finalidad</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Transferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>sb-&lt;ref&gt;-auth-token</td>
+                            <td>Supabase</td>
+                            <td>Token de sesión de autenticación del usuario. Permite mantener la sesión activa entre
+                                recargas de página.</td>
+                            <td><span class="badge badge-tech">Técnica</span></td>
+                            <td><span class="badge badge-session">Sesión / 7 días</span></td>
+                            <td><span class="badge badge-eu">🇪🇺 UE (Frankfurt)</span></td>
+                        </tr>
+                        <tr>
+                            <td>sb-&lt;ref&gt;-auth-token-code-verifier</td>
+                            <td>Supabase</td>
+                            <td>Verificador PKCE para el flujo OAuth seguro de Google Login. Solo existe durante el
+                                proceso de autenticación.</td>
+                            <td><span class="badge badge-tech">Técnica</span></td>
+                            <td><span class="badge badge-session">Sesión (minutos)</span></td>
+                            <td><span class="badge badge-eu">🇪🇺 UE (Frankfurt)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>💳 Seguridad de pagos — Stripe</h3>
+            <div style="overflow-x:auto;">
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Finalidad</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Transferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>__stripe_mid</td>
+                            <td>Stripe Inc.</td>
+                            <td>Identificador de dispositivo para detección de fraude durante el proceso de pago.
+                                Permite a Stripe reconocer si el dispositivo ha realizado pagos anteriores.</td>
+                            <td><span class="badge badge-tech">Técnica</span></td>
+                            <td><span class="badge badge-persist">1 año</span></td>
+                            <td><span class="badge badge-us">🇺🇸 EE.UU. (CCT)</span></td>
+                        </tr>
+                        <tr>
+                            <td>__stripe_sid</td>
+                            <td>Stripe Inc.</td>
+                            <td>Identificador de sesión de pago. Mantiene la coherencia durante el proceso de Checkout.
+                                Se destruye al completar o abandonar el pago.</td>
+                            <td><span class="badge badge-tech">Técnica</span></td>
+                            <td><span class="badge badge-session">30 minutos</span></td>
+                            <td><span class="badge badge-us">🇺🇸 EE.UU. (CCT)</span></td>
+                        </tr>
+                        <tr>
+                            <td>__stripe_req</td>
+                            <td>Stripe Inc.</td>
+                            <td>Correlación de solicitudes durante el proceso de Checkout. Evita el doble cobro ante
+                                reintentos de red.</td>
+                            <td><span class="badge badge-tech">Técnica</span></td>
+                            <td><span class="badge badge-session">Sesión</span></td>
+                            <td><span class="badge badge-us">🇺🇸 EE.UU. (CCT)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>🌐 Preferencias del usuario — Winke</h3>
+            <div style="overflow-x:auto;">
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Finalidad</th>
+                            <th>Tipo</th>
+                            <th>Duración</th>
+                            <th>Transferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>winke_lang</td>
+                            <td>Winke (propio)</td>
+                            <td>Idioma preferido seleccionado por el usuario. Permite mostrar la interfaz en el idioma
+                                elegido sin preguntarlo en cada visita.</td>
+                            <td><span class="badge badge-pref">Preferencia</span></td>
+                            <td><span class="badge badge-persist">1 año</span></td>
+                            <td>No hay transferencia</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-sky" style="margin-top:12px;">
+                <div class="alert-icon">🔎</div>
+                <div class="alert-body">
+                    <strong>¿Cómo verificar las cookies en tu navegador?</strong>
+                    <p>En cualquier navegador puedes ver exactamente qué cookies están instaladas: abre las Herramientas
+                        de Desarrollador (F12), ve a la pestaña <em>Aplicación</em> (Chrome/Edge) o
+                        <em>Almacenamiento</em> (Firefox), y selecciona <em>Cookies</em> en el menú lateral. Ahí verás,
+                        en tiempo real, cada cookie instalada por winke.fun y por terceros.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── 4. LOCALSTORAGE ── -->
+        <section class="section" id="localStorage">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2>Almacenamiento local (localStorage y sessionStorage)</h2>
+            </div>
+
+            <p>Además de cookies, Winke utiliza las APIs de almacenamiento local del navegador. A diferencia de las
+                cookies, estos datos <strong>no se envían automáticamente al servidor</strong> en cada petición; residen
+                exclusivamente en el dispositivo del usuario y son accedidos por el código JavaScript de la aplicación.
+            </p>
+
+            <div class="storage-section">
+                <h4>💾 Inventario de localStorage / sessionStorage</h4>
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Clave</th>
+                            <th>Tecnología</th>
+                            <th>Contenido</th>
+                            <th>Finalidad</th>
+                            <th>Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>winke_wizard_state</td>
+                            <td>sessionStorage</td>
+                            <td>Estado parcial del asistente de creación de cuentos (paso activo, nombre del
+                                protagonista, edad seleccionada)</td>
+                            <td>Preservar el progreso durante la sesión activa para no perder datos ante recargas
+                                accidentales</td>
+                            <td>Hasta cerrar la pestaña</td>
+                        </tr>
+                        <tr>
+                            <td>sb-&lt;ref&gt;-auth-token</td>
+                            <td>localStorage</td>
+                            <td>Token de autenticación de Supabase (duplicado del cookie, gestión interna del SDK)</td>
+                            <td>Mantener la sesión activa en la aplicación React entre recargas</td>
+                            <td>7 días o hasta cierre de sesión</td>
+                        </tr>
+                        <tr>
+                            <td>winke_cookie_prefs</td>
+                            <td>localStorage</td>
+                            <td>Preferencias de cookies del usuario (objeto JSON con categorías aceptadas/rechazadas)
+                            </td>
+                            <td>Recordar las decisiones del usuario sobre cookies opcionales para no volver a solicitar
+                                consentimiento</td>
+                            <td>24 meses</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>El contenido del sessionStorage se elimina automáticamente al cerrar la pestaña o el navegador. El
+                localStorage puede borrarse manualmente desde las herramientas de desarrollo del navegador o desde la
+                opción de limpieza de datos del sitio en la configuración del navegador.</p>
+        </section>
+
+
+        <!-- ── 5. TERCEROS ── -->
+        <section class="section" id="terceros">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2>Cookies de terceros y transferencias internacionales</h2>
+            </div>
+
+            <p>Las cookies de Stripe Inc. implican una <strong>transferencia de datos a EE.UU.</strong>, que se realiza
+                al amparo de las <strong>Cláusulas Contractuales Tipo (CCT)</strong> aprobadas por la Comisión Europea,
+                conforme al Capítulo V del RGPD. Stripe Inc. también está certificada bajo el marco EU-US Data Privacy
+                Framework.</p>
+
+            <p>Las cookies de Supabase se alojan en infraestructura situada en la <strong>Unión Europea (región
+                    eu-central-1, Frankfurt, Alemania)</strong>, por lo que no constituyen transferencia internacional
+                de datos.</p>
+
+            <p>Puedes consultar las políticas de privacidad y cookies de cada tercero en los siguientes enlaces:</p>
+
+            <ul class="check-list">
+                <li><span>🔗</span><a href="https://stripe.com/es/privacy" target="_blank"
+                        rel="noopener noreferrer">Política de Privacidad de Stripe</a> — incluye su política de cookies
+                    y el DPA con CCT.</li>
+                <li><span>🔗</span><a href="https://supabase.com/privacy" target="_blank"
+                        rel="noopener noreferrer">Política de Privacidad de Supabase</a> — almacenamiento en UE, gestión
+                    de tokens de sesión.</li>
+                <li><span>🔗</span><a href="https://policies.google.com/privacy" target="_blank"
+                        rel="noopener noreferrer">Política de Privacidad de Google</a> — aplicable al flujo de inicio de
+                    sesión con Google OAuth.</li>
+            </ul>
+
+            <div class="alert alert-yellow">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-body">
+                    <strong>Google OAuth y cookies de Google</strong>
+                    <p>Cuando el usuario inicia sesión con su cuenta de Google, Google puede instalar cookies propias en
+                        el navegador durante el proceso de autenticación (por ejemplo, cookies de sesión de Google
+                        Accounts). Winke no controla estas cookies y se rigen exclusivamente por la Política de
+                        Privacidad de Google. Si no deseas que Google instale cookies durante el proceso de login,
+                        utiliza la opción de registro con email y contraseña disponible en Winke.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── 6. MENORES ── -->
+        <section class="section" id="menores">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2>Cookies y menores de edad</h2>
+            </div>
+
+            <div class="alert alert-green">
+                <div class="alert-icon">🛡️</div>
+                <div class="alert-body">
+                    <strong>Ninguna cookie perfila, rastrea ni identifica a menores</strong>
+                    <p>Winke no utiliza cookies de seguimiento, perfilado ni analítica individual. Los menores son los
+                        protagonistas de los cuentos, pero no son usuarios directos de la plataforma: no navegan por
+                        winke.fun, no inician sesión ni interactúan con la interfaz. Las únicas cookies que podrían
+                        estar presentes en el dispositivo son las del adulto que opera la plataforma.</p>
+                </div>
+            </div>
+
+            <p>En cumplimiento del considerando 38 del RGPD, que establece que los menores merecen especial protección
+                en materia de datos personales, y de las directrices del CEPD sobre el diseño de servicios para menores,
+                Winke adopta los siguientes compromisos:</p>
+
+            <ul class="check-list">
+                <li><span>🚫</span>No se instala ninguna cookie no esencial que pueda afectar al menor cuyos datos se
+                    procesan para generar el cuento.</li>
+                <li><span>🚫</span>No se realizan perfiles de comportamiento ni se analiza el uso del servicio a nivel
+                    individual que pudiera asociarse a un menor.</li>
+                <li><span>🚫</span>No se utilizan cookies de publicidad comportamental que pudieran crear preferencias
+                    comerciales asociadas a menores.</li>
+                <li><span>✅</span>Si en el futuro se incorporan cookies opcionales, se evaluará específicamente su
+                    impacto sobre la privacidad de los menores antes de implementarlas.</li>
+            </ul>
+        </section>
+
+
+        <!-- ── 7. BANNER ── -->
+        <section class="section" id="banner">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <h2>El banner de cookies: diseño conforme a la AEPD</h2>
+            </div>
+
+            <p>Aunque actualmente Winke solo usa cookies técnicas y no necesita banner de consentimiento, publicamos
+                aquí el diseño que aplicaremos si en el futuro incorporamos cookies opcionales, conforme a las
+                <strong>directrices de la AEPD de 2024-2025</strong> y el <strong>Comité Europeo de Protección de Datos
+                    (CEPD)</strong>.</p>
+
+            <h3>Reglas de diseño obligatorias (AEPD)</h3>
+            <ul class="check-list">
+                <li><span>✅</span><strong>Primera capa con tres opciones:</strong> el banner inicial debe mostrar
+                    siempre los botones "Aceptar todas", "Rechazar todas" y "Configurar", todos visibles en la primera
+                    capa sin necesidad de desplazarse.</li>
+                <li><span>✅</span><strong>Misma prominencia visual:</strong> los botones "Aceptar" y "Rechazar" deben
+                    tener el mismo tamaño, color, contraste y visibilidad. No se puede hacer el botón de rechazo más
+                    pequeño, más pálido ni esconderlo en un menú secundario. <span class="tag tag-warn">Multas por dark
+                        patterns hasta 150.000 €</span></li>
+                <li><span>✅</span><strong>Sin casillas premarcadas:</strong> las categorías de cookies opcionales deben
+                    aparecer desmarcadas por defecto.</li>
+                <li><span>✅</span><strong>Sin cookie walls:</strong> no se puede condicionar el acceso al servicio a la
+                    aceptación de cookies no esenciales.</li>
+                <li><span>✅</span><strong>Sin nudging:</strong> no se puede usar diseño que induzca psicológicamente al
+                    usuario a aceptar (colores llamativos solo en "Aceptar", textos alarmistas para el rechazo, etc.).
+                </li>
+                <li><span>✅</span><strong>Bloqueo previo:</strong> las cookies no esenciales deben estar bloqueadas
+                    hasta que el usuario acepte. No se pueden cargar scripts analíticos antes del consentimiento.</li>
+            </ul>
+
+            <h3>Aspecto del banner (referencia de diseño)</h3>
+            <div class="banner-mockup" aria-label="Simulación visual del banner de cookies">
+                <div class="banner-top">
+                    <p>🍪 <strong style="color:#fff;">Winke usa cookies</strong><br>
+                        Usamos cookies estrictamente necesarias para que el servicio funcione. Si en el futuro
+                        habilitamos cookies analíticas o de preferencias, te pediremos permiso aquí. Puedes consultar
+                        nuestra <a href="/politica-cookies.html">Política de Cookies</a> para todos los detalles.</p>
+                </div>
+                <div class="banner-buttons">
+                    <button class="btn-accept" tabindex="-1">✅ Aceptar todas</button>
+                    <button class="btn-reject" tabindex="-1">🚫 Rechazar todas</button>
+                    <button class="btn-config" tabindex="-1">⚙️ Configurar</button>
+                </div>
+                <div class="banner-rule">
+                    <span>⬆️ Los tres botones tienen la misma prominencia visual. "Rechazar" no es más pequeño ni más
+                        oscuro que "Aceptar". Esto es obligatorio según la AEPD.</span>
+                </div>
+            </div>
+
+            <div class="alert alert-purple">
+                <div class="alert-icon">🛠️</div>
+                <div class="alert-body">
+                    <strong>Recomendación técnica: usa un CMP certificado cuando sea necesario</strong>
+                    <p>Si Winke incorpora cookies analíticas o de marketing, lo más eficiente es integrar una
+                        <strong>Consent Management Platform (CMP)</strong> que gestione automáticamente el bloqueo
+                        previo de scripts, el registro del consentimiento (requerido como evidencia ante la AEPD), el
+                        botón flotante de revocación y la renovación cada 24 meses. Plataformas certificadas compatibles
+                        con la AEPD y Google CMP v2: <strong>CookieYes, Cookiebot, Complianz, Axeptio</strong>. Todas
+                        tienen planes para SaaS pequeños desde ~10€/mes.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── 8. CONSENTIMIENTO ── -->
+        <section class="section" id="consentimiento">
+            <div class="section-header">
+                <div class="section-number">8</div>
+                <h2>Gestión del consentimiento</h2>
+            </div>
+
+            <p>Cuando Winke active cookies no esenciales, el sistema de consentimiento funcionará conforme a las
+                siguientes reglas:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Regla aplicada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Validez del consentimiento</td>
+                        <td><strong>24 meses</strong> desde la fecha de otorgamiento. Transcurrido ese plazo, Winke
+                            solicitará de nuevo el consentimiento.</td>
+                    </tr>
+                    <tr>
+                        <td>Renovación automática</td>
+                        <td>Winke mostrará de nuevo el banner si han pasado 24 meses, si se producen cambios
+                            sustanciales en el uso de cookies, o si el usuario borra las cookies de su navegador.</td>
+                    </tr>
+                    <tr>
+                        <td>Revocación</td>
+                        <td>El usuario puede cambiar o retirar su consentimiento en cualquier momento mediante el icono
+                            flotante <strong>"⚙️ Configurar Cookies"</strong> disponible permanentemente en la esquina
+                            inferior de la página.</td>
+                    </tr>
+                    <tr>
+                        <td>Facilidad de revocación</td>
+                        <td>Revocar el consentimiento debe ser igual de fácil que otorgarlo. No se puede esconder la
+                            opción de revocación ni requerir pasos adicionales de autenticación.</td>
+                    </tr>
+                    <tr>
+                        <td>Registro del consentimiento</td>
+                        <td>Winke conserva un registro técnico del consentimiento otorgado (timestamp, versión de la
+                            política, opciones seleccionadas) como evidencia ante posibles inspecciones de la AEPD.</td>
+                    </tr>
+                    <tr>
+                        <td>Cookies técnicas</td>
+                        <td>Las cookies técnicas y estrictamente necesarias no requieren consentimiento y no pueden ser
+                            desactivadas, ya que el servicio no funcionaría sin ellas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+
+        <!-- ── 9. NAVEGADOR ── -->
+        <section class="section" id="navegador">
+            <div class="section-header">
+                <div class="section-number">9</div>
+                <h2>Control desde tu navegador</h2>
+            </div>
+
+            <p>Con independencia del panel de Winke, puedes gestionar, bloquear o eliminar todas las cookies desde la
+                configuración de tu navegador. Ten en cuenta que <strong>bloquear las cookies técnicas impedirá el
+                    inicio de sesión</strong> y el correcto funcionamiento del creador de cuentos.</p>
+
+            <div class="browser-grid">
+                <div class="browser-card">
+                    <div class="browser-name">🟡 Google Chrome</div>
+                    <div class="browser-path">
+                        <code>⋮ Menú</code> → <code>Configuración</code> → <code>Privacidad y seguridad</code> →
+                        <code>Cookies y otros datos de sitios</code><br><br>
+                        O escribe en la barra: <code>chrome://settings/cookies</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🦊 Mozilla Firefox</div>
+                    <div class="browser-path">
+                        <code>☰ Menú</code> → <code>Ajustes</code> → <code>Privacidad y seguridad</code> →
+                        <code>Cookies y datos del sitio</code><br><br>
+                        O escribe: <code>about:preferences#privacy</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🧭 Safari (Mac)</div>
+                    <div class="browser-path">
+                        <code>Safari</code> → <code>Preferencias</code> → <code>Privacidad</code> →
+                        <code>Gestionar datos de sitios web</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🔷 Microsoft Edge</div>
+                    <div class="browser-path">
+                        <code>⋯ Menú</code> → <code>Configuración</code> →
+                        <code>Cookies y permisos del sitio</code><br><br>
+                        O escribe: <code>edge://settings/content/cookies</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🔴 Opera</div>
+                    <div class="browser-path">
+                        <code>O Menú</code> → <code>Configuración</code> → <code>Avanzado</code> →
+                        <code>Privacidad y seguridad</code> → <code>Cookies</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">📱 Safari (iOS)</div>
+                    <div class="browser-path">
+                        <code>Ajustes</code> del dispositivo → <code>Safari</code> → <code>Privacidad y seguridad</code>
+                        → <code>Bloquear todas las cookies</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🤖 Chrome (Android)</div>
+                    <div class="browser-path">
+                        <code>⋮ Menú</code> → <code>Configuración</code> → <code>Configuración del sitio</code> →
+                        <code>Cookies</code>
+                    </div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">🔍 Brave</div>
+                    <div class="browser-path">
+                        <code>☰ Menú</code> → <code>Configuración</code> → <code>Privacidad y seguridad</code> →
+                        <code>Cookies</code>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Herramientas adicionales de control</h3>
+            <ul class="check-list">
+                <li><span>🔌</span><strong>Extensiones de navegador:</strong> herramientas como Privacy Badger, uBlock
+                    Origin o Ghostery permiten un control granular sobre qué scripts y cookies se ejecutan en cada
+                    sitio.</li>
+                <li><span>🕵️</span><strong>Modo incógnito / privado:</strong> las cookies y datos de almacenamiento
+                    local creados durante una sesión privada se eliminan automáticamente al cerrar la ventana.</li>
+                <li><span>🚫</span><strong>Do Not Track (DNT):</strong> Winke respeta la señal DNT del navegador. Si
+                    tienes activada esta preferencia, no instalaremos cookies analíticas ni de personalización avanzada,
+                    incluso si en el futuro las incorporamos y has prestado consentimiento general.</li>
+            </ul>
+        </section>
+
+
+        <!-- ── 10. FUTURO ── -->
+        <section class="section" id="futuro">
+            <div class="section-header">
+                <div class="section-number">10</div>
+                <h2>Si incorporamos nuevas cookies en el futuro</h2>
+            </div>
+
+            <div class="alert alert-ink">
+                <div class="alert-icon">📋</div>
+                <div class="alert-body">
+                    <strong>Compromiso de transparencia ante cambios</strong>
+                    <p>Si Winke decide incorporar cookies analíticas (por ejemplo, para medir qué géneros de cuentos son
+                        más populares) o cualquier otra categoría no esencial, el procedimiento será el siguiente:</p>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Paso</th>
+                        <th>Acción de Winke</th>
+                        <th>Plazo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Actualización de esta Política de Cookies con el inventario completo de las nuevas cookies,
+                            su proveedor, finalidad y duración.</td>
+                        <td>Antes de activar las cookies</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Notificación por email a todos los usuarios registrados informando del cambio y de las
+                            nuevas opciones de consentimiento.</td>
+                        <td>30 días antes de activar</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Activación del banner de consentimiento conforme a las reglas de la AEPD descritas en la
+                            sección 7.</td>
+                        <td>En la fecha de activación</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Bloqueo técnico de los nuevos scripts hasta que el usuario acepte expresamente esa categoría
+                            de cookies.</td>
+                        <td>Desde el momento de activación</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Habilitación del botón flotante de revocación permanente en todas las páginas del sitio.
+                        </td>
+                        <td>Desde el momento de activación</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Las cookies técnicas y estrictamente necesarias podrán añadirse sin consentimiento previo, siempre que
+                sean indispensables para una nueva funcionalidad del servicio contratado. En ese caso, se actualizará el
+                inventario de la sección 3 y se notificará a los usuarios en la siguiente actualización de esta
+                política.</p>
+        </section>
+
+
+        <!-- ── 11. CAMBIOS ── -->
+        <section class="section" id="cambios">
+            <div class="section-header">
+                <div class="section-number">11</div>
+                <h2>Actualizaciones de esta Política</h2>
+            </div>
+
+            <p>Winke revisará y actualizará esta Política de Cookies en los siguientes supuestos:</p>
+            <ul class="check-list">
+                <li><span>📅</span>Con carácter general, al menos una vez al año, para verificar que el inventario de
+                    cookies refleja fielmente las tecnologías en uso.</li>
+                <li><span>🆕</span>Cuando se incorporen nuevas cookies o tecnologías de almacenamiento, antes de su
+                    activación.</li>
+                <li><span>⚖️</span>Cuando cambien las directrices de la AEPD, el CEPD o la normativa aplicable (LSSI-CE,
+                    RGPD).</li>
+                <li><span>🔧</span>Cuando se produzcan cambios en los proveedores de servicios que afecten a las cookies
+                    de terceros.</li>
+            </ul>
+            <p>La fecha de "Última actualización" en el encabezado de esta página siempre refleja la versión vigente.
+                Los cambios sustanciales se comunicarán por email con al menos 15 días de antelación.</p>
+        </section>
+
+
+        <!-- ── 12. CONTACTO ── -->
+        <section class="section" id="contacto">
+            <div class="section-header">
+                <div class="section-number">12</div>
+                <h2>Contacto</h2>
+            </div>
+
+            <p>Si tienes preguntas sobre el uso de cookies en winke.fun o deseas ejercer algún derecho relacionado con
+                los datos recopilados a través de estas tecnologías, puedes contactarnos:</p>
+
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td>Email general</td>
+                        <td><span class="ph">hola@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Email DPD / Privacidad</td>
+                        <td><span class="ph">privacidad@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Política de Privacidad completa</td>
+                        <td><a href="/politica-privacidad.html">winke.fun/politica-privacidad</a></td>
+                    </tr>
+                    <tr>
+                        <td>Autoridad de control (España)</td>
+                        <td><a href="https://www.aepd.es" target="_blank" rel="noopener noreferrer">Agencia Española de
+                                Protección de Datos — www.aepd.es</a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-ink" style="margin-top:24px;">
+                <div class="alert-icon">⚖️</div>
+                <div class="alert-body">
+                    <strong>Marco normativo de referencia</strong>
+                    <p>Esta política ha sido redactada conforme al artículo 22.2 de la Ley 34/2002 (LSSI-CE), el
+                        Reglamento (UE) 2016/679 (RGPD), la Ley Orgánica 3/2018 (LOPDGDD), la Guía sobre el uso de las
+                        cookies de la AEPD (versión 2.0, mayo 2024) y las directrices 05/2020 del Comité Europeo de
+                        Protección de Datos sobre el consentimiento. Se recomienda revisión legal periódica,
+                        especialmente ante la evolución de la jurisprudencia sobre dark patterns y el futuro ePrivacy
+                        Regulation europeo.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ─────────── FOOTER ─────────── -->
+    <footer class="page-footer">
+        <p>© <span id="year"></span> Winke · <span class="ph">[NOMBRE EMPRESA]</span> · winke.fun</p>
+        <p style="margin-top:6px;">Todos los derechos reservados · Operado desde España · Marco legal UE</p>
+        <div class="footer-links">
+            <a href="/aviso-legal.html">Aviso Legal</a>
+            <a href="/politica-privacidad.html">Privacidad</a>
+            <a href="/politica-cookies.html">Cookies</a>
+            <a href="/condiciones-servicio.html">Condiciones de Servicio</a>
+        </div>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+
+</html>

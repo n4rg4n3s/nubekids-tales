@@ -69,7 +69,7 @@ export async function orchestrate(
             pedagogy: session.pedagogyProfile,
             collections: session.tenantConfig.ragCollections,
             maxChunks: 5,
-        }, import.meta.env.VITE_GEMINI_API_KEY);
+        }, deps);
 
         timing.ragMs = Date.now() - ragStart;
         console.log(`   → ${deps.ragChunks.length} chunks encontrados (${timing.ragMs}ms)`);

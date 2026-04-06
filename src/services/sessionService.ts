@@ -4,8 +4,12 @@
  * Resuelve quién paga el crédito de un cuento antes de iniciar la generación.
  */
 
-import { supabase } from '../lib/supabase';
 import type { PaymentDecision } from '../types';
+
+async function getSupabaseClient() {
+    const { supabase } = await import('../lib/supabase');
+    return supabase;
+}
 
 export interface ResolvePaymentInput {
     tenantId?: string;
@@ -20,6 +24,7 @@ export async function resolvePayment(
 
     // ─── Caso 1 y 2: Sesión anónima B2B ───────────────────────────────────
     if (isAnonymousB2B && tenantId) {
+        const supabase = await getSupabaseClient();
         if (!supabase) return { source: 'needs_credits' };
 
         const { data, error } = await supabase
@@ -41,6 +46,7 @@ export async function resolvePayment(
 
     // ─── Caso 3 y 4: Usuario B2C logueado ────────────────────────────────
     if (userId) {
+        const supabase = await getSupabaseClient();
         if (!supabase) return { source: 'needs_credits' };
 
         const { data, error } = await supabase

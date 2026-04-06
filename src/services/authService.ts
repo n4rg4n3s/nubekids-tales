@@ -11,15 +11,20 @@
 // Supabase devuelve el token en el hash (#access_token=...) y el
 // cliente lo procesa automáticamente al cargar la página raíz.
 
-import { supabase } from '../lib/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import type { UserProfile } from '../types';
 
 export type UserRole = 'admin' | 'tenant_owner' | 'tenant_member' | 'b2c_user';
 
+async function getSupabaseClient() {
+  const { supabase } = await import('../lib/supabase');
+  return supabase;
+}
+
 // ── Sesión y usuario actuales ───────────────────────────────────────────────
 
 export async function getCurrentSession(): Promise<Session | null> {
+  const supabase = await getSupabaseClient();
   if (!supabase) return null;
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
@@ -27,6 +32,7 @@ export async function getCurrentSession(): Promise<Session | null> {
 }
 
 export async function getCurrentUser(): Promise<User | null> {
+  const supabase = await getSupabaseClient();
   if (!supabase) return null;
   const { data, error } = await supabase.auth.getUser();
   if (error) throw error;
@@ -36,6 +42,7 @@ export async function getCurrentUser(): Promise<User | null> {
 // ── Perfil del usuario (tabla profiles) ────────────────────────────────────
 
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+  const supabase = await getSupabaseClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from('profiles')
@@ -72,6 +79,7 @@ export async function signUpWithEmail(
   password: string,
   displayName: string
 ) {
+  const supabase = await getSupabaseClient();
   if (!supabase) throw new Error('Supabase no está configurado');
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -88,6 +96,7 @@ export async function signUpWithEmail(
 // ── Login con email ─────────────────────────────────────────────────────────
 
 export async function signInWithEmail(email: string, password: string) {
+  const supabase = await getSupabaseClient();
   if (!supabase) throw new Error('Supabase no está configurado');
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -100,6 +109,7 @@ export async function signInWithEmail(email: string, password: string) {
 // ── Login con Google OAuth ──────────────────────────────────────────────────
 
 export async function signInWithGoogle() {
+  const supabase = await getSupabaseClient();
   if (!supabase) throw new Error('Supabase no está configurado');
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -118,6 +128,7 @@ export async function signInWithGoogle() {
 // ── Logout ──────────────────────────────────────────────────────────────────
 
 export async function signOut() {
+  const supabase = await getSupabaseClient();
   if (!supabase) throw new Error('Supabase no está configurado');
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
@@ -126,9 +137,10 @@ export async function signOut() {
 // ── Listener de cambios de auth ─────────────────────────────────────────────
 // Devuelve { unsubscribe } para que useAuth.ts pueda limpiar en el return del useEffect
 
-export function onAuthStateChange(
+export async function onAuthStateChange(
   callback: (event: string, session: Session | null) => void
-): { unsubscribe: () => void } {
+): Promise<{ unsubscribe: () => void }> {
+  const supabase = await getSupabaseClient();
   if (!supabase) {
     return { unsubscribe: () => { } };
   }

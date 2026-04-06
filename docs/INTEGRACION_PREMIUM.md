@@ -99,6 +99,20 @@ Resultado:
 
 ---
 
+## Modelo actual del producto en NubeKids
+
+Desde el refactor de abril de 2026:
+
+- el comportamiento narrativo y visual del producto ya no depende de ids demo legacy como `shoe-store` o `fashion-store`
+- la fuente de verdad es `item_interaction_mode` del tenant (`generic`, `wearable`, `interactive`)
+- ese modo se configura una vez durante la activacion del tenant; no hace falta enviarlo en cada pedido
+
+Consecuencia practica:
+- tu integracion solo debe emitir el token y enviar `itemName` + `itemImageUrl` cuando aplique
+- NubeKids decide despues si ese producto se viste, se sostiene o se usa de otra forma dentro del cuento segun la configuracion del tenant
+
+---
+
 ## Ejemplo backend generico
 
 ```ts
@@ -160,8 +174,9 @@ Recomendacion:
 Para pruebas manuales del equipo, sigue existiendo el modo demo:
 
 ```txt
-/?tenant=shoe-store-default&demo=1
-/?tenant=shoe-store-default&demo=1&item=Nike+Air+Max&item_image=https://...&customer_email=test@email.com
+/?tenant=wearable-demo-default&demo=1
+/?tenant=wearable-demo-default&demo=1&item=Chaqueta+Brillante&item_image=https://...&customer_email=test@email.com
+/?tenant=interactive-demo-default&demo=1&item=Robot+Explorador&item_image=https://...&customer_email=test@email.com
 ```
 
 Eso no debe usarse en produccion con compradores reales.

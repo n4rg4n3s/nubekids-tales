@@ -4,6 +4,7 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import type { TenantConfig } from '../../types';
+import LegalLinks from '../LegalLinks';
 
 const INK_BLACK = '#1E293B';
 
@@ -241,6 +242,11 @@ export default function LoginPage({
             </button>
           </p>
         </div>
+
+        <LegalLinks
+          className="mt-5 px-4"
+          linkColor={colors.primary}
+        />
       </motion.div>
     </div>
   );

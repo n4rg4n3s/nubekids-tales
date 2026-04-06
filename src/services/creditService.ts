@@ -1,5 +1,3 @@
-import { supabase } from '../lib/supabase';
-
 export interface CreditPack {
     id: string;
     name: string;
@@ -13,6 +11,11 @@ export interface CreditPack {
     sort_order: number;
 }
 
+async function getSupabaseClient() {
+    const { supabase } = await import('../lib/supabase');
+    return supabase;
+}
+
 /**
  * Consulta el saldo de créditos de un tenant o usuario B2C.
  */
@@ -20,6 +23,7 @@ export async function getBalance(
     tenantId?: string,
     userId?: string
 ): Promise<number> {
+    const supabase = await getSupabaseClient();
     if (!supabase) return 0;
 
     let query = supabase.from('credit_accounts').select('balance');
@@ -47,6 +51,7 @@ export async function consumeCredit(
     userId?: string,
     storySessionId?: string
 ): Promise<boolean> {
+    const supabase = await getSupabaseClient();
     if (!supabase) {
         console.warn('creditService: supabase no disponible, saltando consumo de crédito');
         return true; // En dev sin Supabase, dejamos pasar
@@ -72,6 +77,7 @@ export async function consumeCredit(
 export async function getCreditPacks(
     channel: 'b2b_standard' | 'b2b_premium' | 'b2c'
 ): Promise<CreditPack[]> {
+    const supabase = await getSupabaseClient();
     if (!supabase) return [];
 
     const { data, error } = await supabase

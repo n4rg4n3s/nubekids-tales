@@ -6,7 +6,6 @@
 import { useRef, useCallback, forwardRef, useState, useEffect } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import type { ComicFace, TenantConfig } from '../types';
-import { exportToPdf } from '../utils/pdfExport';
 
 // ============================================================================
 // TIPOS
@@ -22,6 +21,17 @@ interface BookProps {
 interface PageProps {
     children: React.ReactNode;
     className?: string;
+}
+
+interface FlipBookApi {
+    pageFlip: () => {
+        flipPrev: () => void;
+        flipNext: () => void;
+    } | null;
+}
+
+interface FlipEvent {
+    data: number;
 }
 
 // ============================================================================
@@ -52,7 +62,7 @@ Page.displayName = 'Page';
 // ============================================================================
 
 export default function Book({ pages, tenantConfig, heroName, onReset }: BookProps) {
-    const bookRef = useRef<any>(null);
+    const bookRef = useRef<FlipBookApi | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [bookSize, setBookSize] = useState({
         spreadWidth: TARGET_SPREAD_WIDTH,
@@ -113,7 +123,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         bookRef.current?.pageFlip()?.flipNext();
     }, []);
 
-    const onFlip = useCallback((e: any) => {
+    const onFlip = useCallback((e: FlipEvent) => {
         setCurrentPage(e.data);
     }, []);
 
@@ -143,6 +153,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         setExportProgress({ percent: 0, message: 'Preparando PDF...' });
 
         try {
+            const { exportToPdf } = await import('../utils/pdfExport');
             await exportToPdf({
                 pages,
                 heroName,

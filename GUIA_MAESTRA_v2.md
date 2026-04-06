@@ -30,7 +30,7 @@ Las URLs legacy con `?tenant=shoe-store-default` y `?tenant=fashion-store-defaul
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                   ORCHESTRATOR AGENT                        │
-│  (Coordina todo el flujo ANTES de generar páginas)         │
+│  (Coordina todo el flujo ANTES de generar páginas)          │
 └────────────────┬────────────────────────────────────────────┘
                  │
       ┌──────────┴──────────┐

@@ -9,10 +9,10 @@
  * - `?tenant=...` queda reservado a demo/testing y requiere `&demo=1`
  *
  * URL de ejemplo (Plan Standard demo):
- *   /?tenant=shoe-store-default&demo=1
+ *   /?tenant=wearable-demo-default&demo=1
  *
  * URL de ejemplo (Plan Premium demo):
- *   /?tenant=shoe-store-default&demo=1&item=Nike+Air+Max+90+Kids&item_image=https://cdn.tienda.com/foto.jpg&customer_email=padre@email.com
+ *   /?tenant=wearable-demo-default&demo=1&item=Chaqueta+Brillante&item_image=https://cdn.tienda.com/foto.jpg&customer_email=padre@email.com
  */
 
 import type { B2BSessionParams } from '../types';

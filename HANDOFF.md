@@ -1,6 +1,6 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-04 (B2B seguro con token one-time validado en producción)
+> **Última actualización:** 2026-04-06 (cierre fuerte del refactor `itemInteractionMode`)
 > **Estado:** ✅ Fase 10 COMPLETADA — Funnel B2B2C end-to-end funcional
 > **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
 
@@ -33,6 +33,25 @@
 4. ✅ **`src/services/agents/*.ts`** — Narrative, Storytelling y Visual Brief ya usan `itemInteractionMode`
 5. ✅ **Compatibilidad demo preservada** — Las URLs `?tenant=shoe-store-default&demo=1` y `?tenant=fashion-store-default&demo=1` siguen siendo válidas para testing interno
 
+### Cierre definitivo del refactor (06 Abril 2026)
+
+1. ✅ **`src/components/wizard/StepStory.tsx`** — previews neutrales por género; ya no dependen de `verticalId`
+2. ✅ **`src/components/wizard/StepItem.tsx`** — copy estructural guiado por `itemInteractionMode`; ya no depende de `shoe-store` / `fashion-store`
+3. ✅ **`src/config/tenantConfigFactory.ts`** — nuevo factory para construir `TenantConfig` desde demos y desde tenants reales
+4. ✅ **`src/services/tokenService.ts`** — el runtime B2B real ya devuelve `tenantConfig` construido desde datos reales del tenant
+5. ✅ **`src/App.tsx`** — el flujo `?token=...` deja de resolver config con `tenantLoader`
+6. ✅ **`supabase/migrations/20260406_tenant_item_interaction_mode.sql`** — nueva columna `item_interaction_mode` + backfill compatible
+7. ✅ **Demos canónicas nuevas** — `wearable-demo-default` e `interactive-demo-default`; `shoe-store-default` y `fashion-store-default` quedan como compatibilidad legacy
+8. ✅ **Build validado** — `npm run build` verde tras el cierre del refactor
+
+### Estado operativo/documental revisado (06 Abril 2026)
+
+1. ✅ **Legales públicos ya generados** — existen `public/aviso-legal.html`, `public/condiciones-servicio.html`, `public/politica-privacidad.html` y `public/politica-cookies.html`
+2. ✅ **Material técnico B2B ya preparado** — `docs/INTEGRACION_PREMIUM.md` incluye snippet real para `POST /api/b2b/create-token`
+3. ✅ **Runbook de demo/test B2B ya preparado** — `docs/b2b_tenant_activation_and_token_test_guide.md` documenta `tenant-b2b-test`, test por SQL y test por API
+4. ⚠️ **Legales no listos para go-live aún** — los HTML públicos mantienen placeholders fiscales / entidad responsable / contacto legal
+5. ⚠️ **Pricing principal B2B alineado en superficies activas** — landing, UI y precios LIVE están alineados; siguen quedando referencias históricas en `docs/BUSINESS_TECH_SPEC.md` y migraciones antiguas
+
 ### Cierre de riesgo B2B (04 Abril 2026)
 
 1. ✅ **`api/b2b/create-token.ts`** — Nueva API serverless para emitir enlaces one-time `/?token=...`
@@ -58,6 +77,7 @@
 - **Integración Premium requiere desarrollo técnico en el e-Commerce**: documentado en `docs/INTEGRACION_PREMIUM.md`
 - **Landings estáticas en `/public`**: sin React Router, HTML puro servido directamente por Vercel
 - **`itemInteractionMode` como fuente de verdad narrativa**: `tenant` sigue representando identidad comercial/branding; la semántica de uso del objeto ya no depende de `shoe-store` vs `fashion-store`
+- **Tenants demo canónicos**: usar `wearable-demo-default` para demos `wearable` e `interactive-demo-default` para demos `interactive`
 - **Tenants demo legacy se mantienen**: `shoe-store-default` y `fashion-store-default` siguen existiendo por compatibilidad, pero no deben marcar la evolución futura del modelo
 - **`direct-b2c` usa `generic`**: B2C no se fuerza artificialmente a `wearable` ni `interactive`
 - **Onboarding B2B V1 = alta manual asistida**: no habrá self-serve B2B mientras el volumen de leads no justifique asumir la complejidad extra en auth, roles, provisioning y pagos
@@ -110,9 +130,10 @@
 6. Para una segunda prueba, crear otro token nuevo (`nkt_manual_test_002`, `nkt_manual_test_003`, etc.).
 7. Referencia operativa: `docs/b2b_tenant_activation_and_token_test_guide.md`.
 
-### 1. Sincronizar precios B2B
-- Los precios B2B en la landing `public/b2b.html` pueden diferir de los de Stripe y `credit_packs`
-- Revisar y alinear antes del lanzamiento
+### 1. Cerrar referencias históricas de pricing
+- Landing B2B, UI operativa y precios LIVE ya reflejan el pricing actual
+- Siguen quedando referencias antiguas en `docs/BUSINESS_TECH_SPEC.md` y migraciones históricas (`supabase/migrations/sistema_creditos_supabase.sql`, `supabase/migrations/stripe_price_id.sql`)
+- Antes del lanzamiento conviene dejar explícito qué documentos son históricos y cuáles son la fuente de verdad vigente
 
 ### 2. Google OAuth (cuando se tenga dominio)
 - Google Cloud Console → OAuth 2.0 Client ID
@@ -122,6 +143,11 @@
 ### 3. Webhook Stripe en producción
 - Cuando se compre dominio propio → actualizar la URL en Stripe Dashboard
 - `Developers → Webhooks → [endpoint] → Update`
+
+### 4. Completar datos fiscales en los legales públicos
+- Los HTML legales ya están publicados en `/public`
+- Siguen pendientes campos como `[NOMBRE EMPRESA]`, `[NIF/CIF]`, dirección completa, teléfono, datos registrales y contacto/DPD
+- No considerar los legales listos para go-live hasta rellenar esos datos
 
 ---
 
@@ -170,11 +196,15 @@
 
 - **No usar `shoe-store-default` y `fashion-store-default` como semántica de producto**: desde el refactor del 04/04/2026 esos IDs son tenants demo/legacy compatibles con URLs existentes.
 - **La fuente de verdad para comportamiento narrativo y visual es `itemInteractionMode`**.
+- **El wizard ya no debe depender de `verticalId`**: `StepStory` usa previews neutrales y `StepItem` resuelve su copy por `itemInteractionMode`.
 - **Asignación actual**:
+  - `wearable-demo-default` → `wearable`
+  - `interactive-demo-default` → `interactive`
   - `shoe-store-default` → `wearable`
   - `fashion-store-default` → `wearable`
   - `direct-b2c` → `generic`
 - **Implicación práctica**: futuros tenants B2B no deben crearse siguiendo la taxonomía `shoe-store` / `fashion-store`; deben definirse por branding comercial y por `itemInteractionMode`.
+- **Runtime B2B real**: el flujo `?token=...` ya no debe depender de `tenantLoader`; construye `TenantConfig` desde la data real del tenant y usa `item_interaction_mode` o fallback legacy.
 - **Decisión operativa vigente para B2B**: el alta de nuevos tenants será asistida/manual en V1. El self-serve B2B queda explícitamente pospuesto hasta que haya demanda que lo justifique.
 - **Canal operativo recomendado para B2B V1**: formulario propio simple en `public/b2b.html`, con email obligatorio y WhatsApp opcional/recomendado como canal preferido.
 - **Fuente de verdad para enlaces B2B de cliente final**: `/?token=...`
@@ -364,10 +394,10 @@ FRONTEND_URL=http://localhost:5173
 3. **Actualizar webhook Stripe** con URL de producción definitiva
 4. **Google OAuth** — completar config en GCP con dominio definitivo
 5. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
-6. **Landing B2C** — copy basado en investigación NotebookLM (pendiente)
-7. **Sincronizar precios B2B** — landing vs Stripe vs Supabase
-8. **Preparar kit comercial de validación B2B** — tenant demo con saldo, guía de test y procedimiento para demostrar one-time links a tiendas interesadas
-9. **Probar emisión real via `/api/b2b/create-token`** — no solo inserción manual en `tokens`
+6. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
+7. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
+8. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
+9. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
 
 ---
 
@@ -375,9 +405,10 @@ FRONTEND_URL=http://localhost:5173
 
 | Item | Prioridad | Estado |
 |------|-----------|--------|
-| Sincronizar precios B2B (landing vs Stripe vs Supabase) | Alta | ⏳ Pendiente |
+| Referencias históricas de pricing B2B en docs/migraciones antiguas | Media | ⚠️ Pendiente de limpieza documental |
 | Integración B2B insegura por `?tenant=` | Alta | ✅ Resuelto — flujo real restaurado a token one-time |
 | Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas |
+| Legales públicos con placeholders fiscales / entidad responsable | Alta | ⏳ Pendiente antes de go-live |
 | Google OAuth config en GCP + Supabase | Media | ⏳ Cuando haya dominio |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |
@@ -390,7 +421,7 @@ FRONTEND_URL=http://localhost:5173
 
 ## 🏆 GitHub
 
-**Repo:** https://github.com/jav13rrez/nubekids-tales.git
+**Repo:** https://github.com/n4rg4n3s/nubekids-tales.git
 **Branch:** main — deploy automático en Vercel en cada push ✅
 
 ---
@@ -417,9 +448,10 @@ FRONTEND_URL=http://localhost:5173
 
 Falta para lanzamiento:
 - Dominio propio + configuración DNS
-- Legal (GDPR, términos, privacidad)
-- Landing B2C (copy en investigación)
-- Sincronizar precios B2B
+- Completar datos fiscales/mercantiles en los legales ya publicados
+- Google OAuth + webhook final con dominio definitivo
+- Landing B2C (si se quiere una iteración de copy más afinada)
+- Limpieza documental de referencias históricas de pricing
 - Operativa diaria de revisión de `b2b_activation_requests`
 
 Estimación hasta lanzamiento: ~1 semana.

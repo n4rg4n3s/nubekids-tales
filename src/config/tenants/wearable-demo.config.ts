@@ -1,9 +1,9 @@
 import { createTenantConfig } from '../tenantConfigFactory';
 
-export const fashionStoreConfig = createTenantConfig({
-  tenantId: 'fashion-store-default',
+export const wearableDemoConfig = createTenantConfig({
+  tenantId: 'wearable-demo-default',
   tenantName: 'NubeKids Wearable Demo',
-  verticalId: 'fashion-store',
+  verticalId: 'wearable-demo',
   itemInteractionMode: 'wearable',
   integrationLevel: 'standard',
   storeName: 'NubeKids Wearable Demo',

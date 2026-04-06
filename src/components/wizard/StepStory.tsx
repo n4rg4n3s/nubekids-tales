@@ -7,28 +7,6 @@ import { motion } from 'framer-motion';
 import type { Genre, Language, TenantConfig, AgeGroup } from '../../types';
 import { GENRES, LANGUAGES, AGE_GROUP_CONFIGS } from '../../types';
 
-// Importar imágenes de estilos por tenant
-// shoe-store
-import shoeStore3D from '../../assets/styles/shoe-store/3d-animation-magic.webp';
-import shoeStoreFairytale from '../../assets/styles/shoe-store/classic-fairytale.webp';
-import shoeStoreAnime from '../../assets/styles/shoe-store/anime-adventure.webp';
-import shoeStoreClaymation from '../../assets/styles/shoe-store/whimsical-claymation.webp';
-import shoeStoreCustom from '../../assets/styles/shoe-store/custom.webp';
-
-// fashion-store
-import fashionStore3D from '../../assets/styles/fashion-store/3d-animation-magic.webp';
-import fashionStoreFairytale from '../../assets/styles/fashion-store/classic-fairytale.webp';
-import fashionStoreAnime from '../../assets/styles/fashion-store/anime-adventure.webp';
-import fashionStoreClaymation from '../../assets/styles/fashion-store/whimsical-claymation.webp';
-import fashionStoreCustom from '../../assets/styles/fashion-store/custom.webp';
-
-// direct-b2c
-import directB2C3D from '../../assets/styles/direct-b2c/3d-animation-magic.webp';
-import directB2CFairytale from '../../assets/styles/direct-b2c/classic-fairytale.webp';
-import directB2CAnime from '../../assets/styles/direct-b2c/anime-adventure.webp';
-import directB2CClaymation from '../../assets/styles/direct-b2c/whimsical-claymation.webp';
-import directB2CCustom from '../../assets/styles/direct-b2c/custom.webp';
-
 export interface StoryData {
   ageGroup: AgeGroup;
   genre: Genre;
@@ -42,29 +20,13 @@ interface StepStoryProps {
   inferredAgeGroup: AgeGroup;
 }
 
-// Mapeo de imágenes por tenant y género
-const STYLE_IMAGES: Record<string, Record<Genre, string>> = {
-  'shoe-store': {
-    '3D Animation Magic': shoeStore3D,
-    'Classic Fairytale': shoeStoreFairytale,
-    'Anime Adventure': shoeStoreAnime,
-    'Whimsical Claymation': shoeStoreClaymation,
-    'Custom': shoeStoreCustom,
-  },
-  'fashion-store': {
-    '3D Animation Magic': fashionStore3D,
-    'Classic Fairytale': fashionStoreFairytale,
-    'Anime Adventure': fashionStoreAnime,
-    'Whimsical Claymation': fashionStoreClaymation,
-    'Custom': fashionStoreCustom,
-  },
-  'direct-b2c': {
-    '3D Animation Magic': directB2C3D,
-    'Classic Fairytale': directB2CFairytale,
-    'Anime Adventure': directB2CAnime,
-    'Whimsical Claymation': directB2CClaymation,
-    'Custom': directB2CCustom,
-  },
+// Previews neutrales por género. No dependen del tenant ni del vertical legacy.
+const STYLE_IMAGES: Record<Genre, string> = {
+  '3D Animation Magic': '/assets/images/3d-animation-magic.webp',
+  'Classic Fairytale': '/assets/images/classic-fairytale.webp',
+  'Anime Adventure': '/assets/images/anime-adventure.webp',
+  'Whimsical Claymation': '/assets/images/whimsical-claymation.webp',
+  'Custom': '/assets/images/custom.webp',
 };
 
 // Descripciones por género (sin emojis)
@@ -101,9 +63,6 @@ export default function StepStory({
   }, [inferredAgeGroup, data, onChange]);
 
   const ageGroupConfig = AGE_GROUP_CONFIGS[inferredAgeGroup];
-
-  // Obtener imágenes del tenant actual (fallback a direct-b2c)
-  const tenantImages = STYLE_IMAGES[tenantConfig.verticalId] || STYLE_IMAGES['direct-b2c'];
 
   return (
     <motion.div
@@ -143,7 +102,7 @@ export default function StepStory({
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {GENRES.filter(g => tenantConfig.activeGenres.includes(g)).map((genre) => {
             const isSelected = data.genre === genre;
-            const imageUrl = tenantImages[genre];
+            const imageUrl = STYLE_IMAGES[genre];
 
             return (
               <motion.button

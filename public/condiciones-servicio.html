@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Condiciones de Servicio · Winke</title>
+    <meta name="description"
+        content="Condiciones de Servicio de Winke (winke.fun). Contrato de uso, créditos, desistimiento, garantías y derechos de los usuarios." />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        :root {
+            --magic-purple: #8B5CF6;
+            --purple-dark: #6D28D9;
+            --purple-light: #EDE9FE;
+            --yellow: #FBBF24;
+            --cream: #FDFBF7;
+            --ink: #1E293B;
+            --ink-soft: #475569;
+            --mint: #A7F3D0;
+            --border: #1E293B;
+            --shadow: 4px 4px 0px #1E293B;
+            --shadow-sm: 2px 2px 0px #1E293B;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        /* ── Header ── */
+        .site-header {
+            background: var(--magic-purple);
+            border-bottom: 3px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--yellow);
+        }
+
+        .back-link {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-sm);
+            padding: 6px 16px;
+            transition: background 0.15s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ── Hero ── */
+        .hero {
+            background: linear-gradient(135deg, var(--magic-purple) 0%, var(--purple-dark) 100%);
+            border-bottom: 3px solid var(--border);
+            padding: 48px 24px 56px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '📜';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -10px;
+            left: -20px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            padding: 4px 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.05rem;
+            max-width: 640px;
+            margin: 0 auto 20px;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-meta span {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 500;
+        }
+
+        .hero-meta span strong {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* ── Layout ── */
+        .page-wrap {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        /* ── TOC ── */
+        .toc {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin-bottom: 48px;
+        }
+
+        .toc-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--magic-purple);
+            margin-bottom: 16px;
+        }
+
+        .toc ol {
+            list-style: none;
+            counter-reset: toc;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 32px;
+        }
+
+        @media (max-width: 600px) {
+            .toc ol {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .toc li {
+            counter-increment: toc;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .toc li::before {
+            content: counter(toc) ". ";
+            color: var(--magic-purple);
+            font-weight: 700;
+        }
+
+        .toc li a {
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .toc li a:hover {
+            color: var(--magic-purple);
+            text-decoration: underline;
+        }
+
+        /* ── Sections ── */
+        .section {
+            margin-bottom: 56px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-number {
+            background: var(--magic-purple);
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .section h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--purple-dark);
+            margin: 24px 0 10px;
+            padding-left: 12px;
+            border-left: 4px solid var(--magic-purple);
+        }
+
+        .section p {
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+        }
+
+        .section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section a {
+            color: var(--magic-purple);
+            font-weight: 600;
+        }
+
+        /* ── Alerts ── */
+        .alert {
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .alert+.alert {
+            margin-top: -12px;
+        }
+
+        .alert-purple {
+            background: var(--purple-light);
+            border-left: 6px solid var(--magic-purple);
+        }
+
+        .alert-yellow {
+            background: #FFFBEB;
+            border-left: 6px solid var(--yellow);
+        }
+
+        .alert-mint {
+            background: #ECFDF5;
+            border-left: 6px solid #10B981;
+        }
+
+        .alert-red {
+            background: #FEF2F2;
+            border-left: 6px solid #EF4444;
+        }
+
+        .alert-sky {
+            background: #F0F9FF;
+            border-left: 6px solid #38BDF8;
+        }
+
+        .alert-ink {
+            background: #F8FAFC;
+            border-left: 6px solid var(--ink);
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-body {
+            flex: 1;
+        }
+
+        .alert-body strong {
+            display: block;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .alert-body p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+
+        /* ── Tables ── */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin: 20px 0;
+            font-size: 0.88rem;
+        }
+
+        .data-table thead tr {
+            background: var(--ink);
+        }
+
+        .data-table thead th {
+            color: #fff;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            padding: 11px 16px;
+            text-align: left;
+        }
+
+        .data-table tbody tr {
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background: #F8FAFC;
+        }
+
+        .data-table tbody td {
+            padding: 11px 16px;
+            color: var(--ink-soft);
+            vertical-align: top;
+        }
+
+        .data-table tbody td:first-child {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        /* ── List styles ── */
+        .check-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 14px 0;
+        }
+
+        .check-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.92rem;
+            color: var(--ink-soft);
+        }
+
+        .check-list li span:first-child {
+            flex-shrink: 0;
+        }
+
+        .card-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 14px 0;
+        }
+
+        .card-list li {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+        }
+
+        .card-list li span:first-child {
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .card-list li strong {
+            font-family: 'Fredoka', sans-serif;
+            display: block;
+            margin-bottom: 3px;
+            color: var(--ink);
+        }
+
+        .no-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 14px 0;
+        }
+
+        .no-list li {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            background: #FEF2F2;
+            border: 1.5px solid #FCA5A5;
+            border-left: 4px solid #EF4444;
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+        }
+
+        .no-list li span:first-child {
+            flex-shrink: 0;
+        }
+
+        /* ── Credit box ── */
+        .credit-visual {
+            background: var(--ink);
+            color: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 28px 32px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .credit-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .credit-text h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--yellow);
+            margin-bottom: 6px;
+        }
+
+        .credit-text p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.55;
+            margin: 0;
+        }
+
+        /* ── Notice (withdrawal) ── */
+        .withdrawal-box {
+            background: var(--yellow);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 24px 28px;
+            margin: 20px 0;
+        }
+
+        .withdrawal-box h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .withdrawal-box p {
+            font-size: 0.9rem;
+            color: var(--ink);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .withdrawal-box p:last-child {
+            margin: 0;
+        }
+
+        /* ── SLA pills ── */
+        .sla-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .sla-card {
+            background: #fff;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            padding: 18px;
+        }
+
+        .sla-card .sla-level {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--ink);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sla-card p {
+            font-size: 0.82rem;
+            color: var(--ink-soft);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* ── Placeholder ── */
+        .ph {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 0.85em;
+            border: 1.5px dashed var(--border);
+            border-radius: 4px;
+            padding: 1px 8px;
+        }
+
+        /* ── Tags ── */
+        .tag {
+            display: inline-block;
+            font-size: 0.73rem;
+            font-weight: 700;
+            border-radius: 50px;
+            padding: 2px 10px;
+            border: 1.5px solid;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .tag-new {
+            background: #ECFDF5;
+            color: #065F46;
+            border-color: #10B981;
+        }
+
+        .tag-req {
+            background: #FEF2F2;
+            color: #991B1B;
+            border-color: #FCA5A5;
+        }
+
+        .tag-info {
+            background: var(--purple-light);
+            color: var(--purple-dark);
+            border-color: var(--magic-purple);
+        }
+
+        /* ── Divider ── */
+        hr.div {
+            border: none;
+            border-top: 2px dashed #CBD5E1;
+            margin: 28px 0;
+        }
+
+        /* ── Footer ── */
+        .page-footer {
+            background: var(--ink);
+            border-top: 3px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .page-footer p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .footer-links a:hover {
+            color: var(--yellow);
+        }
+
+        @media print {
+
+            .site-header,
+            .back-link {
+                display: none;
+            }
+
+            body {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─────────── HEADER ─────────── -->
+    <header class="site-header">
+        <a href="/" class="logo">Winke<span>.</span></a>
+        <a href="/" class="back-link">← Volver al inicio</a>
+    </header>
+
+    <!-- ─────────── HERO ─────────── -->
+    <div class="hero">
+        <div class="hero-badge">📜 Contrato de Servicio</div>
+        <h1>Condiciones de Servicio</h1>
+        <p>El contrato que rige la relación entre Winke y sus usuarios. Léelo con calma: es importante tanto para ti
+            como para nosotros.</p>
+        <div class="hero-meta">
+            <span>🌐 <strong>winke.fun</strong></span>
+            <span>📅 Última actualización: <strong><span class="ph"
+                        style="background:rgba(251,191,36,0.6);border-color:rgba(255,255,255,0.4);">DD/MM/AAAA</span></strong></span>
+            <span>⚖️ <strong>LSSI · TRLGDCU · EU Data Act · AI Act</strong></span>
+        </div>
+    </div>
+
+    <!-- ─────────── MAIN ─────────── -->
+    <main class="page-wrap">
+
+        <div class="alert alert-purple">
+            <div class="alert-icon">📌</div>
+            <div class="alert-body">
+                <strong>Antes de empezar</strong>
+                <p>Al registrarte, comprar créditos o iniciar la generación de un cuento en winke.fun, aceptas quedar
+                    vinculado por las presentes Condiciones de Servicio. Si no estás de acuerdo con alguno de sus
+                    términos, no utilices el Servicio. Este documento es el contrato completo entre tú y Winke.</p>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <nav class="toc" aria-label="Índice de contenido">
+            <div class="toc-title">📌 Índice</div>
+            <ol>
+                <li><a href="#titular">Datos del Titular</a></li>
+                <li><a href="#descripcion">Descripción del Servicio</a></li>
+                <li><a href="#capacidad">Capacidad Legal y Menores</a></li>
+                <li><a href="#contratacion">Proceso de Contratación</a></li>
+                <li><a href="#creditos">Sistema de Créditos Prepago</a></li>
+                <li><a href="#precios">Precios, IVA y Facturación</a></li>
+                <li><a href="#pago">Medios de Pago</a></li>
+                <li><a href="#desistimiento">Derecho de Desistimiento</a></li>
+                <li><a href="#garantia">Garantía Legal de Conformidad</a></li>
+                <li><a href="#licencia">Licencia de Uso del Servicio</a></li>
+                <li><a href="#contenido">Derechos sobre el Contenido Generado</a></li>
+                <li><a href="#uso-aceptable">Política de Uso Aceptable</a></li>
+                <li><a href="#suspension">Suspensión y Cancelación</a></li>
+                <li><a href="#b2b">Condiciones Específicas B2B</a></li>
+                <li><a href="#sla">Nivel de Servicio (SLA)</a></li>
+                <li><a href="#responsabilidad">Limitación de Responsabilidad</a></li>
+                <li><a href="#privacidad">Datos Personales</a></li>
+                <li><a href="#comunicaciones">Comunicaciones</a></li>
+                <li><a href="#cambios-tos">Modificaciones de estas Condiciones</a></li>
+                <li><a href="#separabilidad">Nulidad Parcial y Renuncia</a></li>
+                <li><a href="#ley">Ley Aplicable y Jurisdicción</a></li>
+            </ol>
+        </nav>
+
+
+        <!-- ── 1. TITULAR ── -->
+        <section class="section" id="titular">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2>Datos del Titular del Servicio</h2>
+            </div>
+            <p>En cumplimiento del artículo 10 de la LSSI-CE, y por remisión al <a href="/aviso-legal.html">Aviso
+                    Legal</a>, el prestador del Servicio es:</p>
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td>Titular</td>
+                        <td><span class="ph">[NOMBRE EMPRESA / AUTÓNOMO]</span></td>
+                    </tr>
+                    <tr>
+                        <td>NIF / CIF</td>
+                        <td><span class="ph">[NIF/CIF]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Domicilio social</td>
+                        <td><span class="ph">[DIRECCIÓN COMPLETA]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Datos registrales</td>
+                        <td><span class="ph">[REGISTRO MERCANTIL, si aplica]</span></td>
+                    </tr>
+                    <tr>
+                        <td>Email de soporte</td>
+                        <td><span class="ph">hola@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Email legal</td>
+                        <td><span class="ph">legal@winke.fun</span></td>
+                    </tr>
+                    <tr>
+                        <td>Teléfono</td>
+                        <td><span class="ph">[TELÉFONO]</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>En adelante, referido como <strong>"Winke"</strong>, <strong>"nosotros"</strong> o <strong>"el
+                    Prestador"</strong>. El usuario que acepta estas Condiciones será referido como
+                <strong>"Usuario"</strong>, <strong>"Cliente"</strong> o, según corresponda, <strong>"Cliente
+                    B2B"</strong>.</p>
+        </section>
+
+
+        <!-- ── 2. DESCRIPCIÓN ── -->
+        <section class="section" id="descripcion">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2>Descripción del Servicio</h2>
+            </div>
+            <p>Winke es una plataforma SaaS (<em>Software as a Service</em>) de generación de cuentos infantiles
+                personalizados mediante un sistema de agentes de inteligencia artificial. El Servicio permite al Usuario
+                introducir parámetros sobre el menor (nombre del protagonista, grupo de edad, intereses y,
+                opcionalmente, imagen del producto asociado) para obtener un cuento personalizado con texto narrativo e
+                ilustraciones generadas por IA, exportable en formato PDF.</p>
+            <p>El Servicio opera en dos modalidades:</p>
+            <ul class="card-list">
+                <li><span>👨‍👩‍👧</span>
+                    <div><strong>B2C — Acceso directo</strong>El padre, madre o tutor legal adquiere créditos
+                        directamente en winke.fun y genera cuentos desde su cuenta personal.</div>
+                </li>
+                <li><span>🏪</span>
+                    <div><strong>B2B — A través de tienda asociada</strong>Una empresa o comercio integra Winke en su
+                        proceso de venta. El comprador final del producto accede mediante un enlace de activación único
+                        (<em>one-time token</em>) generado por la tienda para crear su cuento personalizado.</div>
+                </li>
+            </ul>
+            <p>Winke se reserva el derecho a introducir mejoras, nuevas funcionalidades o cambios en el Servicio,
+                notificando a los Usuarios cuando dichos cambios sean materiales y afecten a derechos ya adquiridos.</p>
+        </section>
+
+
+        <!-- ── 3. CAPACIDAD ── -->
+        <section class="section" id="capacidad">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2>Capacidad Legal y Menores de Edad</h2>
+            </div>
+
+            <div class="alert alert-mint">
+                <div class="alert-icon">🛡️</div>
+                <div class="alert-body">
+                    <strong>El Servicio es operado por adultos, generado para niños</strong>
+                    <p>Winke genera contenido para menores, pero el acceso, la contratación y la gestión del Servicio
+                        corresponden exclusivamente a personas mayores de 18 años con plena capacidad legal.</p>
+                </div>
+            </div>
+
+            <p>Al aceptar estas Condiciones, el Usuario declara y garantiza que:</p>
+            <ul class="check-list">
+                <li><span>✅</span>Es mayor de 18 años con plena capacidad de obrar.</li>
+                <li><span>✅</span>Si proporciona datos sobre un menor, es su padre, madre o tutor legal o actúa con su
+                    expresa autorización.</li>
+                <li><span>✅</span>Otorga su consentimiento parental verificable para el tratamiento de los datos del
+                    menor con el único fin de generar el cuento.</li>
+                <li><span>✅</span>Si actúa en nombre de una empresa (B2B), tiene autorización para contratar en su
+                    nombre y vincularla jurídicamente.</li>
+                <li><span>✅</span>La información que proporciona es veraz, precisa y completa.</li>
+            </ul>
+
+            <p>Winke se reserva el derecho de suspender cuentas si obtiene indicios fundados de que el Usuario no cumple
+                los requisitos anteriores, sin perjuicio de las acciones legales que pudieran corresponder.</p>
+        </section>
+
+
+        <!-- ── 4. CONTRATACIÓN ── -->
+        <section class="section" id="contratacion">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2>Proceso de Contratación</h2>
+            </div>
+
+            <p>La contratación del Servicio se formaliza a través del siguiente proceso, en cumplimiento del artículo 98
+                del TRLGDCU y los artículos 23 y 27 de la LSSI-CE:</p>
+
+            <ul class="card-list">
+                <li><span>1️⃣</span>
+                    <div><strong>Selección del pack de créditos</strong>El Usuario elige el pack de créditos que desea
+                        adquirir. Se mostrarán claramente el precio final con IVA incluido, el número de créditos
+                        (cuentos) y las características principales del Servicio.</div>
+                </li>
+                <li><span>2️⃣</span>
+                    <div><strong>Revisión del pedido</strong>Antes de confirmar, el Usuario puede revisar y modificar su
+                        selección. Se presentará un resumen del pedido con precio desglosado (precio base + IVA =
+                        total).</div>
+                </li>
+                <li><span>3️⃣</span>
+                    <div><strong>Aceptación de condiciones</strong>El Usuario deberá marcar las casillas de aceptación
+                        de estas Condiciones de Servicio y la Política de Privacidad. Ambas casillas estarán desmarcadas
+                        por defecto.</div>
+                </li>
+                <li><span>4️⃣</span>
+                    <div><strong>Botón con obligación de pago <span class="tag tag-req">Obligatorio
+                                TRLGDCU</span></strong>El botón final de confirmación del pedido llevará la leyenda
+                        <em>"Comprar y pagar"</em> o equivalente inequívoco. Usar etiquetas como "Continuar",
+                        "Siguiente" o "Aceptar" sin mención expresa al pago es ilegal conforme al artículo 98.7 del
+                        TRLGDCU.</div>
+                </li>
+                <li><span>5️⃣</span>
+                    <div><strong>Pago y confirmación</strong>El pago se procesa a través de Stripe. Una vez confirmado,
+                        el Usuario recibe un email de confirmación con el resumen del pedido y el número de créditos
+                        acreditados en su cuenta. Este email constituye el acuse de recibo exigido por el artículo 28 de
+                        la LSSI-CE.</div>
+                </li>
+            </ul>
+
+            <p>El contrato queda perfeccionado en el momento en que Winke envía la confirmación de pago por email. Winke
+                archivará el contrato electrónico durante el período legalmente exigido y lo pondrá a disposición del
+                Usuario si lo solicita.</p>
+        </section>
+
+
+        <!-- ── 5. CRÉDITOS ── -->
+        <section class="section" id="creditos">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2>Sistema de Créditos Prepago</h2>
+            </div>
+
+            <div class="credit-visual">
+                <div class="credit-icon">✨</div>
+                <div class="credit-text">
+                    <h4>1 crédito = 1 cuento completo</h4>
+                    <p>Cada crédito da derecho a la generación de un cuento personalizado completo: texto narrativo
+                        adaptado a la edad, ilustraciones originales e informe pedagógico, todo exportable en formato
+                        PDF de alta calidad.</p>
+                </div>
+            </div>
+
+            <h3>Funcionamiento del saldo de créditos</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Aspecto</th>
+                        <th>Condición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Acreditación</td>
+                        <td>Los créditos se acreditan en la cuenta del Usuario de forma inmediata tras la confirmación
+                            del pago por Stripe.</td>
+                    </tr>
+                    <tr>
+                        <td>Consumo</td>
+                        <td>Un crédito se descuenta de la cuenta en el momento en que el Usuario inicia la generación
+                            del cuento, de forma atómica e irreversible.</td>
+                    </tr>
+                    <tr>
+                        <td>Caducidad</td>
+                        <td>Los créditos <strong>no caducan</strong> mientras la cuenta permanezca activa. No hay fecha
+                            límite de uso.</td>
+                    </tr>
+                    <tr>
+                        <td>Acumulación</td>
+                        <td>Los créditos de diferentes compras se acumulan en la misma cuenta sin límite.</td>
+                    </tr>
+                    <tr>
+                        <td>Intransferibilidad</td>
+                        <td>Los créditos están vinculados a la cuenta del Usuario y no son transferibles a otras
+                            cuentas, salvo en los planes B2B que dispongan expresamente de ello.</td>
+                    </tr>
+                    <tr>
+                        <td>No monetización</td>
+                        <td>Los créditos no tienen valor monetario per se y no pueden ser canjeados por dinero, salvo en
+                            los casos de desistimiento o garantía previstos en estas Condiciones.</td>
+                    </tr>
+                    <tr>
+                        <td>Crédito fallido</td>
+                        <td>Si la generación de un cuento falla por causas técnicas imputables a Winke, el crédito
+                            consumido será reintegrado de forma automática. Esta política es de buenas prácticas en V1 y
+                            está sujeta a revisión.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Packs disponibles (B2C)</h3>
+            <p>Los packs de créditos actuales y sus precios se muestran en la <a href="/#precios">página de precios de
+                    winke.fun</a>. Winke puede modificar los packs y sus precios en cualquier momento. Los créditos ya
+                adquiridos no se verán afectados por cambios de precio.</p>
+        </section>
+
+
+        <!-- ── 6. PRECIOS ── -->
+        <section class="section" id="precios">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2>Precios, IVA y Facturación</h2>
+            </div>
+
+            <h3>Precios B2C (consumidor final)</h3>
+            <p>Todos los precios mostrados en la sección de precios B2C de winke.fun son <strong>precios finales que
+                    incluyen el IVA</strong> aplicable (actualmente el 21% en España), salvo indicación expresa en
+                contrario. El desglose IVA/base imponible se mostrará siempre en el resumen previo a la compra y en la
+                factura.</p>
+
+            <h3>Precios B2B (clientes empresariales)</h3>
+            <p>Los precios mostrados en la sección B2B se expresan <strong>sin IVA</strong> (precio neto). El IVA
+                aplicable se añadirá en la factura conforme a la normativa fiscal vigente según la localización del
+                cliente. Los clientes B2B con número de IVA intracomunitario válido podrán beneficiarse del régimen de
+                inversión del sujeto pasivo en las operaciones transfronterizas dentro de la UE.</p>
+
+            <h3>Facturación</h3>
+            <ul class="check-list">
+                <li><span>🧾</span>Winke emitirá una factura por cada transacción, que será enviada al email del Usuario
+                    y estará disponible en el portal de cliente de Stripe.</li>
+                <li><span>📧</span>Las facturas se conservarán durante el período legalmente exigido (mínimo 5 años
+                    conforme a la normativa fiscal española).</li>
+                <li><span>🏢</span>Los clientes B2B que necesiten facturación con datos fiscales específicos deberán
+                    facilitarlos durante el proceso de alta o contactar con <span class="ph">hola@winke.fun</span>.</li>
+            </ul>
+        </section>
+
+
+        <!-- ── 7. PAGO ── -->
+        <section class="section" id="pago">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <h2>Medios de Pago</h2>
+            </div>
+            <p>Los pagos en Winke son gestionados exclusivamente por <strong>Stripe Inc.</strong>, proveedor de pagos
+                con certificación PCI-DSS Level 1. Winke no almacena, procesa ni tiene acceso a los datos de tarjeta del
+                Usuario en ningún momento.</p>
+            <p>Se aceptan los siguientes medios de pago según disponibilidad en la pasarela de Stripe:</p>
+            <ul class="check-list">
+                <li><span>💳</span>Tarjetas de crédito y débito: Visa, Mastercard, American Express.</li>
+                <li><span>🏦</span>SEPA Direct Debit (transferencia domiciliada) para clientes B2B, si está habilitado.
+                </li>
+                <li><span>📱</span>Apple Pay y Google Pay, según disponibilidad del navegador y dispositivo.</li>
+            </ul>
+            <p>En caso de fallo en el pago (tarjeta rechazada, fondos insuficientes), no se acreditarán créditos en la
+                cuenta del Usuario. Winke no cobra comisiones adicionales sobre el precio del pack; los posibles gastos
+                de conversión de divisas o comisiones bancarias son responsabilidad del Usuario.</p>
+            <p>Los pagos se realizan en <strong>euros (€)</strong>. Winke no acepta criptomonedas ni otros activos
+                digitales como medio de pago.</p>
+        </section>
+
+
+        <!-- ── 8. DESISTIMIENTO ── -->
+        <section class="section" id="desistimiento">
+            <div class="section-header">
+                <div class="section-number">8</div>
+                <h2>Derecho de Desistimiento</h2>
+            </div>
+
+            <div class="alert alert-sky">
+                <div class="alert-icon">ℹ️</div>
+                <div class="alert-body">
+                    <strong>Resumen: tienes 14 días, pero los pierdes cuando generas el primer cuento</strong>
+                    <p>Esta es la regla más importante de esta sección. El desistimiento aplica a los créditos no
+                        consumidos. Una vez que inicias la generación de un cuento y se consume un crédito, ese crédito
+                        en particular no es recuperable.</p>
+                </div>
+            </div>
+
+            <h3>Derecho general de desistimiento</h3>
+            <p>Conforme a los artículos 102 y siguientes del Real Decreto Legislativo 1/2007 (TRLGDCU) y a la Directiva
+                2011/83/UE, el Usuario B2C tiene derecho a desistir del contrato de compra de créditos en un plazo de
+                <strong>14 días naturales</strong> contados desde la fecha de confirmación de la compra, sin necesidad
+                de justificación y sin penalización.</p>
+
+            <h3>Excepción: contenido digital iniciado</h3>
+            <p>De conformidad con el artículo 103.m) del TRLGDCU, <strong>el derecho de desistimiento se pierde</strong>
+                respecto de los créditos que hayan sido consumidos para iniciar la generación de un cuento, dado que:
+            </p>
+            <ul class="check-list">
+                <li><span>📱</span>El Servicio consiste en la entrega de contenido digital (el cuento generado en PDF).
+                </li>
+                <li><span>▶️</span>La ejecución del servicio digital comienza en el momento en que el Usuario activa la
+                    generación del cuento.</li>
+                <li><span>✅</span>El Usuario ha prestado consentimiento previo y expreso para el inicio inmediato de la
+                    ejecución, reconociendo la pérdida de su derecho de desistimiento, mediante el aviso mostrado antes
+                    de la generación.</li>
+            </ul>
+            <p>En consecuencia: si un Usuario adquiere un pack de 3 créditos y genera 1 cuento, puede desistir y
+                recuperar el importe correspondiente a los <strong>2 créditos no consumidos</strong>, pero no el del
+                crédito ya utilizado.</p>
+
+            <h3>Cómo ejercer el desistimiento</h3>
+            <div class="withdrawal-box">
+                <h4>📋 Formulario de Desistimiento</h4>
+                <p>Para ejercer el derecho de desistimiento, puedes usar el formulario electrónico disponible en tu área
+                    de cliente o enviar una comunicación a <span class="ph">hola@winke.fun</span> con el siguiente
+                    contenido:</p>
+                <p><em>"Por la presente, notificación de desistimiento del contrato de compra de créditos Winke
+                        realizada el [fecha], con número de confirmación [número]. Nombre: [nombre]. Email de la cuenta:
+                        [email]."</em></p>
+                <p>Winke enviará un acuse de recibo inmediato en soporte duradero (email) y procesará el reembolso en un
+                    plazo máximo de <strong>14 días naturales</strong> desde la recepción de la solicitud, utilizando el
+                    mismo medio de pago empleado en la compra.</p>
+            </div>
+
+            <h3>Botón de Desistimiento <span class="tag tag-new">Novedad — Junio 2026</span></h3>
+            <div class="alert alert-yellow">
+                <div class="alert-icon">🆕</div>
+                <div class="alert-body">
+                    <strong>Nueva obligación legal — Directiva (UE) 2023/2673</strong>
+                    <p>A partir del <strong>19 de junio de 2026</strong>, Winke habilitará en el área de cliente un
+                        botón de desistimiento electrónico, permanentemente visible y accesible sin pasos adicionales de
+                        autenticación. Este botón permitirá tramitar el desistimiento de las compras de créditos no
+                        consumidos en un máximo de 2 pasos. Winke enviará un acuse de recibo inmediato por email al
+                        ejercer esta función.</p>
+                </div>
+            </div>
+
+            <h3>Exclusiones del derecho de desistimiento (Usuarios B2B)</h3>
+            <p>Los clientes empresariales (B2B) que contraten en su condición de empresarios o profesionales <strong>no
+                    tienen derecho de desistimiento</strong> conforme al TRLGDCU, que solo ampara a consumidores
+                finales. Sus condiciones de cancelación están reguladas en la <a href="#b2b">sección 14 (Condiciones
+                    Específicas B2B)</a> de estas Condiciones.</p>
+        </section>
+
+
+        <!-- ── 9. GARANTÍA ── -->
+        <section class="section" id="garantia">
+            <div class="section-header">
+                <div class="section-number">9</div>
+                <h2>Garantía Legal de Conformidad</h2>
+            </div>
+
+            <p>De conformidad con los artículos 115 ter y siguientes del TRLGDCU (transposición de la Directiva
+                2019/770/UE sobre contratos de suministro de contenidos y servicios digitales), Winke ofrece una
+                <strong>garantía legal de conformidad de 3 años</strong> sobre el Servicio a contar desde la fecha de
+                contratación.</p>
+
+            <h3>¿Qué es la falta de conformidad?</h3>
+            <p>El Servicio es no conforme cuando presenta alguna de las siguientes situaciones:</p>
+            <ul class="check-list">
+                <li><span>⚠️</span>El cuento generado no puede descargarse en PDF por un error técnico imputable a
+                    Winke.</li>
+                <li><span>⚠️</span>El contenido generado es manifiestamente incoherente con los parámetros introducidos
+                    por el Usuario (por ejemplo, el nombre del protagonista no aparece o la edad no corresponde al nivel
+                    lingüístico).</li>
+                <li><span>⚠️</span>El Servicio deja de estar disponible de forma permanente sin alternativa ofrecida al
+                    Usuario.</li>
+                <li><span>⚠️</span>El Servicio no cumple con las características y funcionalidades descritas en el
+                    momento de la contratación.</li>
+            </ul>
+
+            <h3>Remedios disponibles</h3>
+            <p>Ante una falta de conformidad, el Usuario tiene derecho a, por el siguiente orden de preferencia:</p>
+            <ul class="card-list">
+                <li><span>🔁</span>
+                    <div><strong>Subsanación sin coste</strong>Winke regenerará el cuento afectado sin consumir un
+                        crédito adicional, en el plazo más breve posible.</div>
+                </li>
+                <li><span>💰</span>
+                    <div><strong>Reducción proporcional del precio</strong>Si la subsanación no es posible o no se
+                        realiza en plazo razonable, el Usuario tiene derecho al reembolso del crédito afectado en
+                        formato económico.</div>
+                </li>
+                <li><span>🔙</span>
+                    <div><strong>Resolución del contrato</strong>Si los fallos son reiterados o de especial gravedad, el
+                        Usuario puede resolver el contrato y recuperar el importe total de los créditos no consumidos.
+                    </div>
+                </li>
+            </ul>
+
+            <p>Para comunicar una falta de conformidad, contacta con <span class="ph">hola@winke.fun</span> describiendo
+                el problema y adjuntando, si es posible, capturas de pantalla o el PDF generado. Winke responderá en el
+                plazo máximo de 5 días hábiles.</p>
+        </section>
+
+
+        <!-- ── 10. LICENCIA ── -->
+        <section class="section" id="licencia">
+            <div class="section-header">
+                <div class="section-number">10</div>
+                <h2>Licencia de Uso del Servicio</h2>
+            </div>
+
+            <p>Winke concede al Usuario, con el pago de los créditos correspondientes, una <strong>licencia de acceso al
+                    Servicio</strong> con las siguientes características:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Característica</th>
+                        <th>Condición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tipo</td>
+                        <td>No exclusiva, personal e intransferible</td>
+                    </tr>
+                    <tr>
+                        <td>Ámbito geográfico</td>
+                        <td>Mundial</td>
+                    </tr>
+                    <tr>
+                        <td>Duración</td>
+                        <td>Mientras la cuenta permanezca activa y existan créditos disponibles</td>
+                    </tr>
+                    <tr>
+                        <td>Finalidad</td>
+                        <td>Exclusivamente para generar cuentos personalizados conforme a las presentes Condiciones</td>
+                    </tr>
+                    <tr>
+                        <td>Sublicencia</td>
+                        <td>No permitida, salvo en el caso de clientes B2B que entregan el cuento al cliente final en el
+                            marco del servicio contratado</td>
+                    </tr>
+                    <tr>
+                        <td>Ingeniería inversa</td>
+                        <td>Expresamente prohibida</td>
+                    </tr>
+                    <tr>
+                        <td>Modificación del software</td>
+                        <td>Expresamente prohibida</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Esta licencia de uso del Servicio es distinta de los derechos sobre los cuentos generados, que se regulan
+                en la sección siguiente.</p>
+        </section>
+
+
+        <!-- ── 11. CONTENIDO GENERADO ── -->
+        <section class="section" id="contenido">
+            <div class="section-header">
+                <div class="section-number">11</div>
+                <h2>Derechos sobre el Contenido Generado</h2>
+            </div>
+
+            <h3>Licencia personal al usuario B2C</h3>
+            <p>Con cada crédito consumido, Winke otorga al Usuario B2C una <strong>licencia de uso personal, no
+                    exclusiva, no comercial e intransferible</strong> sobre el cuento generado (texto e ilustraciones),
+                que incluye:</p>
+            <ul class="check-list">
+                <li><span>✅</span>Leer y disfrutar el cuento en cualquier dispositivo.</li>
+                <li><span>✅</span>Descargar e imprimir el PDF para uso propio y familiar.</li>
+                <li><span>✅</span>Compartir el cuento con el menor al que va dirigido y su entorno familiar inmediato.
+                </li>
+                <li><span>✅</span>Conservar el PDF descargado indefinidamente para uso personal.</li>
+            </ul>
+
+            <ul class="no-list">
+                <li><span>🚫</span>Vender, comercializar o explotar económicamente el cuento sin autorización escrita de
+                    Winke.</li>
+                <li><span>🚫</span>Publicar el cuento en medios de comunicación, plataformas de streaming o redes
+                    sociales con fines de monetización.</li>
+                <li><span>🚫</span>Utilizar las ilustraciones generadas por IA fuera del cuento como obras
+                    independientes.</li>
+            </ul>
+
+            <h3>Licencia para clientes B2B</h3>
+            <p>En el caso de clientes empresariales, la licencia se extiende a la <strong>entrega del cuento al cliente
+                    final</strong> como parte de la experiencia comercial de la tienda. Los cuentos generados mediante
+                tokens B2B pertenecen al cliente final que los ha generado y no pueden ser reutilizados por la tienda
+                para otros compradores.</p>
+
+            <h3>Reserva de derechos de Winke</h3>
+            <p>Winke se reserva el derecho, con carácter permanente y global, de utilizar los datos <strong>agregados y
+                    anonimizados</strong> de generación (géneros narrativos más solicitados, distribución de edades,
+                parámetros pedagógicos) con fines de mejora del Servicio y análisis estadístico. En ningún caso se
+                utilizarán datos personales o imágenes de menores con estos fines.</p>
+
+            <h3>Titularidad de obras de IA: estado legal</h3>
+            <div class="alert alert-ink">
+                <div class="alert-icon">⚖️</div>
+                <div class="alert-body">
+                    <strong>Nota sobre el marco legal de los derechos de autor en IA</strong>
+                    <p>La titularidad de obras generadas íntegramente por inteligencia artificial es una cuestión
+                        jurídicamente no resuelta en la mayoría de las jurisdicciones, incluyendo España. La TRLPI no
+                        reconoce derechos de autor a sistemas no humanos. La aportación creativa del Usuario
+                        (parámetros, inputs, selección) puede fundar derechos sobre el resultado. Winke otorga la
+                        licencia descrita como prestación contractual, con independencia del estado legislativo de esta
+                        cuestión.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ── 12. USO ACEPTABLE ── -->
+        <section class="section" id="uso-aceptable">
+            <div class="section-header">
+                <div class="section-number">12</div>
+                <h2>Política de Uso Aceptable</h2>
+            </div>
+
+            <p>El Usuario se compromete a utilizar el Servicio conforme a la ley, a las presentes Condiciones, a la
+                moral y al orden público. Queda expresamente prohibido, en cumplimiento del <strong>AI Act (Reglamento
+                    UE 2024/1689)</strong>, el <strong>Reglamento de Servicios Digitales (DSA)</strong> y el Código
+                Penal español:</p>
+
+            <ul class="no-list">
+                <li><span>🚫</span>Utilizar el Servicio para generar contenido que represente, incite o normalice la
+                    violencia, el abuso, la explotación sexual o cualquier forma de maltrato de menores.</li>
+                <li><span>🚫</span>Intentar engañar al sistema de IA mediante <em>prompt injection</em>,
+                    <em>jailbreaking</em> o técnicas similares para eludir los filtros de seguridad.</li>
+                <li><span>🚫</span>Generar o intentar generar contenido de naturaleza sexual que involucre a menores
+                    (<em>material CSAM</em>), lo cual constituye un delito tipificado en el artículo 189 del Código
+                    Penal.</li>
+                <li><span>🚫</span>Cargar imágenes de personas sin su consentimiento, especialmente imágenes de menores
+                    ajenos al Usuario.</li>
+                <li><span>🚫</span>Usar el Servicio para crear <em>deepfakes</em> o contenido sintético destinado a
+                    engañar o perjudicar a terceros.</li>
+                <li><span>🚫</span>Intentar obtener acceso no autorizado a cuentas de otros usuarios o a la
+                    infraestructura técnica de Winke.</li>
+                <li><span>🚫</span>Utilizar el Servicio de forma que suponga una carga desproporcionada sobre la
+                    infraestructura (abuso de la API, peticiones masivas automatizadas).</li>
+                <li><span>🚫</span>Revender el acceso al Servicio sin el correspondiente contrato B2B.</li>
+            </ul>
+
+            <p>Winke aplica filtros de moderación automáticos y monitorización del Servicio. Ante la detección de usos
+                prohibidos, Winke podrá suspender el acceso de forma inmediata y sin previo aviso, y notificará a las
+                autoridades competentes cuando los hechos sean constitutivos de delito.</p>
+
+            <h3>Prohibición de dark patterns (DSA)</h3>
+            <p>En cumplimiento del artículo 25 del Reglamento de Servicios Digitales (DSA), Winke se compromete a no
+                utilizar interfaces diseñadas para engañar o manipular al Usuario (<em>dark patterns</em>). Esto
+                incluye: no dificultar artificialmente la baja del Servicio, no ocultar opciones de cancelación, no usar
+                conteos de tiempo falsos para presionar decisiones de compra, y no hacer que la suscripción sea más
+                fácil que la baja.</p>
+        </section>
+
+
+        <!-- ── 13. SUSPENSIÓN ── -->
+        <section class="section" id="suspension">
+            <div class="section-header">
+                <div class="section-number">13</div>
+                <h2>Suspensión y Cancelación de la Cuenta</h2>
+            </div>
+
+            <h3>Cancelación voluntaria por el Usuario</h3>
+            <p>El Usuario puede eliminar su cuenta en cualquier momento desde el área de configuración de su perfil o
+                enviando una solicitud a <span class="ph">hola@winke.fun</span>. La cancelación implica:</p>
+            <ul class="check-list">
+                <li><span>📧</span>Confirmación de la cancelación por email en el plazo de 48 horas hábiles.</li>
+                <li><span>🗑️</span>Eliminación de todos los datos personales del Usuario y de los menores asociados en
+                    el plazo de 30 días, salvo los que deban conservarse por obligación legal.</li>
+                <li><span>💰</span>Los créditos no consumidos en el momento de la cancelación se pierden, salvo que el
+                    Usuario haya ejercido el derecho de desistimiento conforme a la sección 8.</li>
+                <li><span>📄</span>Los cuentos ya generados y descargados en PDF permanecen en posesión del Usuario;
+                    Winke eliminará las copias de sus servidores.</li>
+            </ul>
+
+            <h3>Suspensión por Winke</h3>
+            <p>Winke podrá suspender o cancelar una cuenta, con o sin previo aviso según la gravedad, en los siguientes
+                supuestos:</p>
+            <ul class="check-list">
+                <li><span>⚠️</span><strong>Con preaviso de 15 días:</strong> incumplimiento no grave de estas
+                    Condiciones, falta de pago, actividad sospechosa.</li>
+                <li><span>🚨</span><strong>Sin previo aviso:</strong> conductas que supongan un riesgo inmediato para
+                    menores, actividades ilícitas, ataques a la infraestructura o fraude grave.</li>
+            </ul>
+            <p>En caso de suspensión injustificada por parte de Winke, el Usuario tendrá derecho al reembolso íntegro de
+                los créditos no consumidos. Winke no será responsable de los daños derivados de una suspensión
+                justificada por incumplimiento del Usuario.</p>
+        </section>
+
+
+        <!-- ── 14. B2B ── -->
+        <section class="section" id="b2b">
+            <div class="section-header">
+                <div class="section-number">14</div>
+                <h2>Condiciones Específicas para Clientes B2B</h2>
+            </div>
+
+            <div class="alert alert-purple">
+                <div class="alert-icon">🏪</div>
+                <div class="alert-body">
+                    <strong>Esta sección aplica exclusivamente a empresas y autónomos que contratan Winke para
+                        integrarlo en su oferta comercial</strong>
+                    <p>Si eres un usuario B2C (padre, madre o tutor individual), puedes saltar esta sección.</p>
+                </div>
+            </div>
+
+            <h3>Alta y activación B2B</h3>
+            <p>El proceso de alta B2B requiere el envío del formulario de solicitud disponible en la landing B2B de
+                winke.fun, seguido de un proceso de activación manual asistida por el equipo de Winke. La activación
+                incluye: creación del tenant, configuración del branding, emisión del secreto de integración y firma del
+                Contrato de Encargo del Tratamiento (DPA) conforme al Art. 28 RGPD. Ninguna integración B2B se activa
+                sin DPA firmado.</p>
+
+            <h3>Planes y créditos B2B</h3>
+            <p>Los planes B2B son packs de créditos prepago orientados a empresas, con dos niveles de integración:</p>
+            <ul class="card-list">
+                <li><span>⭐</span>
+                    <div><strong>Plan Estándar</strong>El nombre y branding de la tienda se integran en la narrativa del
+                        cuento. Integración mediante enlace con token one-time.</div>
+                </li>
+                <li><span>💎</span>
+                    <div><strong>Plan Premium</strong>El nombre de la tienda y el producto adquirido (imagen incluida)
+                        aparecen visualmente en las ilustraciones del cuento. Requiere integración técnica avanzada del
+                        e-Commerce.</div>
+                </li>
+            </ul>
+
+            <h3>Portabilidad de datos y cambio de proveedor (EU Data Act)</h3>
+            <div class="alert alert-mint">
+                <div class="alert-icon">📦</div>
+                <div class="alert-body">
+                    <strong>Derechos bajo el Reglamento (UE) 2023/2854 — Ley de Datos de la UE (Data Act)</strong>
+                    <p>En cumplimiento de la Ley de Datos de la UE, Winke reconoce a sus clientes B2B los siguientes
+                        derechos:</p>
+                </div>
+            </div>
+            <ul class="card-list">
+                <li><span>🔄</span>
+                    <div><strong>Derecho a cambiar de proveedor</strong>El Cliente B2B puede dar por terminado el
+                        contrato con un <strong>preaviso máximo de 2 meses</strong>, independientemente de la duración
+                        mínima acordada, sin que Winke pueda imponer barreras técnicas o económicas irrazonables. A
+                        partir de enero de 2027, no se aplicará ningún cargo por la portabilidad de datos.</div>
+                </li>
+                <li><span>📤</span>
+                    <div><strong>Exportación de datos</strong>El Cliente B2B tiene derecho a exportar los datos
+                        generados por el uso del Servicio (historial de generaciones, datos de cuenta, configuración de
+                        tenant) en un formato estructurado, de uso común y lectura mecánica (JSON o CSV), en el plazo de
+                        30 días desde la solicitud.</div>
+                </li>
+                <li><span>📋</span>
+                    <div><strong>Inventario de datos</strong>Winke pondrá a disposición del Cliente B2B, previa
+                        solicitud, un inventario completo de los datos almacenados asociados a su tenant.</div>
+                </li>
+            </ul>
+
+            <h3>Renovación y gestión de créditos B2B</h3>
+            <p>Los packs B2B son prepago sin renovación automática. El Cliente B2B recibirá un aviso por email cuando su
+                saldo alcance el 20% del pack contratado. La recarga de créditos deberá realizarse activamente por el
+                Cliente o a través del equipo de Winke.</p>
+
+            <h3>Confidencialidad del secreto de integración</h3>
+            <p>El secreto de integración asignado a cada Cliente B2B es un dato altamente sensible que garantiza la
+                seguridad del sistema one-time token. El Cliente B2B se compromete a: custodiarlo en sistemas seguros,
+                no compartirlo con terceros no autorizados, comunicar a Winke cualquier compromiso sospechoso de forma
+                inmediata, y aceptar la revocación y reemisión del secreto en caso de brecha de seguridad. Winke solo
+                almacena el hash SHA-256 del secreto, nunca el valor en claro.</p>
+        </section>
+
+
+        <!-- ── 15. SLA ── -->
+        <section class="section" id="sla">
+            <div class="section-header">
+                <div class="section-number">15</div>
+                <h2>Acuerdo de Nivel de Servicio (SLA)</h2>
+            </div>
+
+            <p>Winke aspira a ofrecer el mayor nivel de disponibilidad posible. El siguiente SLA es de referencia para
+                la versión actual del Servicio (MVP / V1) y está sujeto a mejora progresiva:</p>
+
+            <table class="data-table" style="margin-bottom:20px;">
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Objetivo V1</th>
+                        <th>Cálculo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Disponibilidad mensual</td>
+                        <td>≥ 99,0%</td>
+                        <td>Tiempo activo / tiempo total del mes</td>
+                    </tr>
+                    <tr>
+                        <td>Tiempo de generación de cuento</td>
+                        <td>&lt; 3 minutos</td>
+                        <td>Desde inicio hasta PDF disponible en condiciones normales</td>
+                    </tr>
+                    <tr>
+                        <td>Mantenimientos programados</td>
+                        <td>Con 24h de aviso</td>
+                        <td>Notificación por email y aviso en la plataforma</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="sla-grid">
+                <div class="sla-card">
+                    <div class="sla-level">🔴 Crítico</div>
+                    <p>Servicio completamente inaccesible o generación de cuentos imposible para todos los usuarios.</p>
+                    <p style="margin-top:8px;font-weight:700;color:var(--ink);">Respuesta: &lt; 2h hábiles</p>
+                </div>
+                <div class="sla-card">
+                    <div class="sla-level">🟠 Alto</div>
+                    <p>Funcionalidad principal degradada (generación lenta, fallos en imágenes, descargas fallidas).</p>
+                    <p style="margin-top:8px;font-weight:700;color:var(--ink);">Respuesta: &lt; 8h hábiles</p>
+                </div>
+                <div class="sla-card">
+                    <div class="sla-level">🟡 Medio</div>
+                    <p>Funcionalidad secundaria afectada (acceso al historial, área de cuenta, emails de confirmación).
+                    </p>
+                    <p style="margin-top:8px;font-weight:700;color:var(--ink);">Respuesta: &lt; 24h hábiles</p>
+                </div>
+                <div class="sla-card">
+                    <div class="sla-level">🟢 Bajo</div>
+                    <p>Incidencias menores, errores visuales o consultas generales que no afectan la funcionalidad core.
+                    </p>
+                    <p style="margin-top:8px;font-weight:700;color:var(--ink);">Respuesta: &lt; 72h hábiles</p>
+                </div>
+            </div>
+
+            <p>Las indisponibilidades causadas por mantenimientos de terceros (Supabase, Vercel, Google Cloud, Stripe)
+                que estén fuera del control de Winke no computarán a efectos del SLA. Winke comunicará dichas
+                incidencias de forma proactiva.</p>
+        </section>
+
+
+        <!-- ── 16. RESPONSABILIDAD ── -->
+        <section class="section" id="responsabilidad">
+            <div class="section-header">
+                <div class="section-number">16</div>
+                <h2>Limitación de Responsabilidad</h2>
+            </div>
+
+            <p>Con carácter general y sin perjuicio de los derechos imperativos reconocidos a los consumidores por el
+                TRLGDCU:</p>
+
+            <h3>Exclusiones de responsabilidad</h3>
+            <p>Winke no será responsable de daños derivados de:</p>
+            <ul class="check-list">
+                <li><span>⚠️</span>Interrupciones del Servicio causadas por terceros proveedores (Supabase, Google,
+                    Stripe, Vercel) o por causas de fuerza mayor.</li>
+                <li><span>⚠️</span>El contenido generado por el sistema de IA, incluidas imprecisiones narrativas,
+                    similitudes con obras preexistentes o resultados que no satisfagan las expectativas subjetivas del
+                    Usuario.</li>
+                <li><span>⚠️</span>El uso indebido de las credenciales de cuenta por parte del Usuario o de terceros no
+                    autorizados por negligencia del Usuario.</li>
+                <li><span>⚠️</span>Daños indirectos, lucro cesante, pérdida de datos o daños reputacionales, salvo dolo
+                    o negligencia grave de Winke.</li>
+                <li><span>⚠️</span>La interpretación, utilización o efectos del cuento generado sobre el menor al que va
+                    dirigido.</li>
+            </ul>
+
+            <h3>Límite cuantitativo</h3>
+            <p>Salvo en los casos en que la responsabilidad no pueda limitarse por imperativo legal (daños corporales,
+                dolo, negligencia grave o incumplimiento de garantías de consumidores), la <strong>responsabilidad total
+                    de Winke</strong> frente al Usuario por cualquier reclamación no excederá del <strong>importe total
+                    abonado por el Usuario a Winke en los doce meses anteriores</strong> al hecho generador de la
+                responsabilidad, o 100 €, el importe que sea mayor.</p>
+
+            <h3>Indemnización por el Usuario</h3>
+            <p>El Usuario se compromete a indemnizar, defender y mantener indemne a Winke frente a cualquier
+                reclamación, daño, pérdida, coste o gasto (incluidos honorarios de abogados) derivados de: el
+                incumplimiento de estas Condiciones por parte del Usuario, el uso indebido del Servicio, las
+                declaraciones falsas realizadas al contratar, o la infracción de derechos de terceros mediante el uso
+                del Servicio.</p>
+        </section>
+
+
+        <!-- ── 17. PRIVACIDAD ── -->
+        <section class="section" id="privacidad">
+            <div class="section-header">
+                <div class="section-number">17</div>
+                <h2>Protección de Datos Personales</h2>
+            </div>
+            <p>El tratamiento de los datos personales del Usuario y de los menores a su cargo se rige íntegramente por
+                la <a href="/politica-privacidad.html">Política de Privacidad</a> de Winke, que forma parte integrante
+                de estas Condiciones y debe ser aceptada junto con ellas.</p>
+            <p>En particular, Winke recuerda que las fotografías del menor o del producto <strong>nunca se almacenan en
+                    sus servidores</strong> (Decisión Arquitectónica ADR-005 — Privacidad desde el Diseño), lo que
+                constituye una garantía técnica adicional de protección de la imagen de los menores.</p>
+        </section>
+
+
+        <!-- ── 18. COMUNICACIONES ── -->
+        <section class="section" id="comunicaciones">
+            <div class="section-header">
+                <div class="section-number">18</div>
+                <h2>Comunicaciones</h2>
+            </div>
+            <p>Las comunicaciones entre Winke y el Usuario se realizarán preferentemente por correo electrónico a la
+                dirección facilitada en el registro. Es responsabilidad del Usuario mantener actualizada su dirección de
+                email.</p>
+            <p>Las notificaciones de Winke relativas a cambios en el Servicio, actualizaciones de estas Condiciones o
+                comunicaciones legales se considerarán recibidas en el momento de su envío al email registrado, salvo
+                que el Usuario acredite que el mensaje no llegó a su bandeja de entrada por causas imputables a Winke.
+            </p>
+            <p>Para comunicaciones urgentes de soporte, el Usuario puede escribir a <span
+                    class="ph">hola@winke.fun</span>. El tiempo de respuesta habitual es de 1 a 2 días hábiles.</p>
+        </section>
+
+
+        <!-- ── 19. CAMBIOS ── -->
+        <section class="section" id="cambios-tos">
+            <div class="section-header">
+                <div class="section-number">19</div>
+                <h2>Modificaciones de estas Condiciones</h2>
+            </div>
+            <p>Winke podrá modificar estas Condiciones de Servicio para adaptarlas a cambios normativos, en el Servicio
+                o en el modelo de negocio. El procedimiento de modificación varía según el tipo de cambio:</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tipo de cambio</th>
+                        <th>Preaviso</th>
+                        <th>Procedimiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cambios sustanciales (precios, derechos del Usuario, limitaciones)</td>
+                        <td>30 días</td>
+                        <td>Email a todos los Usuarios registrados + aviso en la plataforma. Requiere aceptación activa
+                            para continuar.</td>
+                    </tr>
+                    <tr>
+                        <td>Nuevas funcionalidades o expansión de derechos</td>
+                        <td>15 días</td>
+                        <td>Email + publicación en la web. Se consideran aceptadas si el Usuario continúa usando el
+                            Servicio.</td>
+                    </tr>
+                    <tr>
+                        <td>Cambios menores (datos de contacto, erratas, referencias legales)</td>
+                        <td>Sin preaviso</td>
+                        <td>Publicación en la web con actualización de la fecha. Efecto inmediato.</td>
+                    </tr>
+                    <tr>
+                        <td>Cambios exigidos por ley con plazo imperativo</td>
+                        <td>El mínimo legalmente exigido</td>
+                        <td>Según lo que establezca la norma de obligado cumplimiento.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Si el Usuario no acepta los nuevos términos, debe cancelar su cuenta antes de la fecha de entrada en
+                vigor. La continuación del uso del Servicio tras la fecha efectiva implica aceptación de las Condiciones
+                actualizadas.</p>
+        </section>
+
+
+        <!-- ── 20. SEPARABILIDAD ── -->
+        <section class="section" id="separabilidad">
+            <div class="section-header">
+                <div class="section-number">20</div>
+                <h2>Nulidad Parcial y Renuncia</h2>
+            </div>
+            <p>Si alguna disposición de estas Condiciones fuera declarada nula, inválida o inaplicable por resolución
+                judicial o decisión arbitral firme, dicha disposición se tendrá por no puesta, manteniéndose en vigor el
+                resto de las Condiciones con plena eficacia. Las partes se comprometen a sustituir la cláusula nula por
+                una disposición válida que se aproxime lo más posible a la intención original.</p>
+            <p>La no exigencia por parte de Winke del cumplimiento estricto de alguna de las obligaciones previstas en
+                estas Condiciones no implica renuncia a exigir su cumplimiento en el futuro, ni modifica las presentes
+                Condiciones.</p>
+        </section>
+
+
+        <!-- ── 21. LEY ── -->
+        <section class="section" id="ley">
+            <div class="section-header">
+                <div class="section-number">21</div>
+                <h2>Ley Aplicable y Jurisdicción</h2>
+            </div>
+            <p>Las presentes Condiciones de Servicio se rigen por la <strong>legislación española</strong> vigente. Para
+                la resolución de controversias:</p>
+            <ul class="card-list">
+                <li><span>👤</span>
+                    <div><strong>Usuarios consumidores (B2C)</strong>Serán competentes los juzgados y tribunales del
+                        domicilio del consumidor, conforme al artículo 52 del TRLGDCU. Winke renuncia expresamente a
+                        cualquier otro fuero.</div>
+                </li>
+                <li><span>🏢</span>
+                    <div><strong>Clientes empresariales (B2B)</strong>Las partes se someten expresamente, con renuncia a
+                        cualquier otro fuero, a los juzgados y tribunales de <span class="ph">[CIUDAD DOMICILIO
+                            WINKE]</span>.</div>
+                </li>
+                <li><span>🤝</span>
+                    <div><strong>Resolución amistosa previa</strong>Antes de iniciar acciones legales, ambas partes se
+                        comprometen a intentar resolver cualquier disputa de buena fe mediante negociación directa
+                        durante un período de 30 días.</div>
+                </li>
+                <li><span>🇪🇺</span>
+                    <div><strong>Plataforma ODR (UE)</strong>Los consumidores de la UE pueden acceder a la plataforma de
+                        resolución alternativa de litigios en línea: <a href="https://ec.europa.eu/consumers/odr"
+                            target="_blank" rel="noopener noreferrer">ec.europa.eu/consumers/odr</a>. Email de contacto
+                        para litigios: <span class="ph">hola@winke.fun</span>.</div>
+                </li>
+            </ul>
+
+            <div class="alert alert-ink" style="margin-top:28px;">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-body">
+                    <strong>Nota legal</strong>
+                    <p>Este documento ha sido redactado conforme a la normativa vigente a fecha de su última
+                        actualización. Se recomienda revisión periódica por un despacho jurídico especializado en
+                        derecho digital, especialmente ante la evolución del AI Act, la Ley de Equidad Digital (Digital
+                        Fairness Act, prevista 2026) y posibles modificaciones del TRLGDCU.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ─────────── FOOTER ─────────── -->
+    <footer class="page-footer">
+        <p>© <span id="year"></span> Winke · <span class="ph">[NOMBRE EMPRESA]</span> · winke.fun</p>
+        <p style="margin-top:6px;">Todos los derechos reservados · Operado desde España · Marco legal UE</p>
+        <div class="footer-links">
+            <a href="/aviso-legal.html">Aviso Legal</a>
+            <a href="/politica-privacidad.html">Privacidad</a>
+            <a href="/politica-cookies.html">Cookies</a>
+            <a href="/condiciones-servicio.html">Condiciones de Servicio</a>
+        </div>
+    </footer>
+
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+
+</html>

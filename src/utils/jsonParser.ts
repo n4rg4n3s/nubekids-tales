@@ -10,7 +10,7 @@
  */
 export function parseJsonSafely<T>(response: string): T {
     // 1. Strip markdown fences
-    let clean = response
+    const clean = response
         .replace(/```json\s*/gi, '')
         .replace(/```\s*/g, '')
         .trim();

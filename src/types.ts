@@ -24,6 +24,11 @@ export const LANGUAGES = [
 
 export type Genre = typeof GENRES[number];
 export type Language = typeof LANGUAGES[number];
+export interface BrandColors {
+  primary: string;
+  accent: string;
+  background: string;
+}
 
 // ============================================
 // AGE GROUP SYSTEM
@@ -67,7 +72,9 @@ export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
 // TENANT & VERTICAL CONFIGURATION
 // ============================================
 
-export type VerticalId = 'shoe-store' | 'fashion-store' | 'direct-b2c';
+// `verticalId` se mantiene solo como metadato legacy/comercial.
+// Ya no debe controlar narrativa, imagen ni copy del wizard.
+export type VerticalId = string;
 export type ItemInteractionMode = 'generic' | 'wearable' | 'interactive';
 
 // Nivel de integración del tenant
@@ -79,10 +86,8 @@ export interface TenantConfig {
   verticalId: VerticalId;
   itemInteractionMode: ItemInteractionMode;
 
-  // Configuración del objeto mágico
-  itemLabel: string;              // "zapatos" | "prenda" | "accesorio"
-  itemLabelSingular: string;      // "Los Sneakers Mágicos" | "La Prenda Mágica"
-  itemPlaceholderText: string;
+  // Etiqueta breve usada en prompts internos. No debe gobernar la UX del wizard.
+  itemLabel: string;
   allowUserEditItem: boolean;
 
   // Integración de checkout
@@ -92,11 +97,7 @@ export interface TenantConfig {
 
   // Branding
   baseSystemPrompt: string;
-  brandColors: {
-    primary: string;
-    accent: string;
-    background: string;
-  };
+  brandColors: BrandColors;
   brandLogo?: string;
 
   // Features
@@ -237,7 +238,7 @@ export interface UserProfile {
 /**
  * Query params B2B demo/testing.
  * El flujo real de cliente final entra por `/?token=...`.
- * Ejemplo demo: /?tenant=shoe-store-default&demo=1&item=Nike+Air+Max&item_image=https://...&customer_email=padre@email.com
+ * Ejemplo demo: /?tenant=wearable-demo-default&demo=1&item=Chaqueta+Brillante&item_image=https://...&customer_email=padre@email.com
  */
 export interface B2BSessionParams {
   tenant: string;

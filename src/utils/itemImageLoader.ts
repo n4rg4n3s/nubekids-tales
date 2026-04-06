@@ -43,7 +43,7 @@ export async function loadItemImage(url: string): Promise<ItemImageResult> {
             console.log('[itemImageLoader] ✅ Cargada via fetch directo');
             return { base64, url, loadMethod: 'fetch' };
         }
-    } catch (_e) {
+    } catch {
         console.warn('[itemImageLoader] fetch directo falló (posible CORS), intentando canvas...');
     }
 
@@ -52,7 +52,7 @@ export async function loadItemImage(url: string): Promise<ItemImageResult> {
         const base64 = await loadViaCanvas(url);
         console.log('[itemImageLoader] ✅ Cargada via canvas');
         return { base64, url, loadMethod: 'canvas' };
-    } catch (_e) {
+    } catch {
         console.warn('[itemImageLoader] canvas falló, usando URL directa como fallback...');
     }
 

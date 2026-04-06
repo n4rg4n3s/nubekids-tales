@@ -4,7 +4,7 @@
  * Patrón inspirado en el RAG Agent de referencia.
  */
 
-import { GoogleGenAI } from '@google/genai';
+import type { GoogleGenAI } from '@google/genai';
 import type {
     AgeGroup,
     PedagogyProfile,
@@ -75,7 +75,9 @@ export class AgentDependencies {
     /**
      * Inicializa el cliente de Gemini con la API key.
      */
-    initialize(apiKey: string): void {
+    async initialize(apiKey: string): Promise<void> {
+        if (this._geminiClient) return;
+        const { GoogleGenAI } = await import('@google/genai');
         this._geminiClient = new GoogleGenAI({ apiKey });
     }
 

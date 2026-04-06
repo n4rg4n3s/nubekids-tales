@@ -1,324 +1,308 @@
-# Implementation Plan: Tenant vs Item Interaction Mode Refactor
+# Implementation Plan: Close the `tenant` vs `itemInteractionMode` Refactor
 
-> Fecha: 2026-04-04
-> Estado: Draft listo para ejecutar en fork
-> Objetivo: desacoplar el concepto de `tenant` del concepto narrativo/visual de cómo el niño se relaciona con el producto.
-
----
-
-## 1. Problema que resuelve
-
-Ahora mismo el proyecto mezcla dos ideas distintas dentro de la configuración de tenant:
-
-- `tenant` como identidad comercial o branding de la tienda
-- `tenant` como pista narrativa para el modelo de cuento e imagen
-
-Eso ha llevado a que existan configuraciones como:
-
-- `shoe-store-default`
-- `fashion-store-default`
-
-cuando en realidad esa diferencia no es tanto "qué tipo de tienda es", sino "cómo se usa el objeto en la historia".
-
-Ejemplo:
-
-- un zapato se lleva puesto
-- un vestido se lleva puesto
-- una gorra se lleva puesta
-- un juguete no se lleva puesto, se manipula o se usa para jugar
-
-La taxonomía actual escala mal y fuerza a crear tenants "falsos" para resolver diferencias narrativas.
+> Fecha: 2026-04-06
+> Estado: Plan definitivo para ejecutar en esta sesion
+> Objetivo: cerrar de verdad el refactor para que el wizard, el pipeline y el runtime B2B real dejen de depender semanticamente de `shoe-store` / `fashion-store`.
 
 ---
 
-## 2. Objetivo de la refactorización
+## 1. Diagnostico real
 
-Separar claramente:
+El refactor de `itemInteractionMode` ya existe, pero esta solo medio cerrado.
 
-- `tenant`: quién es la tienda / marca / e-Commerce
-- `itemInteractionMode`: cómo interactúa el niño con el producto dentro del cuento e imágenes
+Hoy el sistema esta dividido en dos capas:
 
-Primera propuesta de modos:
+- una capa nueva correcta, donde narrativa e imagen ya usan `itemInteractionMode`
+- una capa legacy que sigue filtrando semantica vieja en wizard, configs demo y runtime B2B
 
-- `generic`
-- `wearable`
-- `interactive`
+Los restos principales son:
 
-Más adelante se podrán añadir otros sin tocar la arquitectura principal.
+1. `StepStory.tsx` sigue resolviendo previews por `verticalId`
+2. `StepItem.tsx` sigue apoyandose en labels y placeholders heredados de tenants legacy
+3. el flujo B2B real sigue validando tenants en Supabase, pero la config de frontend se resuelve con `tenantLoader` local
+4. `interactive` existe en tipos y helpers, pero no existe como modo operativo real de demo
 
----
+Conclusión:
 
-## 3. Resultado esperado
-
-Al terminar la refactorización:
-
-- el onboarding B2B no dependerá del tipo de producto
-- los tenants dejarán de representar categorías narrativas
-- el prompt del modelo recibirá una señal más útil y explícita
-- zapatos y ropa compartirán el mismo comportamiento narrativo base: `wearable`
-- juguetes podrán tener comportamiento propio con `interactive`
+- el pipeline ya fue refactorizado
+- el wizard y el runtime aun no
 
 ---
 
-## 4. Principio de diseño
+## 2. Objetivo final de esta iteracion
 
-El criterio base será:
+Al terminar esta ejecucion, el sistema debe comportarse asi:
 
-- la identidad comercial vive en `tenant`
-- la semántica narrativa/visual vive en `itemInteractionMode`
-
-Esto evita acoplar branding, pricing, onboarding y comportamiento del modelo en un solo eje.
-
----
-
-## 5. Alcance de esta primera iteración
-
-Incluido:
-
-- añadir `itemInteractionMode` al modelo de configuración
-- redefinir el uso de `verticalId` para que no cargue semántica narrativa innecesaria
-- unificar `shoe-store` y `fashion-store` alrededor de `wearable`
-- preparar la base para introducir `interactive`
-- mantener compatibilidad con URLs y tenants actuales
-
-No incluido:
-
-- rediseño del onboarding B2B
-- migración completa a tenants reales almacenados en base de datos
-- creación de un catálogo multi-vertical completo
-- reescritura profunda de prompts multiagente
+- `itemInteractionMode` sera la fuente de verdad narrativa y de UX del objeto
+- `verticalId` quedara reducido a metadato legacy/comercial, sin controlar comportamiento
+- el wizard sera uno solo en estructura
+- el copy del wizard podra variar solo por `itemInteractionMode`
+- no quedara rastro estructural de `shoe-store` ni `fashion-store` en el wizard
+- el runtime B2B real construira `TenantConfig` desde datos reales del tenant, no desde configs demo locales
+- existira una demo real para `interactive`
 
 ---
 
-## 6. Decisiones de modelado propuestas
+## 3. Principios de diseño que voy a aplicar
 
-### 6.1 Nuevo tipo
+### 3.1 Un solo wizard, varias semanticas
 
-En `src/types.ts`:
+La estructura del wizard no se bifurca por tenant.
 
-```ts
-export type ItemInteractionMode = 'generic' | 'wearable' | 'interactive';
-```
+Solo podra cambiar:
 
-### 6.2 Extensión de `TenantConfig`
+- el copy necesario para `generic`
+- el copy necesario para `wearable`
+- el copy necesario para `interactive`
 
-Añadir:
+No podra cambiar por:
 
-```ts
-itemInteractionMode: ItemInteractionMode;
-```
+- `shoe-store`
+- `fashion-store`
+- ids legacy de tenant
 
-### 6.3 Rol de `verticalId`
+### 3.2 `verticalId` deja de mandar
 
-Opciones:
+`verticalId` se mantiene por compatibilidad y trazabilidad, pero deja de gobernar:
 
-1. Mantener `verticalId` solo como metadato comercial o de branding.
-2. Reducir su relevancia y dejar que el comportamiento real lo controle `itemInteractionMode`.
+- previews del wizard
+- textos del wizard
+- prompts narrativos
+- decisiones visuales
 
-Recomendación:
+### 3.3 Los tenants demo legacy pasan a ser aliases, no modelos
 
-- mantener `verticalId` por ahora para no forzar una ruptura mayor
-- mover toda la lógica narrativa/visual relevante a `itemInteractionMode`
+`shoe-store-default` y `fashion-store-default` seguiran siendo validos por compatibilidad, pero ya no representaran dos comportamientos distintos.
 
----
+Ambos apuntaran al mismo comportamiento `wearable`.
 
-## 7. Estrategia de transición
+### 3.4 El runtime real no puede depender de demo configs
 
-La transición debe ser incremental y compatible hacia atrás.
+Si un token B2B real trae un tenant real desde Supabase, la app debe poder construir un `TenantConfig` funcional con esa data real.
 
-### Fase 1. Introducir la nueva capa sin romper nada
+No es aceptable seguir haciendo:
 
-- Añadir `ItemInteractionMode` en `src/types.ts`
-- Añadir `itemInteractionMode` a todas las configs de tenant
-- Asignar:
-  - `shoe-store-default` → `wearable`
-  - `fashion-store-default` → `wearable`
-  - `direct-b2c` → `generic`
-
-Resultado:
-
-- el sistema sigue funcionando igual
-- el nuevo dato ya existe
-
-### Fase 2. Desacoplar prompts y labels del tipo de tenant
-
-Revisar dónde se usa información de tenant para construir contexto narrativo:
-
-- prompts base del tenant
-- labels de Step 3
-- generación de imágenes
-- cualquier lógica que asuma implícitamente `shoe-store` o `fashion-store`
-
-Objetivo:
-
-- cambiar la lógica a `itemInteractionMode`
-
-Ejemplo:
-
-- `wearable` → lenguaje tipo "lleva puesto", "viste", "calza", según copy final elegido
-- `generic` → lenguaje tipo "acompaña", "lleva consigo", "aparece junto al protagonista"
-- `interactive` → lenguaje tipo "usa", "juega con", "interactúa con"
-
-### Fase 3. Consolidar tenants demo
-
-Decidir si:
-
-- se mantienen ambos tenants demo por branding distinto
-- o se simplifican los tenants demo a uno solo B2B wearable
-
-Recomendación inicial:
-
-- mantener ambos por ahora si ayudan en demos o branding
-- pero dejar claro que ambos comparten `itemInteractionMode: 'wearable'`
-
-### Fase 4. Añadir un tenant demo de juguetes si realmente se necesita
-
-Solo si hay caso de uso real:
-
-- crear una config nueva de demo para `interactive`
-- no antes
-
-Esto evita añadir complejidad especulativa.
+- validar tenant real en base de datos
+- pero resolver la config narrativa/UI con `tenantLoader` local
 
 ---
 
-## 8. Archivos previsiblemente afectados
+## 4. Alcance exacto de la ejecucion
 
-### Tipos y configuración
+### Incluido
+
+- reescribir el plan de cierre del refactor
+- hacer `StepStory` independiente de `verticalId`
+- hacer `StepItem` dependiente de `itemInteractionMode`, no de labels legacy del tenant
+- simplificar y neutralizar las configs demo locales
+- convertir `shoe-store-default` y `fashion-store-default` en compatibilidad legacy real
+- añadir soporte operativo para `interactive` con tenant demo
+- crear un adaptador `DB tenant -> TenantConfig`
+- hacer que el flujo B2B real use ese adaptador
+- añadir soporte de `item_interaction_mode` en datos reales con compatibilidad hacia atras
+- actualizar documentacion principal afectada
+
+### No incluido
+
+- rediseño completo del onboarding B2B
+- dashboard de tenant
+- migracion completa de todos los tenants a un catalogo administrable desde base de datos
+- rediseño profundo del pipeline multiagente
+
+---
+
+## 5. Plan de ejecucion exacto
+
+### Fase A. Reordenar el modelo para que la semantica viva en helpers, no en tenants legacy
+
+Acciones:
+
+- ampliar `src/utils/itemInteraction.ts` para que no solo contenga instrucciones narrativas, sino tambien copy de wizard y fallbacks por modo
+- rebajar `verticalId` a metadato flexible/legacy en `src/types.ts`
+- dejar de usar en el wizard campos como `itemLabelSingular` y `itemPlaceholderText` como fuente de verdad
+
+Resultado esperado:
+
+- el lenguaje del wizard se resolvera desde `itemInteractionMode`
+- los tenants no volveran a arrastrar una UX distinta por categoria historica
+
+### Fase B. Cerrar el wizard
+
+#### B.1 `StepStory`
+
+Acciones:
+
+- eliminar el mapeo de previews por `verticalId`
+- usar previews neutrales por genero, comunes para cualquier tenant
+
+Resultado esperado:
+
+- el paso 4 mostrara estilos visuales, no verticales historicos
+
+#### B.2 `StepItem`
+
+Acciones:
+
+- rehacer titulos, subtitulos, labels, placeholders y estados vacios para que dependan de `itemInteractionMode`
+- conservar branding comercial (`storeName`, `tenantName`) donde tenga sentido
+- evitar cualquier copy estructural basado en “zapatos”, “prenda” o equivalentes legacy
+
+Resultado esperado:
+
+- el paso 3 sera un unico componente con semantica por modo
+- `wearable` tendra copy wearable
+- `generic` tendra copy generic
+- `interactive` tendra copy interactive
+
+### Fase C. Neutralizar configs demo legacy
+
+Acciones:
+
+- crear una config demo canonica para `wearable`
+- crear una config demo canonica para `interactive`
+- mantener `shoe-store-default` y `fashion-store-default` como aliases compatibles
+- dejar `direct-b2c` como modo `generic`
+- unificar prompts base demo para que no dependan de zapato/ropa
+
+Resultado esperado:
+
+- las demos legacy seguiran funcionando
+- pero el modelo canonico ya no sera `shoe-store` vs `fashion-store`
+
+### Fase D. Corregir el runtime B2B real
+
+Acciones:
+
+- crear un factory/adaptador que construya `TenantConfig` desde datos reales de tenant
+- hacer que `tokenService` exponga `itemInteractionMode` real o un fallback inferido
+- cambiar `App.tsx` para que, en flujo real `?token=...`, deje de usar `loadTenantConfig(tenantId)`
+- reservar `tenantLoader` para demo/local/testing
+
+Resultado esperado:
+
+- un tenant real de base de datos podra renderizar wizard y pipeline sin depender de ids demo locales
+
+### Fase E. Compatibilidad de datos y migracion segura
+
+Acciones:
+
+- añadir migracion SQL para `public.tenants.item_interaction_mode`
+- backfill compatible hacia atras:
+  - `shoe-store` y `fashion-store` -> `wearable`
+  - `direct-b2c` -> `generic`
+  - fallback controlado para otros casos legacy
+- mantener inferencia defensiva en frontend mientras existan filas antiguas
+
+Resultado esperado:
+
+- el sistema funcionara tanto con datos ya migrados como con tenants legacy no actualizados
+
+### Fase F. Documentacion y validacion
+
+Acciones:
+
+- actualizar `PLANNING.md`
+- actualizar `HANDOFF.md`
+- actualizar runbooks/docs de demo si siguen mostrando ids legacy como modelo principal
+- validar `npm run build`
+
+Resultado esperado:
+
+- la documentacion quedara alineada con el modelo real
+- el cierre del refactor quedara verificable
+
+---
+
+## 6. Archivos que voy a tocar
+
+### Modelo y helpers
 
 - `src/types.ts`
+- `src/utils/itemInteraction.ts`
 - `src/config/tenantLoader.ts`
+- `src/config/tenantConfigFactory.ts` o equivalente nuevo
+
+### Configs demo
+
 - `src/config/tenants/shoe-store.config.ts`
 - `src/config/tenants/fashion-store.config.ts`
 - `src/config/tenants/direct-b2c.config.ts`
+- nueva config demo `wearable`
+- nueva config demo `interactive`
 
-### Wizard y experiencia del objeto mágico
+### Wizard
 
-- `src/components/Setup.tsx`
 - `src/components/wizard/StepItem.tsx`
+- `src/components/wizard/StepStory.tsx`
 
-### Pipeline narrativo / imagen
+### Runtime B2B real
 
-- `src/services/dependencies.ts`
-- `src/services/agents/*`
-- `src/services/imageGenerationService.ts`
-- `src/utils/itemInteraction.ts`
+- `src/services/tokenService.ts`
+- `src/App.tsx`
 
-### Documentación
+### Base de datos / compatibilidad
 
-- `HANDOFF.md`
+- nueva migracion en `supabase/migrations/`
+
+### Documentacion
+
 - `PLANNING.md`
-- `docs/BUSINESS_TECH_SPEC.md`
-- documentación de integración B2B si menciona categorías de tenant
+- `HANDOFF.md`
+- `docs/b2b_tenant_activation_and_token_test_guide.md`
+- `docs/nubekids_b2b2c_simulator.html`
 
 ---
 
-## 9. Riesgos
+## 7. Definicion de done de esta sesion
 
-### Riesgo 1. Duplicar semántica
+Esta iteracion se considerara cerrada solo si se cumplen todos estos puntos:
 
-Si dejamos al mismo tiempo:
-
-- `verticalId` con semántica narrativa
-- `itemInteractionMode` con semántica narrativa
-
-acabaremos con dos fuentes de verdad.
-
-Mitigación:
-
-- definir desde el primer commit que la fuente de verdad narrativa es `itemInteractionMode`
-
-### Riesgo 2. Copy incoherente
-
-`wearable` no implica siempre el mismo verbo natural en español.
-
-Ejemplos:
-
-- un zapato se calza
-- una camiseta se viste
-- una gorra se lleva puesta
-
-Mitigación:
-
-- no intentar resolver la gramática perfecta en esta primera refactorización
-- usar una formulación suficientemente robusta como:
-  - "lleva puesto"
-  - "la prenda o accesorio"
-  - "el objeto que acompaña al protagonista"
-
-### Riesgo 3. Cambio demasiado grande de una vez
-
-Si mezclamos esta refactorización con:
-
-- onboarding B2B
-- auth
-- Stripe
-- dashboard tenant
-
-la ejecución se volverá frágil.
-
-Mitigación:
-
-- hacer esta refactorización en un fork aislado
-- validar primero que no rompe generación ni setup
+1. `StepStory` ya no usa `verticalId`
+2. `StepItem` ya no usa copy estructural heredado de `shoe-store` / `fashion-store`
+3. el wizard adapta el copy solo por `itemInteractionMode`
+4. existe una demo funcional `interactive`
+5. `shoe-store-default` y `fashion-store-default` quedan solo como compatibilidad
+6. el flujo real `?token=...` construye `TenantConfig` desde datos reales del tenant
+7. existe ruta de compatibilidad para tenants antiguos sin `item_interaction_mode`
+8. la app compila
+9. la documentacion principal queda actualizada
 
 ---
 
-## 10. Recomendaciones de implementación
+## 8. Riesgos y mitigacion
 
-### Recomendación A
+### Riesgo 1. Romper demos legacy
 
-Primero introducir el nuevo campo y usarlo solo en paralelo.
+Mitigacion:
 
-### Recomendación B
+- mantener aliases de tenant
+- mantener fallback defensivo en `tenantLoader`
 
-Después mover la lógica narrativa/visual a `itemInteractionMode`.
+### Riesgo 2. Mezclar branding con semantica otra vez
 
-### Recomendación C
+Mitigacion:
 
-Solo al final limpiar o rebajar la importancia semántica de `verticalId`.
+- branding solo en `tenantName`, `storeName`, `brandColors`
+- semantica del objeto solo en `itemInteractionMode`
 
----
+### Riesgo 3. Tener tenants reales sin la nueva columna en DB
 
-## 11. Definición de Done
+Mitigacion:
 
-La refactorización se considerará completa cuando:
-
-- exista `itemInteractionMode` en `TenantConfig`
-- todos los tenants tengan un valor explícito
-- la narrativa/imagen deje de depender de `shoe-store` vs `fashion-store`
-- `wearable` cubra correctamente zapatos y ropa
-- la app compile y el flujo actual no se rompa
-- la documentación principal quede actualizada
+- migracion SQL
+- inferencia temporal desde campos legacy
 
 ---
 
-## 12. Orden de ejecución en fork
+## 9. Decision operativa final
 
-1. Crear fork o branch de trabajo aislado
-2. Añadir tipo `ItemInteractionMode` y extender `TenantConfig`
-3. Actualizar configs existentes
-4. Reemplazar dependencias narrativas de `verticalId` por `itemInteractionMode`
-5. Revisar copy visible del wizard
-6. Validar build y flujo B2B/B2C actual
-7. Actualizar documentación
+No voy a intentar “parchear” un poco el wizard actual.
 
----
+Voy a cerrar el refactor correctamente con esta regla:
 
-## 13. Decisiones pendientes antes de implementar
+- demo/local -> `tenantLoader`
+- runtime real -> adapter desde tenant real
+- wizard -> copy por `itemInteractionMode`
+- legacy ids -> alias compatibles, nunca modelo canonico
 
-Estas decisiones se pueden cerrar justo antes de empezar el fork:
-
-- si mantenemos ambos tenants demo actuales
-- si queremos introducir ya un tenant demo `interactive` o dejarlo para una segunda iteración
-
----
-
-## 14. Recomendación final
-
-Sí, esta refactorización tiene sentido y no parece especialmente peligrosa si se hace en dos pasos:
-
-- introducir la nueva abstracción
-- migrar la lógica hacia ella sin romper compatibilidad
-
-La clave es no convertirla en una refactorización total del producto. Debe ser una limpieza de modelo, no una reinvención del sistema B2B.
+Ese es el plan que se ejecuta en esta sesion.

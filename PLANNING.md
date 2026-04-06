@@ -3,7 +3,7 @@
 > Documento vivo de decisiones arquitectónicas y roadmap.
 > Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-04-04
+> **Última actualización:** 2026-04-06
 
 ---
 
@@ -257,6 +257,9 @@
 - `shoe-store-default` y `fashion-store-default` siguen existiendo como tenants demo/legacy
 - la fuente de verdad narrativa deja de ser `verticalId` y pasa a `itemInteractionMode`
 - nuevos tenants no deben diseñarse alrededor de la taxonomía `shoe-store` / `fashion-store`
+- el wizard ya no debe bifurcarse por vertical legacy; su copy debe resolverse por `itemInteractionMode`
+- el flujo B2B real por `?token=...` debe construir `TenantConfig` desde datos reales del tenant
+- `wearable-demo-default` e `interactive-demo-default` pasan a ser demos canonicas; los ids legacy quedan como compatibilidad
 
 ---
 
@@ -338,6 +341,7 @@
 - [x] Integrar Supabase para validación de tokens
 - [x] Añadir campos integrationLevel, storeName, itemLabelSingular
 - [x] Refactor 2026-04-04: introducir `itemInteractionMode` y desacoplar semántica narrativa de `tenant`
+- [x] Cierre 2026-04-06: wizard guiado por `itemInteractionMode`, previews neutrales, demo `interactive` y runtime B2B real sin dependencia de configs demo locales
 
 ### ✅ Fase 2 — Wizard de Setup (COMPLETADA)
 - [x] Crear wizard de 4 pasos
@@ -429,7 +433,8 @@
 - [x] Sin ninguna mención a "IA"
 - [x] CTAs públicos B2B a activación asistida en vez de compra directa
 - [x] `public/b2c.html` — Landing B2C para padres
-- [x] ⚠️ Sincronizar nuevos precios B2B en Stripe + Supabase + BuyCredits.tsx
+- [x] Sincronizar nuevos precios B2B en Stripe + Supabase operativo + `BuyCredits.tsx`
+- [ ] Limpiar referencias históricas de pricing en `docs/BUSINESS_TECH_SPEC.md` y migraciones antiguas
 
 ### ✅ Captura de activación B2B V1 (COMPLETADA — 04 Abril 2026)
 - [x] CTA claro en `public/b2b.html` hacia `Solicitar activación`
@@ -469,14 +474,14 @@
 - [ ] Configurar DNS en Vercel
 - [ ] Configurar Stripe webhook con URL de producción
 - [ ] Google OAuth funcional (requiere dominio)
-- [ ] Crear política de privacidad (GDPR, datos de menores)
-- [ ] Crear términos de servicio
-- [ ] Crear aviso legal
-- [ ] Crear política de cookies
+- [x] Publicar borradores legales en `/public` (`aviso-legal`, `condiciones-servicio`, `politica-privacidad`, `politica-cookies`)
+- [ ] Completar datos fiscales / entidad responsable / teléfono / registro / contacto legal en los HTML públicos
 - [ ] Revisar diariamente `b2b_activation_requests` y validar el circuito manual de provisioning
-- [ ] Preparar tenant demo estable y guión comercial para enseñar a tiendas cómo validar enlaces one-time
-- [ ] Probar emisión de tokens desde `/api/b2b/create-token` con el secreto del tenant de test
-- [ ] Documentar snippet o colección Postman para demos comerciales B2B
+- [x] Documentar tenant de test operativo y runbook de demo one-time en `docs/b2b_tenant_activation_and_token_test_guide.md`
+- [ ] Consolidar tenant demo estable y guión comercial final para demos comerciales
+- [x] Probar emisión de tokens desde `/api/b2b/create-token` con el secreto del tenant de test
+- [x] Documentar snippet técnico de integración para `/api/b2b/create-token` en `docs/INTEGRACION_PREMIUM.md`
+- [ ] Preparar colección Postman opcional para demos comerciales B2B
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
 ### ⏳ Fase 12 — Dashboard de Tenant (POST-LANZAMIENTO)
@@ -506,13 +511,14 @@
 
 | Item | Prioridad | Estado | Fase |
 |------|-----------|--------|------|
-| Precios B2B desincronizados (landing vs Stripe vs Supabase) | **ALTA** | ⏳ Pendiente | - |
+| Referencias históricas de pricing B2B en docs/migraciones antiguas | Media | ⚠️ Pendiente de limpieza documental | 11 |
 | Riesgo de drenaje de créditos vía `?tenant=` reutilizable | **ALTA** | ✅ Resuelto con token one-time | - |
 | Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas | - |
 | No hay notificación automática de nuevas solicitudes B2B | Media | Aceptable V1 — revisión manual en Supabase | 11 |
 | Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 — consume_credit es atómico | 10 |
 | Fuentes Fredoka/Nunito no importadas en index.css | Media | ✅ Resuelto sesión 2026-04-02 | 10 |
 | Google OAuth en GCP + Supabase | Media | ⏳ Cuando haya dominio | 7 |
+| Legales públicos con placeholders fiscales / entidad responsable | Alta | ⏳ Pendiente antes de go-live | 11 |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 | 8 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio | 9 |
 | Violations react-pageflip touchstart | Baja | Ignorable (librería externa) | 4 |

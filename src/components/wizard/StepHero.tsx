@@ -3,6 +3,7 @@
 
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatHeroDescription } from './stepHeroUtils';
 
 export interface HeroData {
   name: string;
@@ -62,67 +63,6 @@ const OPTIONS = {
     { value: 'very-dark', label: 'Muy oscura' },
   ],
 };
-
-// Exportar función para que Setup.tsx la use
-export function formatHeroDescription(data: HeroData): string {
-  if (data.inputMode === 'photo') return '';
-  
-  const parts: string[] = [];
-  
-  // Género y edad
-  const genderOption = OPTIONS.gender.find(o => o.value === data.gender);
-  const ageOption = OPTIONS.ageRange.find(o => o.value === data.ageRange);
-  
-  if (genderOption && ageOption) {
-    parts.push(`${genderOption.label} de ${ageOption.label}`);
-  } else if (genderOption) {
-    parts.push(genderOption.label);
-  } else if (ageOption) {
-    parts.push(`de ${ageOption.label}`);
-  }
-  
-  // Pelo
-  const hairColorOption = OPTIONS.hairColor.find(o => o.value === data.hairColor);
-  const hairTypeOption = OPTIONS.hairType.find(o => o.value === data.hairType);
-  
-  if (hairColorOption && hairTypeOption) {
-    parts.push(`pelo ${hairColorOption.label.toLowerCase()} ${hairTypeOption.label.toLowerCase()}`);
-  } else if (hairColorOption) {
-    parts.push(`pelo ${hairColorOption.label.toLowerCase()}`);
-  } else if (hairTypeOption) {
-    parts.push(`pelo ${hairTypeOption.label.toLowerCase()}`);
-  }
-  
-  // Ojos
-  const eyeColorOption = OPTIONS.eyeColor.find(o => o.value === data.eyeColor);
-  if (eyeColorOption) {
-    parts.push(`ojos ${eyeColorOption.label.toLowerCase()}`);
-  }
-  
-  // Piel
-  const skinToneOption = OPTIONS.skinTone.find(o => o.value === data.skinTone);
-  if (skinToneOption) {
-    parts.push(`piel ${skinToneOption.label.toLowerCase()}`);
-  }
-  
-  // Peculiaridades
-  if (data.peculiarities.trim()) {
-    parts.push(data.peculiarities.trim());
-  }
-  
-  return parts.length > 0 ? parts.join(', ') + '.' : '';
-}
-
-// Mapeo de ageRange del héroe a AgeGroup para el sistema
-export function mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
-  switch (ageRange) {
-    case '3-4': return 'tiny';
-    case '5-6': return 'little';
-    case '7-8': 
-    case '9-10': return 'reader';
-    default: return 'little'; // default
-  }
-}
 
 export default function StepHero({ data, onChange }: StepHeroProps) {
   const photoInputRef = useRef<HTMLInputElement>(null);
