@@ -122,7 +122,7 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
             `}
             style={data.inputMode === 'description' ? { boxShadow: '3px 3px 0px #1E293B' } : {}}
           >
-            📝 Describir rasgos
+            Describir rasgos
           </button>
           <button
             type="button"
@@ -136,7 +136,7 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
             `}
             style={data.inputMode === 'photo' ? { boxShadow: '3px 3px 0px #1E293B' } : {}}
           >
-            📷 Subir foto
+            Subir foto
           </button>
         </div>
       </div>
@@ -302,8 +302,8 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
               className={`
                 w-full h-48 rounded-xl cursor-pointer border-4 border-dashed
                 flex items-center justify-center transition-all
-                ${data.photo 
-                  ? 'border-[#34D399] bg-[#34D399]/10' 
+                ${data.photo
+                  ? 'border-[#34D399] bg-[#34D399]/10'
                   : 'border-[#1E293B]/30 hover:border-[#8B5CF6]/50 bg-gray-50 hover:bg-[#8B5CF6]/5'
                 }
               `}
@@ -312,9 +312,9 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
             >
               {data.photo ? (
                 <div className="relative w-full h-full p-2">
-                  <img 
-                    src={data.photo} 
-                    alt="Preview" 
+                  <img
+                    src={data.photo}
+                    alt="Preview"
                     className="w-full h-full object-cover rounded-lg"
                     style={{ transform: 'rotate(-2deg)' }}
                   />
