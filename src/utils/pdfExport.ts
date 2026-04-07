@@ -1,5 +1,5 @@
 // src/utils/pdfExport.ts
-// Exportacion de cuentos a PDF con jsPDF (A4 landscape)
+// Exportacion de cuentos a PDF con jsPDF (16:9 landscape)
 
 import jsPDF from 'jspdf';
 import type { ComicFace, TenantConfig } from '../types';
@@ -16,9 +16,9 @@ export interface ExportedPdfAsset {
   fileName: string;
 }
 
-// A4 horizontal en mm
-const PAGE_WIDTH = 297;
-const PAGE_HEIGHT = 210;
+// Formato libro horizontal 16:9 en mm
+const PAGE_WIDTH = 320;
+const PAGE_HEIGHT = 180;
 
 // Layout principal
 const MARGIN = 12;
@@ -317,7 +317,7 @@ export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAs
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
-    format: 'a4',
+    format: [PAGE_WIDTH, PAGE_HEIGHT],
   });
 
   const totalSteps = pages.length + 2;
@@ -334,12 +334,12 @@ export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAs
     await drawCoverPage(pdf, heroName, tenantConfig, pages[0]?.imageUrl);
 
     for (let i = 0; i < pages.length; i++) {
-      pdf.addPage('a4', 'landscape');
+      pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT], 'landscape');
       reportProgress(`Pagina ${i + 1} de ${pages.length}...`);
       await drawStoryPage(pdf, pages[i], i + 1, tenantConfig);
     }
 
-    pdf.addPage('a4', 'landscape');
+    pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT], 'landscape');
     reportProgress('Generando contraportada...');
     drawBackCover(pdf, tenantConfig);
 

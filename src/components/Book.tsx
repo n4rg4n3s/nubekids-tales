@@ -312,7 +312,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         bookPages.push(
             <Page key="cover" className="cover-page">
                 <div
-                    className="h-full flex items-center justify-center p-3 md:p-4"
+                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
                     style={{ backgroundColor: colors.background }}
                 >
                     <div className="w-full max-w-[240px] md:max-w-[360px] text-center flex flex-col items-center">
@@ -342,14 +342,14 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             bookPages.push(
                 <Page key={`img-${idx}`} className="image-page">
                     <div
-                        className="h-full flex items-center justify-center p-2.5 md:p-3"
+                        className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-1' : 'p-2.5 md:p-3'}`}
                         style={{ backgroundColor: colors.background }}
                     >
                         <div
                             className="w-auto h-full max-w-full max-h-full rounded-lg overflow-hidden bg-white"
                             style={{
                                 aspectRatio: '4/5',
-                                border: '1px solid #E5E7EB',
+                                border: isImmersiveMobile ? 'none' : '1px solid #E5E7EB',
                             }}
                         >
                             {page.imageUrl ? (
@@ -414,33 +414,15 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         });
 
         bookPages.push(
-            <Page key="back-cover" className="back-cover-page">
+            <Page key="back-cover-actions" className="back-cover-page">
                 <div
-                    className="h-full flex items-center justify-center p-3 md:p-4"
+                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
                     style={{ backgroundColor: colors.background }}
                 >
                     <div
-                        className="w-full max-w-[250px] md:max-w-[360px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
+                        className="w-full max-w-[220px] md:max-w-[320px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
                         style={{ backgroundColor: '#FCFBF8' }}
                     >
-                        <div className="text-2xl md:text-5xl mb-1 md:mb-2">*</div>
-
-                        <h2
-                            className="text-2xl md:text-4xl font-display font-bold mb-2"
-                            style={{ color: colors.primary }}
-                        >
-                            ¡Fin!
-                        </h2>
-
-                        <p
-                            className="text-sm md:text-lg font-body mb-4 md:mb-6 leading-relaxed"
-                            style={{ color: INK_BLACK, opacity: 0.7 }}
-                        >
-                            Esperamos que hayas disfrutado
-                            <br />
-                            esta aventura magica
-                        </p>
-
                         <div className="flex flex-col gap-3 md:gap-4">
                             <button
                                 onClick={handleExportPdf}
@@ -475,12 +457,44 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             </Page>
         );
 
+        bookPages.push(
+            <Page key="back-cover-copy" className="back-cover-page">
+                <div
+                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
+                    style={{ backgroundColor: colors.background }}
+                >
+                    <div
+                        className="w-full max-w-[220px] md:max-w-[320px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
+                        style={{ backgroundColor: '#FCFBF8' }}
+                    >
+                        <div className="text-2xl md:text-5xl mb-1 md:mb-2">*</div>
+
+                        <h2
+                            className="text-2xl md:text-4xl font-display font-bold mb-2"
+                            style={{ color: colors.primary }}
+                        >
+                            ¡Fin!
+                        </h2>
+
+                        <p
+                            className="text-sm md:text-lg font-body leading-relaxed"
+                            style={{ color: INK_BLACK, opacity: 0.7 }}
+                        >
+                            Esperamos que hayas disfrutado
+                            <br />
+                            esta aventura magica
+                        </p>
+                    </div>
+                </div>
+            </Page>
+        );
+
         return bookPages;
     };
 
     const bookPagesElements = buildPages();
-    const totalPairs = Math.ceil(bookPagesElements.length / 2);
-    const displayPage = Math.floor(currentPage / 2) + 1;
+    const totalPairs = Math.ceil((bookPagesElements.length - 1) / 2);
+    const displayPage = Math.max(1, Math.floor((currentPage - 1) / 2) + 1);
     const displayTotal = totalPairs;
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage >= bookPagesElements.length - 2;
@@ -614,8 +628,10 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                     <button
                         onClick={onReset}
                         disabled={isExporting}
-                        className="absolute top-0 right-0 px-3 py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
+                        className="fixed px-3 py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60 z-40"
                         style={{
+                            top: `${MOBILE_BOOK_PADDING}px`,
+                            right: `${MOBILE_BOOK_PADDING}px`,
                             backgroundColor: 'white',
                             border: `3px solid ${INK_BLACK}`,
                             boxShadow: `3px 3px 0px ${INK_BLACK}`,
@@ -698,6 +714,38 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             isImmersiveMobile ? 'h-full overflow-hidden' : 'flex-1 px-4 pb-8'
                         }`}
                     >
+                        {isImmersiveMobile && (
+                            <>
+                                <div className="absolute left-0 top-1/2 z-20 -translate-y-1/2">
+                                    <div
+                                        className="rounded-full px-3 py-2 text-sm font-body font-semibold"
+                                        style={{
+                                            backgroundColor: 'rgba(255,255,255,0.96)',
+                                            border: `2px solid ${INK_BLACK}`,
+                                            color: INK_BLACK,
+                                        }}
+                                    >
+                                        {displayPage} de {displayTotal}
+                                    </div>
+                                </div>
+
+                                <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2">
+                                    <button
+                                        onClick={onReset}
+                                        disabled={isExporting}
+                                        className="px-3 py-2 rounded-full font-display font-bold text-sm btn-tactile disabled:opacity-60"
+                                        style={{
+                                            backgroundColor: 'rgba(255,255,255,0.96)',
+                                            border: `2px solid ${INK_BLACK}`,
+                                            boxShadow: `2px 2px 0px ${INK_BLACK}`,
+                                            color: INK_BLACK,
+                                        }}
+                                    >
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </>
+                        )}
 
                         <div
                             className="relative rounded-xl"
@@ -712,35 +760,6 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                                 overflow: 'hidden',
                             }}
                         >
-                            {isImmersiveMobile && (
-                                <div className="absolute inset-x-3 top-3 z-20 flex items-center justify-between">
-                                    <div
-                                        className="rounded-full px-2.5 py-1 text-[11px] font-body font-semibold"
-                                        style={{
-                                            backgroundColor: 'rgba(255,255,255,0.94)',
-                                            border: `2px solid ${INK_BLACK}`,
-                                            color: INK_BLACK,
-                                        }}
-                                    >
-                                        Pagina {displayPage} / {displayTotal}
-                                    </div>
-
-                                    <button
-                                        onClick={onReset}
-                                        disabled={isExporting}
-                                        className="px-3 py-1.5 rounded-full font-display font-bold text-xs btn-tactile disabled:opacity-60"
-                                        style={{
-                                            backgroundColor: 'rgba(255,255,255,0.96)',
-                                            border: `2px solid ${INK_BLACK}`,
-                                            boxShadow: `2px 2px 0px ${INK_BLACK}`,
-                                            color: INK_BLACK,
-                                        }}
-                                    >
-                                        Cerrar
-                                    </button>
-                                </div>
-                            )}
-
                             <HTMLFlipBook
                                 ref={bookRef}
                                 width={pageWidth}
@@ -753,7 +772,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                                 showCover={true}
                                 mobileScrollSupport={true}
                                 drawShadow={true}
-                                flippingTime={600}
+                                flippingTime={1200}
                                 usePortrait={false}
                                 startPage={0}
                                 startZIndex={0}
