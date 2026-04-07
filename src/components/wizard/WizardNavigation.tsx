@@ -26,13 +26,13 @@ export default function WizardNavigation({
     const isLastStep = currentStep === totalSteps - 1;
 
     return (
-        <div className="flex gap-4 mt-8 pt-6 border-t-2 border-[#1E293B]/10">
+        <div className="flex gap-3 md:gap-4 mt-6 md:mt-8 pt-5 md:pt-6 border-t-2 border-[#1E293B]/10">
             {/* Previous button */}
             {!isFirstStep && (
                 <motion.button
                     type="button"
                     onClick={onPrevious}
-                    className="flex-1 py-4 px-6 rounded-xl border-4 border-[#1E293B] bg-white font-bold text-lg text-[#1E293B]"
+                    className="flex-1 py-3 md:py-4 px-4 md:px-6 rounded-xl border-4 border-[#1E293B] bg-white font-bold text-base md:text-lg text-[#1E293B] leading-none"
                     style={{
                         boxShadow: '4px 4px 0px #1E293B',
                     }}
@@ -47,7 +47,7 @@ export default function WizardNavigation({
                         boxShadow: '0px 0px 0px #1E293B'
                     }}
                 >
-                    ← Anterior
+                    Anterior
                 </motion.button>
             )}
 
@@ -57,7 +57,7 @@ export default function WizardNavigation({
                 onClick={isLastStep ? onFinish : onNext}
                 disabled={!canContinue}
                 className={`
-                    flex-1 py-4 px-6 rounded-xl border-4 border-[#1E293B] font-bold text-lg text-[#1E293B]
+                    flex-1 py-3 md:py-4 px-4 md:px-6 rounded-xl border-4 border-[#1E293B] font-bold text-base md:text-lg text-[#1E293B] leading-none
                     ${!canContinue ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
                 style={{
@@ -75,7 +75,7 @@ export default function WizardNavigation({
                     boxShadow: '0px 0px 0px #1E293B'
                 } : {}}
             >
-                {isLastStep ? '✨ Comenzar Aventura' : 'Siguiente →'}
+                {isLastStep ? 'Crear cuento' : 'Siguiente'}
             </motion.button>
         </div>
     );

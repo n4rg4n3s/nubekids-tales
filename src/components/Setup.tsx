@@ -192,14 +192,10 @@ export default function Setup({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl mx-auto p-6 min-h-screen flex flex-col justify-center"
+      className="w-full max-w-2xl mx-auto px-4 pt-18 pb-6 md:p-6 min-h-screen flex flex-col justify-start md:justify-center"
     >
       <div
-        className="bg-white rounded-2xl border-4 border-[#1E293B] p-6"
-        style={{
-          boxShadow: '8px 8px 0px #1E293B',
-          transform: 'rotate(0.5deg)'
-        }}
+        className="bg-white rounded-2xl border-4 border-[#1E293B] p-4 md:p-6 shadow-[4px_4px_0px_#1E293B] md:shadow-[8px_8px_0px_#1E293B] md:rotate-[0.5deg]"
       >
         {/* Header */}
         <div className="text-center mb-6">

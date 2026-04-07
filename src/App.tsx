@@ -474,13 +474,13 @@ function App() {
     const generatedPages: ComicFace[] = [];
     const isMockMode = isDevMockMode();
     const generationModules = !isMockMode ? await loadGenerationModules() : null;
-    const mockImagesModule = isMockMode ? await loadMockImagesModule() : null;
-    let fallbackImagesPromise: Promise<string[]> | null = isMockMode
-      ? mockImagesModule!.getMockImages(totalPages)
-      : null;
+    let fallbackImagesPromise: Promise<string[]> | null = null;
 
     const getFallbackImages = async () => {
-      fallbackImagesPromise ??= mockImagesModule!.getMockImages(totalPages);
+      if (!fallbackImagesPromise) {
+        const mockImagesModule = await loadMockImagesModule();
+        fallbackImagesPromise = mockImagesModule.getMockImages(totalPages);
+      }
       return fallbackImagesPromise;
     };
 
@@ -880,30 +880,32 @@ function App() {
       <>
         {renderDevBanner()}
         {(auth.isAuthenticated || isAnonymousSession) && (
-          <div className="fixed top-4 right-4 z-40 flex items-center gap-2">
+          <div className="fixed top-3 left-3 right-3 z-40 flex items-start justify-between gap-2 md:top-4 md:left-auto md:right-4 md:justify-end">
             <Suspense fallback={null}>
               <CreditBalance
                 tenantId={b2bSession?.tenantId ?? tenantData?.tenantId}
                 userId={auth.user?.id}
               />
             </Suspense>
-            <span className="text-xs font-medium" style={{ color: '#1E293B99' }}>
-              {auth.profile?.displayName || auth.user?.email}
-            </span>
-            {/* No mostramos botón "Salir" en sesiones anónimas B2B */}
-            {auth.isAuthenticated && (
-              <button
-                onClick={auth.signOut}
-                className="px-3 py-1 text-xs font-bold rounded-lg transition-all"
-                style={{
-                  backgroundColor: 'white',
-                  border: '2px solid #1E293B',
-                  color: '#1E293B',
-                }}
-              >
-                Salir
-              </button>
-            )}
+            <div className="flex items-center gap-2 ml-auto">
+              <span className="hidden md:block text-xs font-medium" style={{ color: '#1E293B99' }}>
+                {auth.profile?.displayName || auth.user?.email}
+              </span>
+              {/* No mostramos botón "Salir" en sesiones anónimas B2B */}
+              {auth.isAuthenticated && (
+                <button
+                  onClick={auth.signOut}
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg transition-all"
+                  style={{
+                    backgroundColor: 'white',
+                    border: '2px solid #1E293B',
+                    color: '#1E293B',
+                  }}
+                >
+                  Salir
+                </button>
+              )}
+            </div>
           </div>
         )}
         <Suspense fallback={<ChunkFallback />}>

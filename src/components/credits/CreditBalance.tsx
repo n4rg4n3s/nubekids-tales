@@ -16,12 +16,12 @@ export function CreditBalance({ tenantId, userId }: CreditBalanceProps) {
     if (!tenantId && !userId) return null;
 
     return (
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-            <span className="text-lg leading-none">✨</span>
+        <div className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 rounded-full bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <span className="text-base md:text-lg leading-none">✨</span>
             {loading ? (
-                <span className="text-sm font-bold text-gray-400">...</span>
+                <span className="text-xs md:text-sm font-bold text-gray-400">...</span>
             ) : (
-                <span className="text-sm font-bold text-black">
+                <span className="text-xs md:text-sm font-bold text-black">
                     {balance} {balance === 1 ? 'cuento' : 'cuentos'}
                 </span>
             )}

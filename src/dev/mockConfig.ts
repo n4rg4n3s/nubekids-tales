@@ -13,10 +13,12 @@
 
 /**
  * Lee la variable de entorno VITE_USE_MOCK
- * - "true" o ausente → modo mock (desarrollo)
- * - "false" → modo producción (llamadas reales a Gemini)
+ * - en desarrollo: "true" o ausente → modo mock
+ * - en producción: solo "true" activa mock de forma explícita
  */
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK !== 'false';
+const USE_MOCK_DATA = import.meta.env.DEV
+  ? import.meta.env.VITE_USE_MOCK !== 'false'
+  : import.meta.env.VITE_USE_MOCK === 'true';
 
 /**
  * Objeto de configuración de desarrollo
