@@ -167,10 +167,45 @@ Conclusión:
 - Ejecutar compras reales innecesarias con Stripe LIVE
 - Confundir links demo `?tenant=` con links comerciales `?token=...`
 - Validar solo el frontend sin comprobar el estado final en Supabase
+- Dar por válido el modo móvil solo con emulación de escritorio: `Book` detecta móvil real por `pointer: coarse` + viewport y algunas extensiones no reproducen eso fielmente
 
 ---
 
-## 7. Siguiente foco recomendado
+## 7. Checklist específica para iPhone real
+
+Objetivo: validar solo la parte pendiente de `Book` y PDF móvil antes del merge a `main`.
+
+### A. Lectura
+
+- Abrir el preview en iPhone Safari
+- Generar un cuento completo
+- En `portrait`, confirmar que no aparece el libro y sí el aviso `Gira el móvil`
+- Girar a `landscape`
+- Confirmar que el libro ocupa prácticamente toda la pantalla
+- Confirmar que no aparece la barra inferior grande de `Anterior / Siguiente`
+- Confirmar que se ven solo las ayudas ligeras de navegación
+- Confirmar que tocar los lados del cuento pasa página
+- Confirmar que `Cerrar` sigue siendo usable
+
+### B. PDF
+
+- Ir a la contraportada
+- Pulsar `Preparar PDF`
+- Confirmar que aparece el modal `PDF listo`
+- Probar `Guardar o compartir`
+- Probar `Abrir PDF`
+- Probar `Descargar archivo`
+- Confirmar qué flujo funciona mejor en iPhone Safari real
+
+### C. Criterio de aceptación
+
+- El usuario entiende que debe girar el móvil
+- La lectura en horizontal no pierde altura útil por chrome innecesario
+- Existe al menos un flujo fiable de guardado o compartición del PDF en iPhone
+
+---
+
+## 8. Siguiente foco recomendado
 
 El siguiente trabajo a ejecutar en esta rama debe ser:
 
