@@ -1,8 +1,8 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-06 (cierre fuerte del refactor `itemInteractionMode`)
-> **Estado:** ✅ Fase 10 COMPLETADA — Funnel B2B2C end-to-end funcional
-> **Próximo paso:** Fase 11 — Dominio + Deploy + Legal
+> **Última actualización:** 2026-04-07 (Book móvil + export PDF móvil reforzados)
+> **Estado:** ✅ Preview `preview/fase11-launch-readiness` validada — Funnel B2B2C end-to-end funcional
+> **Próximo paso:** revalidar `Book`/PDF en móvil sobre preview y después rematar Fase 11
 
 ---
 
@@ -51,6 +51,14 @@
 3. ✅ **Runbook de demo/test B2B ya preparado** — `docs/b2b_tenant_activation_and_token_test_guide.md` documenta `tenant-b2b-test`, test por SQL y test por API
 4. ⚠️ **Legales no listos para go-live aún** — los HTML públicos mantienen placeholders fiscales / entidad responsable / contacto legal
 5. ⚠️ **Pricing principal B2B alineado en superficies activas** — landing, UI y precios LIVE están alineados; siguen quedando referencias históricas en `docs/BUSINESS_TECH_SPEC.md` y migraciones antiguas
+
+### Validación preview y permisos (06 Abril 2026)
+
+1. ✅ **Preview Vercel validada** — la rama `preview/fase11-launch-readiness` quedó desplegada y revisada en entorno preview
+2. ✅ **Flujos principales validados en preview** — B2C, B2B real por `?token=...` y B2B2C probados con éxito
+3. ✅ **Permisos GitHub/Vercel saneados** — repo migrado a `n4rg4n3s/nubekids-tales`, `origin` corregido, credenciales locales renovadas y commits nuevos firmados como `n4rg4n3s`
+4. ✅ **`src/components/Book.tsx` reforzado para móvil** — en portrait muestra aviso "Gira el móvil"; en landscape pasa a modo de lectura inmersivo sin barra de botones inferior
+5. ✅ **`src/utils/pdfExport.ts` + `src/components/Book.tsx`** — el PDF ya no depende de `pdf.save()` en móvil; ahora se genera como `Blob` y ofrece flujo nativo de guardar/compartir/abrir
 
 ### Cierre de riesgo B2B (04 Abril 2026)
 
@@ -130,21 +138,26 @@
 6. Para una segunda prueba, crear otro token nuevo (`nkt_manual_test_002`, `nkt_manual_test_003`, etc.).
 7. Referencia operativa: `docs/b2b_tenant_activation_and_token_test_guide.md`.
 
-### 1. Cerrar referencias históricas de pricing
+### 1. Cerrar issues móviles detectados en preview
+- Revalidar en dispositivo real el nuevo flujo móvil de `Book.tsx` (`portrait` => aviso; `landscape` => lectura inmersiva)
+- Revalidar en iPhone/Android el nuevo flujo PDF móvil (`Guardar o compartir` / `Abrir PDF` / `Descargar archivo`)
+- No dar la rama preview por lista para merge a `main` hasta cerrar o acotar claramente ambos comportamientos
+
+### 2. Cerrar referencias históricas de pricing
 - Landing B2B, UI operativa y precios LIVE ya reflejan el pricing actual
 - Siguen quedando referencias antiguas en `docs/BUSINESS_TECH_SPEC.md` y migraciones históricas (`supabase/migrations/sistema_creditos_supabase.sql`, `supabase/migrations/stripe_price_id.sql`)
 - Antes del lanzamiento conviene dejar explícito qué documentos son históricos y cuáles son la fuente de verdad vigente
 
-### 2. Google OAuth (cuando se tenga dominio)
+### 3. Google OAuth (cuando se tenga dominio)
 - Google Cloud Console → OAuth 2.0 Client ID
 - Redirect URI: `https://eyirhuxpqaneiehnmguq.supabase.co/auth/v1/callback`
 - Supabase Dashboard → Authentication → Providers → Google
 
-### 3. Webhook Stripe en producción
+### 4. Webhook Stripe en producción
 - Cuando se compre dominio propio → actualizar la URL en Stripe Dashboard
 - `Developers → Webhooks → [endpoint] → Update`
 
-### 4. Completar datos fiscales en los legales públicos
+### 5. Completar datos fiscales en los legales públicos
 - Los HTML legales ya están publicados en `/public`
 - Siguen pendientes campos como `[NOMBRE EMPRESA]`, `[NIF/CIF]`, dirección completa, teléfono, datos registrales y contacto/DPD
 - No considerar los legales listos para go-live hasta rellenar esos datos
@@ -165,7 +178,7 @@
 | Fase 8 — Sistema de Créditos | ✅ Completa | Prepago funcional end-to-end |
 | Fase 9 — Stripe | ✅ Completa | Pago end-to-end verificado |
 | Fase 10 — Flujo B2B → B2C | ✅ **COMPLETA** | **Funnel completo funcional** ← HOY |
-| Fase 11 — Deploy + Dominio + Legal | ⏳ Pendiente | Vercel ✅, falta dominio + legal |
+| Fase 11 — Deploy + Dominio + Legal | ⏳ En curso | Preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo móvil `Book`/PDF |
 | Fase 12 — Dashboard Tenant | 🔮 Futuro | Post-lanzamiento |
 
 ---
@@ -389,15 +402,17 @@ FRONTEND_URL=http://localhost:5173
 
 ## 🚀 Próximos Pasos — Fase 11
 
-1. **Comprar dominio** (nubekids.io / nubekidstales.com)
-2. **Configurar DNS** en Vercel
-3. **Actualizar webhook Stripe** con URL de producción definitiva
-4. **Google OAuth** — completar config en GCP con dominio definitivo
-5. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
-6. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
-7. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
-8. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
-9. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
+1. **Revalidar `Book` móvil en preview** — confirmar en iPhone/Android el nuevo aviso portrait y la lectura inmersiva en landscape
+2. **Revalidar export PDF móvil** — confirmar en iPhone/Android los flujos `Guardar o compartir`, `Abrir PDF` y `Descargar archivo`
+3. **Comprar dominio** (nubekids.io / nubekidstales.com)
+4. **Configurar DNS** en Vercel
+5. **Actualizar webhook Stripe** con URL de producción definitiva
+6. **Google OAuth** — completar config en GCP con dominio definitivo
+7. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
+8. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
+9. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
+10. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
+11. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
 
 ---
 
@@ -409,6 +424,8 @@ FRONTEND_URL=http://localhost:5173
 | Integración B2B insegura por `?tenant=` | Alta | ✅ Resuelto — flujo real restaurado a token one-time |
 | Algunas referencias históricas aún describen el modelo previo y deben leerse con nota de compatibilidad | Baja | ⚠️ Controlado con notas explícitas |
 | Legales públicos con placeholders fiscales / entidad responsable | Alta | ⏳ Pendiente antes de go-live |
+| UX móvil de `Book` en viewport portrait | Alta | 🟡 Implementado en código — pendiente revalidación manual en iPhone/Android |
+| Guardado PDF en Safari iOS / móvil | Alta | 🟡 Implementado en código — pendiente revalidación manual en iPhone/Android |
 | Google OAuth config en GCP + Supabase | Media | ⏳ Cuando haya dominio |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |
@@ -438,7 +455,7 @@ FRONTEND_URL=http://localhost:5173
 ✅ Fase 8:  Sistema de Créditos — COMPLETADA
 ✅ Fase 9:  Stripe + Compra de Créditos — COMPLETADA
 ✅ Fase 10: Flujo B2B → B2C completo — COMPLETADA ← HOY
-⏳ Fase 11: Deploy + Dominio + Legal — Vercel ✅, falta dominio + legal
+⏳ Fase 11: Deploy + Dominio + Legal — preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo `Book`/PDF en móvil
 
 🎯 ESTADO: MVP COMERCIAL COMPLETO
 💳 PAGOS: Stripe end-to-end verificado en LIVE mode
@@ -459,4 +476,4 @@ Estimación hasta lanzamiento: ~1 semana.
 
 ---
 
-*Fase 10 completada. Funnel B2B2C funcional end-to-end. Listo para Fase 11. 🚀*
+*Preview validada. Funnel B2B2C funcional end-to-end. `Book`/PDF móvil ya reforzados en código; próximo foco: revalidación manual final y después dominio/legal antes del merge a `main`.*

@@ -1,15 +1,7 @@
-// src/components/Book.tsx
-// Visor de libro con efecto page-flip + export PDF
-// Ratio libro abierto: 16:9 | Ratio imagen: 4:5
-// Usa: npm install react-pageflip jspdf
-
-import { useRef, useCallback, forwardRef, useState, useEffect } from 'react';
+import { useRef, useCallback, forwardRef, useState, useEffect, type ReactNode } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import type { ComicFace, TenantConfig } from '../types';
-
-// ============================================================================
-// TIPOS
-// ============================================================================
+import type { ExportedPdfAsset } from '../utils/pdfExport';
 
 interface BookProps {
     pages: ComicFace[];
@@ -19,7 +11,7 @@ interface BookProps {
 }
 
 interface PageProps {
-    children: React.ReactNode;
+    children: ReactNode;
     className?: string;
 }
 
@@ -34,18 +26,100 @@ interface FlipEvent {
     data: number;
 }
 
-// ============================================================================
-// CONSTANTES
-// ============================================================================
+interface ViewportState {
+    width: number;
+    height: number;
+    isMobile: boolean;
+    isLandscape: boolean;
+}
+
+interface PreparedPdfState extends ExportedPdfAsset {
+    url: string;
+}
 
 const INK_BLACK = '#1E293B';
-const SPREAD_RATIO = 16 / 9; // Libro abierto completo
-const TARGET_SPREAD_WIDTH = 900; // Ancho total del libro abierto (2 páginas)
-const TARGET_SPREAD_HEIGHT = Math.round((TARGET_SPREAD_WIDTH * 9) / 16);
+const SPREAD_RATIO = 16 / 9;
+const TARGET_SPREAD_WIDTH = 900;
+const DEFAULT_VIEWPORT: ViewportState = {
+    width: 1280,
+    height: 800,
+    isMobile: false,
+    isLandscape: true,
+};
 
-// ============================================================================
-// COMPONENTE DE PÁGINA
-// ============================================================================
+function getViewportState(): ViewportState {
+    if (typeof window === 'undefined') {
+        return DEFAULT_VIEWPORT;
+    }
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const shortestSide = Math.min(width, height);
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+    return {
+        width,
+        height,
+        isLandscape: width > height,
+        isMobile: isCoarsePointer && shortestSide < 900,
+    };
+}
+
+function computeBookSize(viewport: ViewportState): { spreadWidth: number; spreadHeight: number } {
+    const isImmersiveMobile = viewport.isMobile && viewport.isLandscape;
+    const horizontalPadding = isImmersiveMobile ? 12 : viewport.width < 768 ? 24 : 80;
+    const chromeAllowance = isImmersiveMobile ? 28 : viewport.isMobile ? 260 : 420;
+    const availableWidth = Math.max(320, viewport.width - horizontalPadding);
+    const availableHeight = Math.max(220, viewport.height - chromeAllowance);
+
+    let spreadWidth = viewport.width >= 1024 && !viewport.isMobile
+        ? Math.min(TARGET_SPREAD_WIDTH, availableWidth)
+        : availableWidth;
+    let spreadHeight = spreadWidth / SPREAD_RATIO;
+
+    if (viewport.width < 1024 || isImmersiveMobile) {
+        if (spreadHeight > availableHeight) {
+            spreadHeight = availableHeight;
+            spreadWidth = spreadHeight * SPREAD_RATIO;
+        }
+    }
+
+    return {
+        spreadWidth: Math.floor(spreadWidth),
+        spreadHeight: Math.floor(spreadHeight),
+    };
+}
+
+function triggerBrowserDownload(url: string, fileName: string): void {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+}
+
+function buildShareablePdfFile(blob: Blob, fileName: string): File | null {
+    if (typeof File === 'undefined') {
+        return null;
+    }
+
+    return new File([blob], fileName, { type: 'application/pdf' });
+}
+
+function canSharePdf(blob: Blob, fileName: string): boolean {
+    const file = buildShareablePdfFile(blob, fileName);
+    if (!file || typeof navigator === 'undefined' || typeof navigator.canShare !== 'function') {
+        return false;
+    }
+
+    try {
+        return navigator.canShare({ files: [file] });
+    } catch {
+        return false;
+    }
+}
 
 const Page = forwardRef<HTMLDivElement, PageProps>(({ children, className = '' }, ref) => {
     return (
@@ -57,64 +131,59 @@ const Page = forwardRef<HTMLDivElement, PageProps>(({ children, className = '' }
 
 Page.displayName = 'Page';
 
-// ============================================================================
-// COMPONENTE PRINCIPAL
-// ============================================================================
-
 export default function Book({ pages, tenantConfig, heroName, onReset }: BookProps) {
     const bookRef = useRef<FlipBookApi | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const [bookSize, setBookSize] = useState({
-        spreadWidth: TARGET_SPREAD_WIDTH,
-        spreadHeight: TARGET_SPREAD_HEIGHT,
-    });
-
-    // Estado para export PDF
+    const [viewport, setViewport] = useState<ViewportState>(DEFAULT_VIEWPORT);
+    const [bookSize, setBookSize] = useState(() => computeBookSize(DEFAULT_VIEWPORT));
     const [isExporting, setIsExporting] = useState(false);
     const [exportProgress, setExportProgress] = useState({ percent: 0, message: '' });
+    const [preparedPdf, setPreparedPdf] = useState<PreparedPdfState | null>(null);
 
-    // Colores dinámicos del tenant
+    const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
+    const isImmersiveMobile = viewport.isMobile && viewport.isLandscape;
+    const exportButtonLabel = viewport.isMobile ? 'Preparar PDF' : 'Descargar PDF';
+
     const colors = {
         primary: tenantConfig.brandColors.primary,
         accent: tenantConfig.brandColors.accent,
         background: tenantConfig.brandColors.background,
     };
 
-    // Calcular dimensiones con ratio 16:9 estricto para el libro abierto
-    useEffect(() => {
-        const updateDimensions = () => {
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-
-            // En desktop damos prioridad al ancho 900; en móvil, ancho disponible.
-            const horizontalPadding = vw < 768 ? 24 : 80;
-            const availableWidth = Math.max(320, vw - horizontalPadding);
-            const availableHeight = Math.max(220, vh - (vw < 768 ? 260 : 420));
-
-            let spreadWidth = vw >= 1024
-                ? Math.min(TARGET_SPREAD_WIDTH, availableWidth)
-                : availableWidth;
-            let spreadHeight = spreadWidth / SPREAD_RATIO;
-
-            // En mobile/tablet, ajustar por alto manteniendo 16:9.
-            // En desktop, respetar 900x506 aunque implique más scroll vertical.
-            if (vw < 1024 && spreadHeight > availableHeight) {
-                spreadHeight = availableHeight;
-                spreadWidth = spreadHeight * SPREAD_RATIO;
+    const replacePreparedPdf = useCallback((nextPdf: PreparedPdfState | null) => {
+        setPreparedPdf((currentPdf) => {
+            if (currentPdf?.url && currentPdf.url !== nextPdf?.url) {
+                URL.revokeObjectURL(currentPdf.url);
             }
-
-            setBookSize({
-                spreadWidth: Math.floor(spreadWidth),
-                spreadHeight: Math.floor(spreadHeight),
-            });
-        };
-
-        updateDimensions();
-        window.addEventListener('resize', updateDimensions);
-        return () => window.removeEventListener('resize', updateDimensions);
+            return nextPdf;
+        });
     }, []);
 
-    // Navegación
+    useEffect(() => {
+        const updateViewport = () => {
+            const nextViewport = getViewportState();
+            setViewport(nextViewport);
+            setBookSize(computeBookSize(nextViewport));
+        };
+
+        updateViewport();
+        window.addEventListener('resize', updateViewport, { passive: true });
+        window.addEventListener('orientationchange', updateViewport, { passive: true });
+
+        return () => {
+            window.removeEventListener('resize', updateViewport);
+            window.removeEventListener('orientationchange', updateViewport);
+        };
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (preparedPdf?.url) {
+                URL.revokeObjectURL(preparedPdf.url);
+            }
+        };
+    }, [preparedPdf]);
+
     const handlePrevPage = useCallback(() => {
         bookRef.current?.pageFlip()?.flipPrev();
     }, []);
@@ -127,10 +196,11 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         setCurrentPage(e.data);
     }, []);
 
-    // Navegación por teclado
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (isExporting) return; // Deshabilitar durante export
+            if (isExporting || isMobilePortrait) {
+                return;
+            }
 
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 e.preventDefault();
@@ -145,16 +215,70 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleNextPage, handlePrevPage, onReset, isExporting]);
+    }, [handleNextPage, handlePrevPage, onReset, isExporting, isMobilePortrait]);
 
-    // Export PDF
-    const handleExportPdf = async () => {
+    const closePreparedPdf = useCallback(() => {
+        replacePreparedPdf(null);
+    }, [replacePreparedPdf]);
+
+    const handleOpenPreparedPdf = useCallback(() => {
+        if (!preparedPdf) {
+            return;
+        }
+
+        const openedWindow = window.open(preparedPdf.url, '_blank', 'noopener,noreferrer');
+        if (!openedWindow) {
+            window.location.assign(preparedPdf.url);
+        }
+    }, [preparedPdf]);
+
+    const handleDownloadPreparedPdf = useCallback(() => {
+        if (!preparedPdf) {
+            return;
+        }
+
+        triggerBrowserDownload(preparedPdf.url, preparedPdf.fileName);
+    }, [preparedPdf]);
+
+    const handleSharePreparedPdf = useCallback(async () => {
+        if (!preparedPdf) {
+            return;
+        }
+
+        const shareFile = buildShareablePdfFile(preparedPdf.blob, preparedPdf.fileName);
+        if (
+            !shareFile ||
+            typeof navigator.share !== 'function' ||
+            !canSharePdf(preparedPdf.blob, preparedPdf.fileName)
+        ) {
+            handleOpenPreparedPdf();
+            return;
+        }
+
+        try {
+            await navigator.share({
+                files: [shareFile],
+                title: preparedPdf.fileName,
+            });
+            closePreparedPdf();
+        } catch (error) {
+            if (error instanceof DOMException && error.name === 'AbortError') {
+                return;
+            }
+
+            console.error('Error compartiendo PDF:', error);
+            alert('No hemos podido abrir el menu de compartir. Prueba con "Abrir PDF".');
+        }
+    }, [preparedPdf, closePreparedPdf, handleOpenPreparedPdf]);
+
+    const handleExportPdf = useCallback(async () => {
         setIsExporting(true);
         setExportProgress({ percent: 0, message: 'Preparando PDF...' });
+        closePreparedPdf();
 
         try {
             const { exportToPdf } = await import('../utils/pdfExport');
-            await exportToPdf({
+            const pdfAsset = await exportToPdf({
                 pages,
                 heroName,
                 tenantConfig,
@@ -162,19 +286,28 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                     setExportProgress({ percent, message });
                 },
             });
+
+            if (viewport.isMobile) {
+                replacePreparedPdf({
+                    ...pdfAsset,
+                    url: URL.createObjectURL(pdfAsset.blob),
+                });
+            } else {
+                const downloadUrl = URL.createObjectURL(pdfAsset.blob);
+                triggerBrowserDownload(downloadUrl, pdfAsset.fileName);
+                window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 60_000);
+            }
         } catch (error) {
             console.error('Error exportando PDF:', error);
-            alert('Error al generar el PDF. Por favor, inténtalo de nuevo.');
+            alert('Error al generar el PDF. Por favor, intentalo de nuevo.');
         } finally {
             setIsExporting(false);
         }
-    };
+    }, [pages, heroName, tenantConfig, viewport.isMobile, closePreparedPdf, replacePreparedPdf]);
 
-    // Construir las páginas
     const buildPages = () => {
-        const bookPages: React.ReactNode[] = [];
+        const bookPages: ReactNode[] = [];
 
-        // === PORTADA ===
         bookPages.push(
             <Page key="cover" className="cover-page">
                 <div
@@ -204,9 +337,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             </Page>
         );
 
-        // === PÁGINAS DEL CUENTO ===
         pages.forEach((page, idx) => {
-            // Página de IMAGEN
             bookPages.push(
                 <Page key={`img-${idx}`} className="image-page">
                     <div
@@ -223,7 +354,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             {page.imageUrl ? (
                                 <img
                                     src={page.imageUrl}
-                                    alt={`Ilustración página ${idx + 1}`}
+                                    alt={`Ilustracion pagina ${idx + 1}`}
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
@@ -236,26 +367,21 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                 </Page>
             );
 
-            // Página de TEXTO
             bookPages.push(
                 <Page key={`text-${idx}`} className="text-page">
                     <div
                         className="h-full flex flex-col justify-between p-4"
                         style={{ backgroundColor: colors.background }}
                     >
-                        {/* Número de página */}
                         <div className="flex justify-center mb-2">
                             <div
                                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-sm"
-                                style={{
-                                    backgroundColor: colors.primary,
-                                }}
+                                style={{ backgroundColor: colors.primary }}
                             >
                                 {idx + 1}
                             </div>
                         </div>
 
-                        {/* Texto del cuento */}
                         <div className="flex-1 flex flex-col justify-center space-y-3">
                             {page.narrative?.caption && (
                                 <p
@@ -276,16 +402,14 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             )}
                         </div>
 
-                        {/* Decoración */}
                         <div className="flex justify-center text-lg" style={{ color: colors.accent }}>
-                            ✦  ✦  ✦
+                            * * *
                         </div>
                     </div>
                 </Page>
             );
         });
 
-        // === CONTRAPORTADA ===
         bookPages.push(
             <Page key="back-cover" className="back-cover-page">
                 <div
@@ -296,7 +420,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                         className="w-full max-w-[320px] md:max-w-[360px] rounded-2xl px-5 py-5 md:px-6 md:py-6 text-center"
                         style={{ backgroundColor: '#FCFBF8' }}
                     >
-                        <div className="text-4xl md:text-5xl mb-2">🌟</div>
+                        <div className="text-4xl md:text-5xl mb-2">*</div>
 
                         <h2
                             className="text-3xl md:text-4xl font-display font-bold mb-2"
@@ -305,10 +429,13 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             ¡Fin!
                         </h2>
 
-                        <p className="text-base md:text-lg font-body mb-5 md:mb-6 leading-relaxed" style={{ color: INK_BLACK, opacity: 0.7 }}>
+                        <p
+                            className="text-base md:text-lg font-body mb-5 md:mb-6 leading-relaxed"
+                            style={{ color: INK_BLACK, opacity: 0.7 }}
+                        >
                             Esperamos que hayas disfrutado
                             <br />
-                            esta aventura mágica
+                            esta aventura magica
                         </p>
 
                         <div className="flex flex-col gap-4">
@@ -323,7 +450,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                                     color: 'white',
                                 }}
                             >
-                                📥 Descargar PDF
+                                {exportButtonLabel}
                             </button>
 
                             <button
@@ -337,7 +464,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                                     color: INK_BLACK,
                                 }}
                             >
-                                ✨ Nuevo Cuento
+                                Nuevo cuento
                             </button>
                         </div>
                     </div>
@@ -349,24 +476,26 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
     };
 
     const bookPagesElements = buildPages();
-
-    // Contador de páginas (par/impar)
     const totalPairs = Math.ceil(bookPagesElements.length / 2);
     const displayPage = Math.floor(currentPage / 2) + 1;
     const displayTotal = totalPairs;
-
-    // Verificar si estamos en primera o última página
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage >= bookPagesElements.length - 2;
     const pageWidth = Math.floor(bookSize.spreadWidth / 2);
     const pageHeight = Math.floor(bookSize.spreadHeight);
+    const canSharePreparedPdf = preparedPdf
+        ? canSharePdf(preparedPdf.blob, preparedPdf.fileName)
+        : false;
 
     return (
         <div
-            className="min-h-screen flex flex-col relative"
-            style={{ backgroundColor: colors.background }}
+            className={`relative ${isImmersiveMobile ? 'overflow-hidden' : 'min-h-screen flex flex-col'}`}
+            style={{
+                backgroundColor: colors.background,
+                minHeight: isImmersiveMobile ? '100dvh' : '100vh',
+                height: isImmersiveMobile ? '100dvh' : undefined,
+            }}
         >
-            {/* Modal de progreso PDF */}
             {isExporting && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                     <div
@@ -380,7 +509,6 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             Generando PDF...
                         </h3>
 
-                        {/* Barra de progreso */}
                         <div
                             className="w-full h-4 rounded-full overflow-hidden mb-3"
                             style={{ backgroundColor: '#f0f0f0', border: `2px solid ${INK_BLACK}` }}
@@ -394,35 +522,95 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             />
                         </div>
 
-                        <p
-                            className="text-sm text-center font-body"
-                            style={{ color: INK_BLACK }}
-                        >
+                        <p className="text-sm text-center font-body" style={{ color: INK_BLACK }}>
                             {exportProgress.message}
                         </p>
                     </div>
                 </div>
             )}
 
-            {/* Header */}
-            <header className="w-full px-4 mt-6 mb-5 flex justify-center items-center gap-4 md:gap-10">
-                <h1
-                    className="text-xl md:text-2xl font-display font-bold"
-                    style={{ color: colors.primary }}
-                >
-                    {tenantConfig.tenantName}
-                </h1>
-                <div className="flex items-center gap-3">
-                    <span
-                        className="text-sm md:text-base font-body font-medium text-center"
-                        style={{ color: INK_BLACK }}
+            {preparedPdf && (
+                <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-50 px-4">
+                    <div
+                        className="w-full max-w-md rounded-3xl bg-white p-6"
+                        style={{ border: `3px solid ${INK_BLACK}` }}
                     >
-                        Página {displayPage} de {displayTotal}
-                    </span>
+                        <h3
+                            className="text-xl font-display font-bold text-center mb-3"
+                            style={{ color: colors.primary }}
+                        >
+                            PDF listo
+                        </h3>
+
+                        <p
+                            className="text-sm md:text-base font-body text-center leading-relaxed mb-5"
+                            style={{ color: INK_BLACK }}
+                        >
+                            En movil te recomendamos usar el guardado nativo del dispositivo. Si el
+                            navegador no lo guarda directo, abre el PDF y usa Compartir {'>'} Guardar
+                            en Archivos o Descargas.
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            {canSharePreparedPdf && (
+                                <button
+                                    onClick={handleSharePreparedPdf}
+                                    className="w-full px-5 py-3 rounded-xl font-display font-bold text-base btn-tactile"
+                                    style={{
+                                        backgroundColor: colors.primary,
+                                        border: `3px solid ${INK_BLACK}`,
+                                        boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                        color: 'white',
+                                    }}
+                                >
+                                    Guardar o compartir
+                                </button>
+                            )}
+
+                            <button
+                                onClick={handleOpenPreparedPdf}
+                                className="w-full px-5 py-3 rounded-xl font-display font-bold text-base btn-tactile"
+                                style={{
+                                    backgroundColor: colors.accent,
+                                    border: `3px solid ${INK_BLACK}`,
+                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                    color: INK_BLACK,
+                                }}
+                            >
+                                Abrir PDF
+                            </button>
+
+                            <button
+                                onClick={handleDownloadPreparedPdf}
+                                className="w-full px-5 py-3 rounded-xl font-display font-bold text-base btn-tactile"
+                                style={{
+                                    backgroundColor: 'white',
+                                    border: `3px solid ${INK_BLACK}`,
+                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                    color: INK_BLACK,
+                                }}
+                            >
+                                Descargar archivo
+                            </button>
+
+                            <button
+                                onClick={closePreparedPdf}
+                                className="text-sm font-body mt-1"
+                                style={{ color: INK_BLACK, opacity: 0.65 }}
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isMobilePortrait ? (
+                <div className="min-h-[100dvh] flex items-center justify-center px-6 py-8">
                     <button
                         onClick={onReset}
                         disabled={isExporting}
-                        className="px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
+                        className="absolute top-4 right-4 px-3 py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
                         style={{
                             backgroundColor: 'white',
                             border: `3px solid ${INK_BLACK}`,
@@ -430,98 +618,247 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
                             color: INK_BLACK,
                         }}
                     >
-                        ✕ Cerrar
+                        Cerrar
                     </button>
-                </div>
-            </header>
 
-            {/* Book Container */}
-            <main className="flex-1 flex flex-col items-center justify-center px-4 pb-8">
-                <div
-                    className="relative rounded-xl"
-                    style={{
-                        backgroundColor: 'white',
-                        border: `3px solid ${INK_BLACK}`,
-                        boxShadow: `6px 6px 0px ${INK_BLACK}`,
-                        width: `${bookSize.spreadWidth}px`,
-                        height: `${bookSize.spreadHeight}px`,
-                        maxWidth: 'calc(100vw - 24px)',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <HTMLFlipBook
-                        ref={bookRef}
-                        width={pageWidth}
-                        height={pageHeight}
-                        size="fixed"
-                        minWidth={160}
-                        maxWidth={pageWidth}
-                        minHeight={180}
-                        maxHeight={pageHeight}
-                        showCover={true}
-                        mobileScrollSupport={true}
-                        drawShadow={true}
-                        flippingTime={600}
-                        usePortrait={false}
-                        startPage={0}
-                        startZIndex={0}
-                        autoSize={false}
-                        maxShadowOpacity={0.3}
-                        showPageCorners={true}
-                        disableFlipByClick={false}
-                        onFlip={onFlip}
-                        className=""
-                        style={{}}
-                        useMouseEvents={true}
-                        swipeDistance={30}
-                        clickEventForward={true}
-                    >
-                        {bookPagesElements}
-                    </HTMLFlipBook>
-                </div>
-                {/* Controls - Pegados al contenedor del libro */}
-                <footer className="mt-5 flex justify-center items-center gap-4 md:gap-6">
-                    {/* Botón Anterior */}
-                    <button
-                        onClick={handlePrevPage}
-                        disabled={isFirstPage || isExporting}
-                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    <div
+                        className="w-full max-w-sm rounded-[28px] bg-white px-6 py-7 text-center"
                         style={{
-                            backgroundColor: colors.accent,
                             border: `3px solid ${INK_BLACK}`,
-                            boxShadow: isFirstPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
-                            color: INK_BLACK,
+                            boxShadow: `6px 6px 0px ${INK_BLACK}`,
                         }}
                     >
-                        ← Anterior
-                    </button>
+                        <div
+                            className="mx-auto mb-4 w-fit px-4 py-2 rounded-full font-display font-bold text-sm"
+                            style={{
+                                backgroundColor: colors.accent,
+                                border: `2px solid ${INK_BLACK}`,
+                                color: INK_BLACK,
+                            }}
+                        >
+                            Formato 16:9
+                        </div>
 
-                    {/* Botón Siguiente */}
-                    <button
-                        onClick={handleNextPage}
-                        disabled={isLastPage || isExporting}
-                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                        style={{
-                            backgroundColor: colors.accent,
-                            border: `3px solid ${INK_BLACK}`,
-                            boxShadow: isLastPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
-                            color: INK_BLACK,
-                        }}
+                        <h2
+                            className="text-3xl font-display font-bold mb-3"
+                            style={{ color: colors.primary }}
+                        >
+                            Gira el movil
+                        </h2>
+
+                        <p
+                            className="text-base font-body leading-relaxed"
+                            style={{ color: INK_BLACK }}
+                        >
+                            Este cuento se lee en horizontal y a pantalla completa. Al girar el
+                            dispositivo aprovecharas todo el ancho y pasaras pagina tocando los lados.
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    {!isImmersiveMobile && (
+                        <header className="w-full px-4 mt-6 mb-5 flex justify-center items-center gap-4 md:gap-10">
+                            <h1
+                                className="text-xl md:text-2xl font-display font-bold"
+                                style={{ color: colors.primary }}
+                            >
+                                {tenantConfig.tenantName}
+                            </h1>
+                            <div className="flex items-center gap-3">
+                                <span
+                                    className="text-sm md:text-base font-body font-medium text-center"
+                                    style={{ color: INK_BLACK }}
+                                >
+                                    Pagina {displayPage} de {displayTotal}
+                                </span>
+                                <button
+                                    onClick={onReset}
+                                    disabled={isExporting}
+                                    className="px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
+                                    style={{
+                                        backgroundColor: 'white',
+                                        border: `3px solid ${INK_BLACK}`,
+                                        boxShadow: `3px 3px 0px ${INK_BLACK}`,
+                                        color: INK_BLACK,
+                                    }}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </header>
+                    )}
+
+                    <main
+                        className={`relative flex flex-col items-center justify-center ${
+                            isImmersiveMobile ? 'h-full overflow-hidden px-2 py-2' : 'flex-1 px-4 pb-8'
+                        }`}
                     >
-                        Siguiente →
-                    </button>
-                </footer>
+                        {isImmersiveMobile && (
+                            <div className="absolute inset-x-3 top-3 z-20 flex items-center justify-between">
+                                <div
+                                    className="rounded-full px-3 py-1 text-xs font-body font-semibold"
+                                    style={{
+                                        backgroundColor: 'rgba(255,255,255,0.94)',
+                                        border: `2px solid ${INK_BLACK}`,
+                                        color: INK_BLACK,
+                                    }}
+                                >
+                                    Pagina {displayPage} / {displayTotal}
+                                </div>
 
-                {/* Instrucciones */}
-                <p
-                    className="mt-2 text-center text-xs font-body"
-                    style={{ color: INK_BLACK, opacity: 0.5 }}
-                >
-                    Haz clic en las esquinas o usa los botones • ← → para teclado • ESC para cerrar
-                </p>
-            </main>
+                                <button
+                                    onClick={onReset}
+                                    disabled={isExporting}
+                                    className="px-3 py-1.5 rounded-full font-display font-bold text-xs btn-tactile disabled:opacity-60"
+                                    style={{
+                                        backgroundColor: 'rgba(255,255,255,0.96)',
+                                        border: `2px solid ${INK_BLACK}`,
+                                        boxShadow: `2px 2px 0px ${INK_BLACK}`,
+                                        color: INK_BLACK,
+                                    }}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        )}
 
-            {/* Estilos */}
+                        <div
+                            className="relative rounded-xl"
+                            style={{
+                                backgroundColor: 'white',
+                                border: `${isImmersiveMobile ? 2 : 3}px solid ${INK_BLACK}`,
+                                boxShadow: `${isImmersiveMobile ? 4 : 6}px ${isImmersiveMobile ? 4 : 6}px 0px ${INK_BLACK}`,
+                                width: `${bookSize.spreadWidth}px`,
+                                height: `${bookSize.spreadHeight}px`,
+                                maxWidth: isImmersiveMobile ? 'calc(100vw - 12px)' : 'calc(100vw - 24px)',
+                                maxHeight: isImmersiveMobile ? 'calc(100dvh - 24px)' : undefined,
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <HTMLFlipBook
+                                ref={bookRef}
+                                width={pageWidth}
+                                height={pageHeight}
+                                size="fixed"
+                                minWidth={160}
+                                maxWidth={pageWidth}
+                                minHeight={180}
+                                maxHeight={pageHeight}
+                                showCover={true}
+                                mobileScrollSupport={true}
+                                drawShadow={true}
+                                flippingTime={600}
+                                usePortrait={false}
+                                startPage={0}
+                                startZIndex={0}
+                                autoSize={false}
+                                maxShadowOpacity={0.3}
+                                showPageCorners={!viewport.isMobile}
+                                disableFlipByClick={false}
+                                onFlip={onFlip}
+                                className=""
+                                style={{}}
+                                useMouseEvents={true}
+                                swipeDistance={30}
+                                clickEventForward={true}
+                            >
+                                {bookPagesElements}
+                            </HTMLFlipBook>
+
+                            {isImmersiveMobile && (
+                                <>
+                                    {!isFirstPage && (
+                                        <div className="pointer-events-none absolute inset-y-0 left-2 flex items-center">
+                                            <div
+                                                className="rounded-full px-2 py-1 text-sm font-display font-bold"
+                                                style={{
+                                                    backgroundColor: 'rgba(255,255,255,0.82)',
+                                                    border: `2px solid ${INK_BLACK}`,
+                                                    color: INK_BLACK,
+                                                }}
+                                            >
+                                                {'<'}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {!isLastPage && (
+                                        <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                                            <div
+                                                className="rounded-full px-2 py-1 text-sm font-display font-bold"
+                                                style={{
+                                                    backgroundColor: 'rgba(255,255,255,0.82)',
+                                                    border: `2px solid ${INK_BLACK}`,
+                                                    color: INK_BLACK,
+                                                }}
+                                            >
+                                                {'>'}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+                                        <div
+                                            className="rounded-full px-3 py-1 text-[11px] font-body"
+                                            style={{
+                                                backgroundColor: 'rgba(255,255,255,0.92)',
+                                                border: `2px solid ${INK_BLACK}`,
+                                                color: INK_BLACK,
+                                            }}
+                                        >
+                                            Toca los lados del cuento para pasar pagina
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {!isImmersiveMobile && (
+                            <>
+                                <footer className="mt-5 flex justify-center items-center gap-4 md:gap-6">
+                                    <button
+                                        onClick={handlePrevPage}
+                                        disabled={isFirstPage || isExporting}
+                                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                        style={{
+                                            backgroundColor: colors.accent,
+                                            border: `3px solid ${INK_BLACK}`,
+                                            boxShadow: isFirstPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                                            color: INK_BLACK,
+                                        }}
+                                    >
+                                        {'<'} Anterior
+                                    </button>
+
+                                    <button
+                                        onClick={handleNextPage}
+                                        disabled={isLastPage || isExporting}
+                                        className="px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-display font-bold text-sm md:text-base btn-tactile disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                                        style={{
+                                            backgroundColor: colors.accent,
+                                            border: `3px solid ${INK_BLACK}`,
+                                            boxShadow: isLastPage ? 'none' : `4px 4px 0px ${INK_BLACK}`,
+                                            color: INK_BLACK,
+                                        }}
+                                    >
+                                        Siguiente {'>'}
+                                    </button>
+                                </footer>
+
+                                <p
+                                    className="mt-2 text-center text-xs font-body"
+                                    style={{ color: INK_BLACK, opacity: 0.5 }}
+                                >
+                                    Haz clic en las esquinas o usa los botones. Teclado: {'<'} {'>'} y
+                                    ESC para cerrar
+                                </p>
+                            </>
+                        )}
+                    </main>
+                </>
+            )}
+
             <style>{`
         .page-wrapper {
           width: 100%;
@@ -542,13 +879,11 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
           transition: transform 0.3s ease;
         }
 
-        /* Remove react-pageflip default dark borders on pages */
         .stf__item {
           border: none !important;
           box-shadow: none !important;
         }
 
-        /* Efecto táctil neobrutalist para botones */
         .btn-tactile:hover:not(:disabled) {
           transform: translate(2px, 2px);
           box-shadow: 2px 2px 0px ${INK_BLACK} !important;

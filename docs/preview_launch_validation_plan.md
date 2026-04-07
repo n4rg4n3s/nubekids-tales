@@ -140,6 +140,27 @@ La rama preview se considera lista para merge cuando:
 
 ---
 
+## 5.1 Estado tras validación real (06 Abril 2026)
+
+Resultado actual:
+
+- Preview deployment validado en Vercel sobre `preview/fase11-launch-readiness`
+- Flujos B2C, B2B real por `?token=...` y B2B2C revisados con éxito
+- `/api/b2b/create-token` validado end-to-end
+- Permisos GitHub/Vercel corregidos tras migrar el repo a `n4rg4n3s/nubekids-tales`
+
+Cambios añadidos tras esa validación:
+
+- `Book` móvil reforzado: en `portrait` muestra aviso `Gira el móvil` y en `landscape` entra en modo de lectura inmersivo sin barra inferior
+- Export PDF móvil rehecha: el visor genera `Blob` y ofrece flujo `Guardar o compartir` / `Abrir PDF` / `Descargar archivo`
+
+Conclusión:
+
+- la preview queda validada funcionalmente
+- la rama no debe considerarse lista para merge a `main` hasta revalidar manualmente estos cambios en iPhone/Android y cerrar dominio/legal
+
+---
+
 ## 6. Riesgos a vigilar durante la preview
 
 - Usar datos o créditos reales de tenants que no sean de test
@@ -151,10 +172,10 @@ La rama preview se considera lista para merge cuando:
 
 ## 7. Siguiente foco recomendado
 
-El primer trabajo a ejecutar en esta rama debe ser:
+El siguiente trabajo a ejecutar en esta rama debe ser:
 
-1. Sincronización de precios B2B
-2. Validación preview de `/api/b2b/create-token`
-3. Checklist manual completa de B2C + B2B + B2B2C
+1. Revalidar en iPhone/Android el nuevo flujo móvil de `Book`
+2. Revalidar en iPhone/Android el nuevo flujo de export PDF
+3. Solo después, decidir merge a `main` y rematar dominio/legal
 
-Ese orden reduce el mayor riesgo comercial antes del merge.
+Ese orden cierra la última incertidumbre funcional relevante antes del merge.

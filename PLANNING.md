@@ -470,6 +470,9 @@
 - [x] **Referencia:** `BUSINESS_TECH_SPEC.md` § 5 y § 6
 
 ### ⏳ Fase 11 — Dominio + Deploy + Legal (PENDIENTE)
+- [x] Desplegar rama `preview/fase11-launch-readiness` en Vercel
+- [x] Validar preview end-to-end de flujos B2C, B2B real y B2B2C
+- [x] Corregir permisos GitHub/Vercel tras migración del repo a `n4rg4n3s/nubekids-tales`
 - [ ] Comprar dominio
 - [ ] Configurar DNS en Vercel
 - [ ] Configurar Stripe webhook con URL de producción
@@ -481,6 +484,8 @@
 - [ ] Consolidar tenant demo estable y guión comercial final para demos comerciales
 - [x] Probar emisión de tokens desde `/api/b2b/create-token` con el secreto del tenant de test
 - [x] Documentar snippet técnico de integración para `/api/b2b/create-token` en `docs/INTEGRACION_PREMIUM.md`
+- [x] Implementar aviso `Gira el móvil` en portrait y modo de lectura inmersivo en landscape para `Book`
+- [x] Rehacer export PDF móvil para usar flujo `Blob` + `Guardar o compartir` / `Abrir PDF` / `Descargar archivo`
 - [ ] Preparar colección Postman opcional para demos comerciales B2B
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
@@ -519,6 +524,8 @@
 | Fuentes Fredoka/Nunito no importadas en index.css | Media | ✅ Resuelto sesión 2026-04-02 | 10 |
 | Google OAuth en GCP + Supabase | Media | ⏳ Cuando haya dominio | 7 |
 | Legales públicos con placeholders fiscales / entidad responsable | Alta | ⏳ Pendiente antes de go-live | 11 |
+| UX móvil de `Book` en viewport portrait | Alta | 🟡 Implementado en código; pendiente revalidación manual en preview | 11 |
+| Guardado PDF en Safari iOS / móvil | Alta | 🟡 Implementado en código; pendiente revalidación manual en preview | 11 |
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 | 8 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio | 9 |
 | Violations react-pageflip touchstart | Baja | Ignorable (librería externa) | 4 |

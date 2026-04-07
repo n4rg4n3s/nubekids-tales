@@ -11,6 +11,11 @@ interface ExportOptions {
   onProgress?: (percent: number, message: string) => void;
 }
 
+export interface ExportedPdfAsset {
+  blob: Blob;
+  fileName: string;
+}
+
 // A4 horizontal en mm
 const PAGE_WIDTH = 297;
 const PAGE_HEIGHT = 210;
@@ -306,7 +311,7 @@ function drawBackCover(pdf: jsPDF, tenantConfig: TenantConfig): void {
   pdf.text('esta aventura magica', centerX, panelCenterY + 18, { align: 'center' });
 }
 
-export async function exportToPdf(options: ExportOptions): Promise<void> {
+export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAsset> {
   const { pages, heroName, tenantConfig, onProgress } = options;
 
   const pdf = new jsPDF({
@@ -339,8 +344,9 @@ export async function exportToPdf(options: ExportOptions): Promise<void> {
     drawBackCover(pdf, tenantConfig);
 
     const fileName = `${heroName.replace(/\s+/g, '_')}_aventura_magica.pdf`;
-    pdf.save(fileName);
+    const blob = pdf.output('blob');
     onProgress?.(100, 'PDF listo');
+    return { blob, fileName };
   } catch (error) {
     console.error('Error generando PDF:', error);
     throw error;
