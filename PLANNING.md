@@ -43,6 +43,8 @@
 
 **Nota:** Los tags en la tabla están vacíos. La búsqueda semántica es suficiente — no se usa `match_rag_chunks_hybrid`. Si en el futuro se quieren tags, hay que actualizar el script de ingesta para asignarlos.
 
+**Siguiente paso fino de seguridad:** versionar en el repo la función `match_rag_chunks` y dejarla como `SECURITY DEFINER`, para poder eliminar también la lectura pública directa de `rag_chunks`.
+
 ---
 
 ### ADR-003: Estado en React (no Redux/Zustand en V1)
