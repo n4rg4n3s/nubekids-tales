@@ -1,4 +1,4 @@
-import { useRef, useCallback, forwardRef, useState, useEffect, useLayoutEffect, type ReactNode } from 'react';
+import { useRef, useCallback, forwardRef, useState, useEffect, useLayoutEffect, useMemo, type ReactNode } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import type { AgeGroup, ComicFace, TenantConfig } from '../types';
 import type { ExportedPdfAsset } from '../utils/pdfExport';
@@ -147,7 +147,10 @@ interface TextPageProps {
     page: ComicFace;
 }
 
-function TextPage({ ageGroup, colors, index, isImmersiveMobile, layoutSignature, page }: TextPageProps) {
+const TextPage = forwardRef<HTMLDivElement, TextPageProps>(function TextPage(
+    { ageGroup, colors, index, isImmersiveMobile, layoutSignature, page },
+    ref
+) {
     const caption = page.narrative?.caption || '';
     const dialogue = page.narrative?.dialogue || '';
     const metrics = getStoryTextMetrics(caption, dialogue);
@@ -177,7 +180,7 @@ function TextPage({ ageGroup, colors, index, isImmersiveMobile, layoutSignature,
     }, [ageGroup, caption, dialogue, layoutIndex, layoutSignature, layouts.length]);
 
     return (
-        <Page className="text-page">
+        <Page ref={ref} className="text-page">
             <div
                 className="h-full flex flex-col"
                 style={{
@@ -261,7 +264,9 @@ function TextPage({ ageGroup, colors, index, isImmersiveMobile, layoutSignature,
             </div>
         </Page>
     );
-}
+});
+
+TextPage.displayName = 'TextPage';
 
 export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset }: BookProps) {
     const bookRef = useRef<FlipBookApi | null>(null);
@@ -277,11 +282,15 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
     const exportButtonLabel = viewport.isMobile ? 'Preparar PDF' : 'Descargar PDF';
     const textLayoutSignature = `${bookSize.spreadWidth}x${bookSize.spreadHeight}-${viewport.isMobile ? 'mobile' : 'desktop'}-${viewport.isLandscape ? 'landscape' : 'portrait'}`;
 
-    const colors = {
+    const colors = useMemo(() => ({
         primary: tenantConfig.brandColors.primary,
         accent: tenantConfig.brandColors.accent,
         background: tenantConfig.brandColors.background,
-    };
+    }), [
+        tenantConfig.brandColors.primary,
+        tenantConfig.brandColors.accent,
+        tenantConfig.brandColors.background,
+    ]);
 
     const replacePreparedPdf = useCallback((nextPdf: PreparedPdfState | null) => {
         setPreparedPdf((currentPdf) => {
@@ -439,7 +448,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
         }
     }, [pages, heroName, ageGroup, tenantConfig, viewport.isMobile, closePreparedPdf, replacePreparedPdf]);
 
-    const buildPages = () => {
+    const bookPagesElements = useMemo(() => {
         const bookPages: ReactNode[] = [];
 
         bookPages.push(
@@ -515,16 +524,34 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
         });
 
         bookPages.push(
-            <Page key="back-cover-actions" className="back-cover-page">
+            <Page key="back-cover" className="back-cover-page">
                 <div
                     className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
                     style={{ backgroundColor: colors.background }}
                 >
                     <div
-                        className="w-full max-w-[220px] md:max-w-[320px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
+                        className="w-full max-w-[240px] md:max-w-[320px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
                         style={{ backgroundColor: '#FCFBF8' }}
                     >
-                        <div className="flex flex-col gap-3 md:gap-4">
+                        <div className="text-2xl md:text-5xl mb-1 md:mb-2">*</div>
+
+                        <h2
+                            className="text-2xl md:text-4xl font-display font-bold mb-2"
+                            style={{ color: colors.primary }}
+                        >
+                            ¡Fin!
+                        </h2>
+
+                        <p
+                            className="text-sm md:text-lg font-body leading-relaxed"
+                            style={{ color: INK_BLACK, opacity: 0.7 }}
+                        >
+                            Esperamos que hayas disfrutado
+                            <br />
+                            esta aventura magica
+                        </p>
+
+                        <div className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">
                             <button
                                 onClick={handleExportPdf}
                                 disabled={isExporting}
@@ -558,47 +585,24 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
             </Page>
         );
 
-        bookPages.push(
-            <Page key="back-cover-copy" className="back-cover-page">
-                <div
-                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
-                    style={{ backgroundColor: colors.background }}
-                >
-                    <div
-                        className="w-full max-w-[220px] md:max-w-[320px] rounded-2xl px-4 py-4 md:px-6 md:py-6 text-center"
-                        style={{ backgroundColor: '#FCFBF8' }}
-                    >
-                        <div className="text-2xl md:text-5xl mb-1 md:mb-2">*</div>
-
-                        <h2
-                            className="text-2xl md:text-4xl font-display font-bold mb-2"
-                            style={{ color: colors.primary }}
-                        >
-                            ¡Fin!
-                        </h2>
-
-                        <p
-                            className="text-sm md:text-lg font-body leading-relaxed"
-                            style={{ color: INK_BLACK, opacity: 0.7 }}
-                        >
-                            Esperamos que hayas disfrutado
-                            <br />
-                            esta aventura magica
-                        </p>
-                    </div>
-                </div>
-            </Page>
-        );
-
         return bookPages;
-    };
-
-    const bookPagesElements = buildPages();
-    const totalPairs = Math.ceil((bookPagesElements.length - 1) / 2);
-    const displayPage = Math.max(1, Math.floor((currentPage - 1) / 2) + 1);
-    const displayTotal = totalPairs;
+    }, [
+        ageGroup,
+        colors,
+        exportButtonLabel,
+        handleExportPdf,
+        heroName,
+        isExporting,
+        isImmersiveMobile,
+        onReset,
+        pages,
+        tenantConfig.tenantName,
+        textLayoutSignature,
+    ]);
+    const displayPage = Math.floor((currentPage + 1) / 2) + 1;
+    const displayTotal = Math.ceil((bookPagesElements.length - 2) / 2) + 2;
     const isFirstPage = currentPage === 0;
-    const isLastPage = currentPage >= bookPagesElements.length - 2;
+    const isLastPage = currentPage >= bookPagesElements.length - 1;
     const pageWidth = Math.floor(bookSize.spreadWidth / 2);
     const pageHeight = Math.floor(bookSize.spreadHeight);
     const canSharePreparedPdf = preparedPdf

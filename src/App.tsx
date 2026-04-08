@@ -681,10 +681,13 @@ function App() {
 
     return (
       <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ backgroundColor: tenantConfig.brandColors.background }}
+        className="fixed inset-0 z-40 flex w-full items-center justify-center overflow-y-auto px-4 py-6 sm:px-6"
+        style={{
+          minHeight: '100dvh',
+          backgroundColor: tenantConfig.brandColors.background,
+        }}
       >
-        <div className="text-center p-8 max-w-md">
+        <div className="w-full max-w-md shrink-0 text-center p-8 sm:p-10">
           <div className="text-7xl mb-6 animate-bounce">
             {isOrchestrating ? '🎭' : '✨'}
           </div>
@@ -699,8 +702,9 @@ function App() {
             }
           </h2>
 
-          <p className="text-[#1E293B]/80 mb-6 font-body">
-            No cierres esta página, te avisaremos cuando esté listo 🌟
+          <p className="mb-6 flex items-center justify-center gap-2 font-body font-semibold text-red-600">
+            <span aria-hidden="true">⚠️</span>
+            <span>No cierres esta página, te avisaremos cuando esté listo</span>
           </p>
 
           {!isOrchestrating && generationProgress.total > 0 && (
