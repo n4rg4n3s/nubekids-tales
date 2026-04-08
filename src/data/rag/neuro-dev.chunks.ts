@@ -11,6 +11,24 @@ import type { RagChunk } from '../../types';
 
 export const neuroDevChunks: RagChunk[] = [
     {
+        id: 'neuro-000',
+        collection: 'neuro-dev',
+        tags: ['age:baby', 'technique:co-regulation', 'technique:sensory-language'],
+        summary: 'En 0-3 años, el lenguaje funciona mejor como co-regulación y nombrado sensorial.',
+        fullContent: `
+Entre los 0-3 años, el adulto regula la experiencia emocional del niño a través de
+la voz, el ritmo y la repetición. En un cuento, el lenguaje sirve para:
+
+1. Nombrar lo visible y sensorial
+2. Reforzar seguridad y previsibilidad
+3. Asociar exploración con calma y celebración
+
+TÉCNICA NARRATIVA: frases breves, melódicas y concretas.
+Ejemplo: "Luna toca el agua. Agua fresca. Mamá sonríe. ¡Bravo, Luna!"
+    `.trim(),
+        source: 'Early childhood co-regulation - adapted reference.',
+    },
+    {
         id: 'neuro-001',
         collection: 'neuro-dev',
         tags: ['age:tiny', 'topic:tantrums', 'technique:emotion-naming'],
@@ -33,9 +51,9 @@ se apretaban." Esto modela tanto la emoción como las sensaciones físicas.
         id: 'neuro-002',
         collection: 'neuro-dev',
         tags: ['age:little', 'topic:sharing', 'technique:perspective-taking'],
-        summary: 'A los 5-6 años emerge la capacidad de ver perspectivas ajenas.',
+        summary: 'Entre 4-5 años emerge con más claridad la capacidad de ver perspectivas ajenas.',
         fullContent: `
-Entre los 5-6 años, los niños comienzan a desarrollar "teoría de la mente" - 
+Entre los 4-5 años, los niños comienzan a desarrollar "teoría de la mente" - 
 la capacidad de entender que otros tienen pensamientos y sentimientos 
 diferentes a los suyos.
 
@@ -54,10 +72,10 @@ Esto refuerza:
         id: 'neuro-003',
         collection: 'neuro-dev',
         tags: ['age:reader', 'topic:problem-solving', 'technique:metacognition'],
-        summary: 'Los 7-10 años es ideal para introducir pensamiento metacognitivo.',
+        summary: 'Los 5-7 años ya permiten modelar planificación y evaluación sencilla.',
         fullContent: `
-Los niños de 7-10 años pueden beneficiarse de narrativas que modelen 
-el proceso de pensamiento, no solo el resultado.
+Los niños de 5-7 años pueden beneficiarse de narrativas que modelen 
+un proceso de pensamiento sencillo, no solo el resultado.
 
 TÉCNICA NARRATIVA: El protagonista "piensa en voz alta" antes de actuar.
 Ejemplo: "Marcos se detuvo a pensar. Tenía tres opciones: podía correr, 
@@ -86,9 +104,10 @@ Sus zapatos brillaron dos veces... y saltó un charco mediano.
 Sus zapatos brillaron tres veces... ¡y saltó sobre el río entero!"
 
 Beneficios por edad:
+- Baby (0-3): Anticipa y se calma con patrones predecibles
 - Tiny (3-4): Predice y participa activamente
-- Little (5-6): Reconoce patrones y anticipa
-- Reader (7-10): Aprecia la estructura narrativa
+- Little (4-5): Reconoce patrones y anticipa
+- Reader (5-7): Empieza a disfrutar la progresión narrativa completa
     `.trim(),
         source: 'Bruner, J.S. (1990). Acts of Meaning.',
     },

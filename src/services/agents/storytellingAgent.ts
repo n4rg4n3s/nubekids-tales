@@ -33,12 +33,52 @@ REGLAS ABSOLUTAS:
 - El objeto mágico SIEMPRE tiene un papel activo en la resolución
 - Respeta ESTRICTAMENTE el límite de palabras por página
 - Responde SOLO con JSON válido, sin markdown, sin explicaciones
-
-CALIBRACIÓN POR EDAD:
-- tiny (3-4 años): Frases sujeto+verbo+complemento. Onomatopeyas. Repetición.
-- little (5-6 años): Adjetivos y conectores básicos. Diálogo simple. Emociones nombradas.
-- reader (7-10 años): Vocabulario rico. Metáforas simples. Dilemas morales leves.
 `.trim();
+
+const AGE_SYSTEM_INSTRUCTIONS: Record<AgeGroup, string> = {
+    baby: `
+Estás escribiendo para un bebé o niño de 0 a 3 años. El adulto leerá el cuento en voz alta.
+
+REGLAS ABSOLUTAS:
+- Máximo 15 palabras por página en total.
+- Frases de 3 a 5 palabras. Una frase por página suele ser suficiente.
+- El texto debe sonar rítmico, musical y repetitivo.
+- Usa vocabulario cotidiano, concreto y sensorial.
+- No uses abstracciones ni emociones complejas.
+- Celebra al protagonista con frecuencia.
+- No introduzcas antagonistas ni conflictos.
+- No incluyas diálogos separados del caption.
+    `.trim(),
+    tiny: `
+Estás escribiendo para un niño de 3 a 4 años. El adulto sigue leyendo en voz alta.
+
+REGLAS ABSOLUTAS:
+- Máximo 30 palabras por página.
+- Frases de 5 a 8 palabras.
+- Repetición con variación y ritmo claro.
+- Una sola emoción o idea por página.
+- Reto pequeño, final gozoso y tranquilizador.
+    `.trim(),
+    little: `
+Estás escribiendo para un niño de 4 a 5 años. El adulto todavía acompaña la lectura.
+
+REGLAS ABSOLUTAS:
+- Máximo 55 palabras por página.
+- Frases de 7 a 12 palabras.
+- El protagonista tiene un deseo claro, un obstáculo simple y una resolución satisfactoria.
+- Usa conectores de causa-efecto y diálogos muy breves.
+    `.trim(),
+    reader: `
+Estás escribiendo para un niño de 5 a 7 años que empieza a leer o ya lee con apoyo.
+
+REGLAS ABSOLUTAS:
+- Máximo 100 palabras por página.
+- Frases de 10 a 18 palabras.
+- Inicio, nudo y desenlace claramente diferenciados.
+- El protagonista resuelve el desafío con sus propias capacidades.
+- Usa vocabulario rico pero accesible y diálogos con personalidad.
+    `.trim(),
+};
 
 // ============================================
 // TYPES
@@ -80,7 +120,7 @@ export async function generateBeats(
         model: 'gemini-2.5-flash',
         contents: prompt,
         config: {
-            systemInstruction: SYSTEM_PROMPT,
+            systemInstruction: `${SYSTEM_PROMPT}\n\n${AGE_SYSTEM_INSTRUCTIONS[input.ageGroup]}`,
             responseMimeType: 'application/json',
             temperature: 0.8,
             maxOutputTokens: 8192,
@@ -91,7 +131,7 @@ export async function generateBeats(
     const beats = parseJsonSafely<Beat[]>(responseText);
 
     // Validar y ajustar beats
-    const validatedBeats = validateAndFixBeats(beats, ageGroupConfig);
+    const validatedBeats = validateAndFixBeats(beats, ageGroupConfig, input.ageGroup);
 
     console.log(`[StorytellingAgent] ${validatedBeats.length} beats generados`);
 
@@ -110,6 +150,9 @@ function buildPrompt(
     const friendSection = input.friendName
         ? `- Co-protagonista: ${input.friendName}`
         : '- Sin co-protagonista';
+    const babyPromptNote = input.ageGroup === 'baby'
+        ? '- Para baby, cada página funciona como un pie de imagen rítmico y visual. Todo el texto va en "caption" sin "dialogue".'
+        : '';
 
     return `
 ARCO NARRATIVO A DESARROLLAR:
@@ -129,6 +172,7 @@ REGLAS DE ESCRITURA (OBLIGATORIAS):
 - Complejidad de frases: ${config.sentenceComplexity}
 - Estructura narrativa: ${config.narrativeStructure}
 - Profundidad emocional: ${config.emotionalDepth}
+${babyPromptNote}
 
 ESTRUCTURA DEL CUENTO:
 - Página 1: Portada (solo título y escena visual)
@@ -156,32 +200,45 @@ IMPORTANTE:
 - focus_char puede ser "hero", "friend", o "other"
 - "scene" debe ser muy descriptiva para el ilustrador
 - "caption" debe respetar el límite de palabras ESTRICTAMENTE
+${input.ageGroup === 'baby' ? '- En baby, si necesitas una exclamación o voz del narrador, intégrala dentro de "caption". Nunca uses "dialogue".' : ''}
   `.trim();
 }
 
 /**
  * Valida los beats y corrige problemas comunes.
  */
-function validateAndFixBeats(beats: Beat[], config: AgeGroupConfig): Beat[] {
+function countWords(text: string): number {
+    return text.split(/\s+/).filter(Boolean).length;
+}
+
+function trimToWordLimit(text: string, limit: number): string {
+    return text
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, limit)
+        .join(' ');
+}
+
+function validateAndFixBeats(beats: Beat[], config: AgeGroupConfig, ageGroup: AgeGroup): Beat[] {
     return beats.map((beat, idx) => {
-        // Asegurar que caption existe
-        const caption = beat.caption || '';
+        const rawCaption = beat.caption || '';
+        const rawDialogue = beat.dialogue || '';
+        const totalText = [rawCaption, rawDialogue].filter(Boolean).join(' ').trim();
+        const normalizedCaption = ageGroup === 'baby'
+            ? trimToWordLimit(totalText, config.maxWordsPerPage)
+            : rawCaption;
+        const wordCount = countWords(ageGroup === 'baby' ? normalizedCaption : totalText);
 
-        // Contar palabras
-        const wordCount = caption.split(/\s+/).filter(Boolean).length;
-
-        // Warning si excede el límite
         if (wordCount > config.maxWordsPerPage) {
             console.warn(
                 `[StorytellingAgent] Beat ${idx + 1} tiene ${wordCount} palabras (máx: ${config.maxWordsPerPage})`
             );
         }
 
-        // Asegurar estructura correcta
         return {
             scene: beat.scene || '',
-            caption: caption,
-            dialogue: beat.dialogue || null,
+            caption: normalizedCaption,
+            dialogue: ageGroup === 'baby' ? null : beat.dialogue || null,
             choices: beat.choices || [],
             focus_char: beat.focus_char || 'hero',
             visualDirection: beat.visualDirection,

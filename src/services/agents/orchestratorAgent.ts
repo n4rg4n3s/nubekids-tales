@@ -132,6 +132,7 @@ export async function orchestrate(
         const visualBriefs = await visualBriefAgent.generateBriefs(
             {
                 storyBeats,
+                ageGroup: session.ageGroup,
                 genre: session.genre,
                 itemLabel: session.tenantConfig.itemLabel,
                 itemInteractionMode: session.tenantConfig.itemInteractionMode,

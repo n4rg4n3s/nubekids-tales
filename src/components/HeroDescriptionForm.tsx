@@ -26,10 +26,10 @@ const OPTIONS = {
         { value: 'neutral', label: 'Prefiero no decir', emoji: '🧒' },
     ],
     ageRange: [
+        { value: '0-3', label: '0-3 años' },
         { value: '3-4', label: '3-4 años' },
-        { value: '5-6', label: '5-6 años' },
-        { value: '7-8', label: '7-8 años' },
-        { value: '9-10', label: '9-10 años' },
+        { value: '4-5', label: '4-5 años' },
+        { value: '5-7', label: '5-7 años' },
     ],
     hairColor: [
         { value: 'blonde', label: 'Rubio', color: '#F4D03F' },
@@ -151,7 +151,7 @@ export default function HeroDescriptionForm({ onChange }: HeroDescriptionFormPro
                 <label className="block text-sm font-semibold text-[#1E293B] mb-2">
                     Edad aproximada
                 </label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {OPTIONS.ageRange.map(opt => (
                         <button
                             key={opt.value}

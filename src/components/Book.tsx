@@ -1,12 +1,14 @@
-import { useRef, useCallback, forwardRef, useState, useEffect, type ReactNode } from 'react';
+import { useRef, useCallback, forwardRef, useState, useEffect, useLayoutEffect, type ReactNode } from 'react';
 import HTMLFlipBook from 'react-pageflip';
-import type { ComicFace, TenantConfig } from '../types';
+import type { AgeGroup, ComicFace, TenantConfig } from '../types';
 import type { ExportedPdfAsset } from '../utils/pdfExport';
+import { getStoryTextMetrics, getWebTextLayouts } from '../utils/storyTextLayout';
 
 interface BookProps {
     pages: ComicFace[];
     tenantConfig: TenantConfig;
     heroName: string;
+    ageGroup: AgeGroup;
     onReset: () => void;
 }
 
@@ -132,7 +134,136 @@ const Page = forwardRef<HTMLDivElement, PageProps>(({ children, className = '' }
 
 Page.displayName = 'Page';
 
-export default function Book({ pages, tenantConfig, heroName, onReset }: BookProps) {
+interface TextPageProps {
+    ageGroup: AgeGroup;
+    colors: {
+        primary: string;
+        accent: string;
+        background: string;
+    };
+    index: number;
+    isImmersiveMobile: boolean;
+    layoutSignature: string;
+    page: ComicFace;
+}
+
+function TextPage({ ageGroup, colors, index, isImmersiveMobile, layoutSignature, page }: TextPageProps) {
+    const caption = page.narrative?.caption || '';
+    const dialogue = page.narrative?.dialogue || '';
+    const metrics = getStoryTextMetrics(caption, dialogue);
+    const layouts = getWebTextLayouts(ageGroup, metrics, isImmersiveMobile);
+    const [layoutIndex, setLayoutIndex] = useState(0);
+    const viewportRef = useRef<HTMLDivElement | null>(null);
+    const contentRef = useRef<HTMLDivElement | null>(null);
+    const layout = layouts[Math.min(layoutIndex, layouts.length - 1)];
+
+    useEffect(() => {
+        setLayoutIndex(0);
+    }, [ageGroup, caption, dialogue, layoutSignature]);
+
+    useLayoutEffect(() => {
+        const viewport = viewportRef.current;
+        const content = contentRef.current;
+        if (!viewport || !content) {
+            return;
+        }
+
+        const overflowing = content.scrollHeight > viewport.clientHeight + 1
+            || content.scrollWidth > viewport.clientWidth + 1;
+
+        if (overflowing && layoutIndex < layouts.length - 1) {
+            setLayoutIndex((current) => current + 1);
+        }
+    }, [ageGroup, caption, dialogue, layoutIndex, layoutSignature, layouts.length]);
+
+    return (
+        <Page className="text-page">
+            <div
+                className="h-full flex flex-col"
+                style={{
+                    backgroundColor: colors.background,
+                    padding: `${layout.paddingY}px ${layout.paddingX}px`,
+                }}
+            >
+                <div className="flex justify-center" style={{ marginBottom: `${layout.pageNumberGap}px` }}>
+                    <div
+                        className="rounded-full flex items-center justify-center font-bold text-white shrink-0"
+                        style={{
+                            backgroundColor: colors.primary,
+                            width: `${layout.pageNumberSize}px`,
+                            height: `${layout.pageNumberSize}px`,
+                            fontSize: `${layout.pageNumberFontSize}px`,
+                            lineHeight: 1,
+                        }}
+                    >
+                        {index + 1}
+                    </div>
+                </div>
+
+                <div
+                    ref={viewportRef}
+                    className="flex-1 overflow-hidden flex"
+                    style={{
+                        alignItems: layout.verticalAlign === 'center' ? 'center' : 'flex-start',
+                    }}
+                >
+                    <div
+                        ref={contentRef}
+                        className="w-full"
+                        style={{
+                            textAlign: 'center',
+                        }}
+                    >
+                        {caption && (
+                            <p
+                                className="font-body"
+                                style={{
+                                    color: INK_BLACK,
+                                    fontSize: `${layout.captionFontSize}px`,
+                                    lineHeight: `${layout.captionLineHeight}px`,
+                                    wordBreak: 'break-word',
+                                }}
+                            >
+                                {caption}
+                            </p>
+                        )}
+
+                        {dialogue && (
+                            <p
+                                className="font-body italic"
+                                style={{
+                                    color: colors.primary,
+                                    fontSize: `${layout.dialogueFontSize}px`,
+                                    lineHeight: `${layout.dialogueLineHeight}px`,
+                                    marginTop: `${layout.dialogueGap}px`,
+                                    wordBreak: 'break-word',
+                                }}
+                            >
+                                "{dialogue}"
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                {layout.showDecoration && (
+                    <div
+                        className="flex justify-center"
+                        style={{
+                            color: colors.accent,
+                            fontSize: `${layout.decorationFontSize}px`,
+                            lineHeight: 1,
+                            marginTop: `${layout.decorationGap}px`,
+                        }}
+                    >
+                        * * *
+                    </div>
+                )}
+            </div>
+        </Page>
+    );
+}
+
+export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset }: BookProps) {
     const bookRef = useRef<FlipBookApi | null>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [viewport, setViewport] = useState<ViewportState>(DEFAULT_VIEWPORT);
@@ -144,6 +275,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
     const isMobilePortrait = viewport.isMobile && !viewport.isLandscape;
     const isImmersiveMobile = viewport.isMobile && viewport.isLandscape;
     const exportButtonLabel = viewport.isMobile ? 'Preparar PDF' : 'Descargar PDF';
+    const textLayoutSignature = `${bookSize.spreadWidth}x${bookSize.spreadHeight}-${viewport.isMobile ? 'mobile' : 'desktop'}-${viewport.isLandscape ? 'landscape' : 'portrait'}`;
 
     const colors = {
         primary: tenantConfig.brandColors.primary,
@@ -282,6 +414,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             const pdfAsset = await exportToPdf({
                 pages,
                 heroName,
+                ageGroup,
                 tenantConfig,
                 onProgress: (percent, message) => {
                     setExportProgress({ percent, message });
@@ -304,7 +437,7 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
         } finally {
             setIsExporting(false);
         }
-    }, [pages, heroName, tenantConfig, viewport.isMobile, closePreparedPdf, replacePreparedPdf]);
+    }, [pages, heroName, ageGroup, tenantConfig, viewport.isMobile, closePreparedPdf, replacePreparedPdf]);
 
     const buildPages = () => {
         const bookPages: ReactNode[] = [];
@@ -369,47 +502,15 @@ export default function Book({ pages, tenantConfig, heroName, onReset }: BookPro
             );
 
             bookPages.push(
-                <Page key={`text-${idx}`} className="text-page">
-                    <div
-                        className="h-full flex flex-col justify-between p-3 md:p-4"
-                        style={{ backgroundColor: colors.background }}
-                    >
-                        <div className="flex justify-center mb-2">
-                            <div
-                                className={`rounded-full flex items-center justify-center font-bold text-white ${
-                                    isImmersiveMobile ? 'w-7 h-7 text-xs' : 'w-8 h-8 text-sm'
-                                }`}
-                                style={{ backgroundColor: colors.primary }}
-                            >
-                                {idx + 1}
-                            </div>
-                        </div>
-
-                        <div className="flex-1 flex flex-col justify-center space-y-3">
-                            {page.narrative?.caption && (
-                                <p
-                                    className="text-[13px] md:text-base font-body leading-snug md:leading-relaxed text-center"
-                                    style={{ color: INK_BLACK }}
-                                >
-                                    {page.narrative.caption}
-                                </p>
-                            )}
-
-                            {page.narrative?.dialogue && (
-                                <p
-                                    className="text-[13px] md:text-base font-body italic leading-snug md:leading-relaxed text-center"
-                                    style={{ color: colors.primary }}
-                                >
-                                    "{page.narrative.dialogue}"
-                                </p>
-                            )}
-                        </div>
-
-                        <div className="flex justify-center text-base md:text-lg" style={{ color: colors.accent }}>
-                            * * *
-                        </div>
-                    </div>
-                </Page>
+                <TextPage
+                    key={`text-${idx}`}
+                    ageGroup={ageGroup}
+                    colors={colors}
+                    index={idx}
+                    isImmersiveMobile={isImmersiveMobile}
+                    layoutSignature={textLayoutSignature}
+                    page={page}
+                />
             );
         });
 

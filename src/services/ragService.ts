@@ -64,9 +64,10 @@ function buildSemanticQuery(params: RagQuery): string {
   const parts: string[] = [];
 
   const ageLabels: Record<AgeGroup, string> = {
-    tiny: 'children aged 3-4 years, early childhood development',
-    little: 'children aged 5-6 years, social-emotional learning',
-    reader: 'children aged 7-10 years, cognitive development, moral reasoning',
+    baby: 'board books for 0-3 year olds, sensory language, minimal text, read aloud rhythm, repetition',
+    tiny: 'picture books for 3-4 year olds, repetition, rhythm, short sentences, pre-reader support',
+    little: 'picture books for 4-5 year olds, cause and effect, emotional development, simple narrative arc',
+    reader: 'easy readers for 5-7 year olds, emerging reader vocabulary, inference, full narrative arc',
   };
   parts.push(ageLabels[params.ageGroup]);
 

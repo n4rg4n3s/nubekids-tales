@@ -47,6 +47,25 @@ const LANGUAGE_FLAGS: Record<Language, string> = {
   'Italiano': 'IT',
 };
 
+const AGE_GROUP_UI: Record<AgeGroup, { emoji: string; description: string }> = {
+  baby: {
+    emoji: '🍼',
+    description: 'Texto mínimo, ritmo oral e imagen claramente protagonista',
+  },
+  tiny: {
+    emoji: '🌟',
+    description: 'Frases cortas, repetición y una idea emocional por página',
+  },
+  little: {
+    emoji: '🚀',
+    description: 'Aventura simple con causa y efecto, deseo y resolución claros',
+  },
+  reader: {
+    emoji: '📖',
+    description: 'Nudo y desenlace completos, vocabulario accesible y más autonomía',
+  },
+};
+
 export default function StepStory({
   data,
   onChange,
@@ -63,6 +82,7 @@ export default function StepStory({
   }, [inferredAgeGroup, data, onChange]);
 
   const ageGroupConfig = AGE_GROUP_CONFIGS[inferredAgeGroup];
+  const ageGroupUi = AGE_GROUP_UI[inferredAgeGroup];
 
   return (
     <motion.div
@@ -78,17 +98,13 @@ export default function StepStory({
         className="p-4 bg-gradient-to-r from-[#8B5CF6]/10 to-[#38BDF8]/10 rounded-xl border-2 border-[#8B5CF6]/30"
       >
         <div className="flex items-center gap-3">
-          <span className="text-2xl">
-            {inferredAgeGroup === 'tiny' ? '🧒' : inferredAgeGroup === 'little' ? '👦' : '🧑'}
-          </span>
+          <span className="text-2xl">{ageGroupUi.emoji}</span>
           <div>
             <p className="font-bold text-[#1E293B]">
               Cuento para {ageGroupConfig.label}
             </p>
             <p className="text-sm text-[#1E293B]/60">
-              {inferredAgeGroup === 'tiny' && 'Frases cortas, mucha repetición y onomatopeyas'}
-              {inferredAgeGroup === 'little' && 'Vocabulario simple, emociones claras'}
-              {inferredAgeGroup === 'reader' && 'Vocabulario rico, arco narrativo completo'}
+              {ageGroupUi.description}
             </p>
           </div>
         </div>
@@ -201,7 +217,7 @@ export default function StepStory({
           <p className="text-sm text-[#1E293B]">
             <span className="font-bold text-[#34D399]">✓ Todo listo:</span>{' '}
             Cuento en <strong>{data.language}</strong> con estilo <strong>{data.genre}</strong>
-            {' '}para niños de <strong>{ageGroupConfig.label}</strong>
+            {' '}para peques de <strong>{ageGroupConfig.label}</strong>
           </p>
         </motion.div>
       )}

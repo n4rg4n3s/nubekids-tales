@@ -6,7 +6,7 @@
  * asegurando consistencia visual a lo largo del cuento.
  */
 
-import type { Beat, Genre, ItemInteractionMode } from '../../types';
+import type { AgeGroup, Beat, Genre, ItemInteractionMode } from '../../types';
 import type { AgentDependencies } from '../dependencies';
 import { parseJsonSafely } from '../../utils/jsonParser';
 import {
@@ -39,12 +39,37 @@ ESTILOS VISUALES:
 - "Custom": Adaptar según indicaciones
 `.trim();
 
+const VISUAL_AGE_INSTRUCTIONS: Record<AgeGroup, string> = {
+    baby: `
+Colores vivos y saturados. Formas redondeadas y simples.
+El protagonista siempre visible y central.
+Fondos simples, expresiones claras y positivas.
+La imagen debe cargar casi todo el peso narrativo.
+    `.trim(),
+    tiny: `
+Escena clara y legible. Protagonista y objeto mágico siempre reconocibles.
+Fondos con contexto ligero y expresiones faciales muy claras.
+La imagen sigue siendo dominante sobre el texto.
+    `.trim(),
+    little: `
+Ilustración narrativa con acción visible.
+Las emociones del protagonista deben entenderse sin leer el texto.
+Fondos con más contexto, pero sin sobrecargar la escena.
+    `.trim(),
+    reader: `
+Ilustración que complementa y expande el texto.
+Se permiten escenas algo más complejas y detalles que apoyen la inferencia.
+Fondos más atmosféricos y personajes secundarios cuando aporten a la historia.
+    `.trim(),
+};
+
 // ============================================
 // TYPES
 // ============================================
 
 export interface VisualBriefInput {
     storyBeats: Beat[];
+    ageGroup: AgeGroup;
     genre: Genre;
     itemLabel: string;
     itemInteractionMode: ItemInteractionMode;
@@ -144,6 +169,10 @@ function buildPrompt(input: VisualBriefInput): string {
 
     return `
 ESTILO VISUAL: ${input.genre}
+GRUPO DE EDAD: ${input.ageGroup}
+
+INSTRUCCIONES VISUALES POR EDAD:
+${VISUAL_AGE_INSTRUCTIONS[input.ageGroup]}
 
 PERSONAJES:
 ${heroSection}

@@ -34,36 +34,43 @@ export interface BrandColors {
 // AGE GROUP SYSTEM
 // ============================================
 
-export type AgeGroup = 'tiny' | 'little' | 'reader';
+export type AgeGroup = 'baby' | 'tiny' | 'little' | 'reader';
 
 export interface AgeGroupConfig {
   label: string;
   maxWordsPerPage: number;
-  sentenceComplexity: 'simple' | 'medium' | 'rich';
-  narrativeStructure: 'linear' | 'simple-arc' | 'complex-arc';
+  sentenceComplexity: 'minimal' | 'simple' | 'medium' | 'rich';
+  narrativeStructure: 'observe-name' | 'linear' | 'simple-arc' | 'full-arc';
   emotionalDepth: 'basic' | 'secondary' | 'nuanced';
 }
 
 export const AGE_GROUP_CONFIGS: Record<AgeGroup, AgeGroupConfig> = {
+  baby: {
+    label: "0-3 años",
+    maxWordsPerPage: 15,
+    sentenceComplexity: 'minimal',
+    narrativeStructure: 'observe-name',
+    emotionalDepth: 'basic'
+  },
   tiny: {
     label: "3-4 años",
-    maxWordsPerPage: 20,
+    maxWordsPerPage: 30,
     sentenceComplexity: 'simple',
     narrativeStructure: 'linear',
     emotionalDepth: 'basic'
   },
   little: {
-    label: "5-6 años",
-    maxWordsPerPage: 50,
+    label: "4-5 años",
+    maxWordsPerPage: 55,
     sentenceComplexity: 'medium',
     narrativeStructure: 'simple-arc',
     emotionalDepth: 'secondary'
   },
   reader: {
-    label: "7-10 años",
-    maxWordsPerPage: 120,
+    label: "5-7 años",
+    maxWordsPerPage: 100,
     sentenceComplexity: 'rich',
-    narrativeStructure: 'complex-arc',
+    narrativeStructure: 'full-arc',
     emotionalDepth: 'nuanced'
   },
 };

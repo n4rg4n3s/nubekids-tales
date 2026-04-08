@@ -951,6 +951,7 @@ function App() {
             pages={pages}
             tenantConfig={tenantConfig}
             heroName={setupData.heroName}
+            ageGroup={setupData.ageGroup}
             onReset={handleReset}
           />
         </Suspense>

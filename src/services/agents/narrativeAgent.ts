@@ -31,6 +31,44 @@ REGLAS:
 - Responde SOLO con JSON válido, sin markdown, sin explicaciones
 `.trim();
 
+const NARRATIVE_AGE_INSTRUCTIONS: Record<AgeGroup, string> = {
+    baby: `
+El arco narrativo para 0-3 años NO es una historia convencional.
+Es una secuencia de momentos gozosos y sensoriales protagonizados por el niño.
+Estructura sugerida:
+- Página 1: presentación celebratoria
+- Páginas 2-8: exploración cotidiana o sensorial con el objeto mágico
+- Página 9: momento cumbre de alegría o descubrimiento
+- Página 10: cierre calmado y tranquilizador
+No hay antagonista ni conflicto. Solo observación, nombrar y celebrar.
+    `.trim(),
+    tiny: `
+Arco narrativo simple de 3 actos en 10 páginas:
+- Páginas 1-2: presentación del protagonista y su mundo
+- Páginas 3-4: aparece el objeto mágico o un deseo pequeño
+- Páginas 5-7: búsqueda o reto concreto
+- Páginas 8-9: resolución con pequeño esfuerzo propio
+- Página 10: final celebratorio y tranquilizador
+    `.trim(),
+    little: `
+Arco narrativo con causa-efecto claro:
+- Páginas 1-2: protagonista, mundo y deseo claro
+- Páginas 3-5: el objeto mágico complica o facilita el deseo
+- Páginas 6-8: obstáculo simple, intento, ajuste y nuevo intento
+- Página 9: superación del obstáculo con recursos propios
+- Página 10: resolución del deseo y aprendizaje emocional implícito
+    `.trim(),
+    reader: `
+Arco narrativo completo con tensión sostenida:
+- Páginas 1-2: mundo, protagonista y problema insinuado
+- Páginas 3-4: el objeto mágico entra en escena y el protagonista decide actuar
+- Páginas 5-7: nudo con complicaciones e intentos fallidos
+- Página 8: momento de máxima duda o tensión
+- Página 9: resolución por iniciativa del protagonista
+- Página 10: desenlace con consecuencia emocional real
+    `.trim(),
+};
+
 // ============================================
 // TYPES
 // ============================================
@@ -125,6 +163,9 @@ ${interactionSection}
 ${storeSection}
 
 ${pedagogySection}
+
+INSTRUCCIONES NARRATIVAS PARA ${input.ageGroup.toUpperCase()}:
+${NARRATIVE_AGE_INSTRUCTIONS[input.ageGroup]}
 
 Diseña el ARCO NARRATIVO respondiendo SOLO con este JSON:
 {

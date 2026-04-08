@@ -2,11 +2,13 @@
 // Exportacion de cuentos a PDF con jsPDF (16:9 landscape)
 
 import jsPDF from 'jspdf';
-import type { ComicFace, TenantConfig } from '../types';
+import type { AgeGroup, ComicFace, TenantConfig } from '../types';
+import { getPdfTextLayouts, getStoryTextMetrics, type PdfTextLayout } from './storyTextLayout';
 
 interface ExportOptions {
   pages: ComicFace[];
   heroName: string;
+  ageGroup: AgeGroup;
   tenantConfig: TenantConfig;
   onProgress?: (percent: number, message: string) => void;
 }
@@ -159,6 +161,7 @@ async function drawStoryPage(
   pdf: jsPDF,
   page: ComicFace,
   pageNumber: number,
+  ageGroup: AgeGroup,
   tenantConfig: TenantConfig
 ): Promise<void> {
   const { primary, accent } = tenantConfig.brandColors;
@@ -211,80 +214,79 @@ async function drawStoryPage(
 
   // Columna derecha: numero + texto (centrado vertical y horizontalmente)
   const rightCenterX = rightX + PANEL_WIDTH / 2;
-  const textAreaWidth = PANEL_WIDTH - 24;
-
   const caption = (page.narrative?.caption || page.narrative?.scene || '').trim();
   const dialogue = (page.narrative?.dialogue || '').trim();
+  const metrics = getStoryTextMetrics(caption, dialogue);
+  const layout = pickPdfTextLayout(pdf, ageGroup, caption, dialogue, metrics);
+  const textAreaWidth = PANEL_WIDTH - layout.horizontalInset * 2;
 
-  // Font sizes (~50% larger than before)
-  const CAPTION_SIZE = 19;
-  const DIALOGUE_SIZE = 17;
-  const CAPTION_LINE_H = 9.5;
-  const DIALOGUE_LINE_H = 8.8;
-  const CIRCLE_R = 7;
-  const DECOR_H = 14;
-
-  // Pre-calculate caption lines at the larger font size
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(CAPTION_SIZE);
+  pdf.setFontSize(layout.captionFontSize);
   const captionLines = caption ? pdf.splitTextToSize(caption, textAreaWidth) as string[] : [];
 
   pdf.setFont('helvetica', 'italic');
-  pdf.setFontSize(DIALOGUE_SIZE);
+  pdf.setFontSize(layout.dialogueFontSize);
   const dialogueLines = dialogue ? pdf.splitTextToSize(`"${dialogue}"`, textAreaWidth) as string[] : [];
 
-  // Calculate total block height for vertical centering
-  let blockHeight = CIRCLE_R * 2 + 10; // circle + gap after circle
-  blockHeight += captionLines.length * CAPTION_LINE_H;
+  let blockHeight = layout.circleRadius * 2 + layout.pageNumberGap;
+  blockHeight += captionLines.length * layout.captionLineHeight;
   if (dialogueLines.length > 0) {
-    blockHeight += 8 + dialogueLines.length * DIALOGUE_LINE_H; // gap + dialogue
+    blockHeight += layout.dialogueGap + dialogueLines.length * layout.dialogueLineHeight;
   }
-  blockHeight += DECOR_H; // decoration at bottom
+  if (layout.showDecoration) {
+    blockHeight += layout.decorationGap + layout.decorationFontSize * 0.5;
+  }
 
-  // Start Y so the block is vertically centered in the panel
-  let currentY = panelY + (PANEL_HEIGHT - blockHeight) / 2 + CIRCLE_R;
+  const availableHeight = PANEL_HEIGHT - layout.topInset - layout.bottomInset;
+  let currentY = panelY + layout.topInset + layout.circleRadius;
+
+  if (layout.verticalAlign === 'center') {
+    currentY += Math.max(0, (availableHeight - blockHeight) / 2);
+  }
 
   // Page number circle (fill only, no stroke border)
   pdf.setFillColor(primary);
-  pdf.circle(rightCenterX, currentY, CIRCLE_R, 'F');
+  pdf.circle(rightCenterX, currentY, layout.circleRadius, 'F');
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(12);
+  pdf.setFontSize(layout.pageNumberFontSize);
   pdf.setTextColor('#FFFFFF');
-  pdf.text(String(pageNumber), rightCenterX, currentY + 4, { align: 'center' });
+  pdf.text(String(pageNumber), rightCenterX, currentY + layout.pageNumberFontSize * 0.32, { align: 'center' });
 
-  currentY += CIRCLE_R + 10;
+  currentY += layout.circleRadius + layout.pageNumberGap;
 
   // Caption text
   if (captionLines.length > 0) {
     pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(CAPTION_SIZE);
+    pdf.setFontSize(layout.captionFontSize);
     pdf.setTextColor(INK_BLACK);
 
     for (const line of captionLines) {
       pdf.text(line, rightCenterX, currentY, { align: 'center' });
-      currentY += CAPTION_LINE_H;
+      currentY += layout.captionLineHeight;
     }
   }
 
   // Dialogue text
   if (dialogueLines.length > 0) {
-    currentY += 8;
+    currentY += layout.dialogueGap;
     pdf.setFont('helvetica', 'italic');
-    pdf.setFontSize(DIALOGUE_SIZE);
+    pdf.setFontSize(layout.dialogueFontSize);
     pdf.setTextColor(primary);
 
     for (const line of dialogueLines) {
       pdf.text(line, rightCenterX, currentY, { align: 'center' });
-      currentY += DIALOGUE_LINE_H;
+      currentY += layout.dialogueLineHeight;
     }
   }
 
   // Decoration
-  currentY += 6;
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(14);
-  pdf.setTextColor(accent);
-  pdf.text('*   *   *', rightCenterX, currentY, { align: 'center' });
+  if (layout.showDecoration) {
+    currentY += layout.decorationGap;
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(layout.decorationFontSize);
+    pdf.setTextColor(accent);
+    pdf.text('*   *   *', rightCenterX, currentY, { align: 'center' });
+  }
 }
 
 function drawBackCover(pdf: jsPDF, tenantConfig: TenantConfig): void {
@@ -312,7 +314,7 @@ function drawBackCover(pdf: jsPDF, tenantConfig: TenantConfig): void {
 }
 
 export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAsset> {
-  const { pages, heroName, tenantConfig, onProgress } = options;
+  const { pages, heroName, ageGroup, tenantConfig, onProgress } = options;
 
   const pdf = new jsPDF({
     orientation: 'landscape',
@@ -336,7 +338,7 @@ export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAs
     for (let i = 0; i < pages.length; i++) {
       pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT], 'landscape');
       reportProgress(`Pagina ${i + 1} de ${pages.length}...`);
-      await drawStoryPage(pdf, pages[i], i + 1, tenantConfig);
+      await drawStoryPage(pdf, pages[i], i + 1, ageGroup, tenantConfig);
     }
 
     pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT], 'landscape');
@@ -351,5 +353,43 @@ export async function exportToPdf(options: ExportOptions): Promise<ExportedPdfAs
     console.error('Error generando PDF:', error);
     throw error;
   }
+}
+
+function pickPdfTextLayout(
+  pdf: jsPDF,
+  ageGroup: AgeGroup,
+  caption: string,
+  dialogue: string,
+  metrics: ReturnType<typeof getStoryTextMetrics>
+): PdfTextLayout {
+  const layouts = getPdfTextLayouts(ageGroup, metrics);
+
+  for (const layout of layouts) {
+    const textAreaWidth = PANEL_WIDTH - layout.horizontalInset * 2;
+    const availableHeight = PANEL_HEIGHT - layout.topInset - layout.bottomInset;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(layout.captionFontSize);
+    const captionLines = caption ? pdf.splitTextToSize(caption, textAreaWidth) as string[] : [];
+
+    pdf.setFont('helvetica', 'italic');
+    pdf.setFontSize(layout.dialogueFontSize);
+    const dialogueLines = dialogue ? pdf.splitTextToSize(`"${dialogue}"`, textAreaWidth) as string[] : [];
+
+    let blockHeight = layout.circleRadius * 2 + layout.pageNumberGap;
+    blockHeight += captionLines.length * layout.captionLineHeight;
+    if (dialogueLines.length > 0) {
+      blockHeight += layout.dialogueGap + dialogueLines.length * layout.dialogueLineHeight;
+    }
+    if (layout.showDecoration) {
+      blockHeight += layout.decorationGap + layout.decorationFontSize * 0.5;
+    }
+
+    if (blockHeight <= availableHeight) {
+      return layout;
+    }
+  }
+
+  return layouts[layouts.length - 1];
 }
 

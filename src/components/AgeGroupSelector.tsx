@@ -9,31 +9,38 @@ interface AgeGroupSelectorProps {
 }
 
 const AGE_GROUP_UI: Record<AgeGroup, { emoji: string; color: string; hoverColor: string; borderColor: string; description: string }> = {
+  baby: {
+    emoji: '🍼',
+    color: 'bg-amber-300',
+    hoverColor: 'hover:bg-amber-400',
+    borderColor: 'border-amber-500',
+    description: 'Texto minimo e imagen protagonista'
+  },
   tiny: {
     emoji: '🧸',
     color: 'bg-pink-400',
     hoverColor: 'hover:bg-pink-500',
     borderColor: 'border-pink-600',
-    description: 'Frases cortitas y mucha repeticion'
+    description: 'Frases cortas y repeticion ritmica'
   },
   little: {
     emoji: '🎨',
     color: 'bg-sky-400',
     hoverColor: 'hover:bg-sky-500',
     borderColor: 'border-sky-600',
-    description: 'Mas palabras, primeras aventuras'
+    description: 'Aventuras simples con causa y efecto'
   },
   reader: {
     emoji: '📚',
-    color: 'bg-purple-400',
-    hoverColor: 'hover:bg-purple-500',
-    borderColor: 'border-purple-600',
-    description: 'Vocabulario rico, giros narrativos'
+    color: 'bg-emerald-400',
+    hoverColor: 'hover:bg-emerald-500',
+    borderColor: 'border-emerald-600',
+    description: 'Nudo y desenlace para primeros lectores'
   }
 };
 
 export default function AgeGroupSelector({ selected, onSelect }: AgeGroupSelectorProps) {
-  const ageGroups: AgeGroup[] = ['tiny', 'little', 'reader'];
+  const ageGroups: AgeGroup[] = ['baby', 'tiny', 'little', 'reader'];
 
   return (
     <div className="space-y-3">

@@ -1,3 +1,4 @@
+import type { AgeGroup } from '../../types';
 import type { HeroData } from './StepHero';
 
 const HERO_OPTIONS = {
@@ -7,10 +8,10 @@ const HERO_OPTIONS = {
     { value: 'neutral', label: 'Prefiero no decir' },
   ],
   ageRange: [
+    { value: '0-3', label: '0-3 años' },
     { value: '3-4', label: '3-4 años' },
-    { value: '5-6', label: '5-6 años' },
-    { value: '7-8', label: '7-8 años' },
-    { value: '9-10', label: '9-10 años' },
+    { value: '4-5', label: '4-5 años' },
+    { value: '5-7', label: '5-7 años' },
   ],
   hairColor: [
     { value: 'blonde', label: 'Rubio' },
@@ -84,14 +85,15 @@ export function formatHeroDescription(data: HeroData): string {
   return parts.length > 0 ? `${parts.join(', ')}.` : '';
 }
 
-export function mapAgeRangeToAgeGroup(ageRange: string): 'tiny' | 'little' | 'reader' {
+export function mapAgeRangeToAgeGroup(ageRange: string): AgeGroup {
   switch (ageRange) {
+    case '0-3':
+      return 'baby';
     case '3-4':
       return 'tiny';
-    case '5-6':
+    case '4-5':
       return 'little';
-    case '7-8':
-    case '9-10':
+    case '5-7':
       return 'reader';
     default:
       return 'little';

@@ -11,10 +11,33 @@ import type { RagChunk } from '../../types';
 
 export const storytellingChunks: RagChunk[] = [
     {
+        id: 'story-000',
+        collection: 'storytelling',
+        tags: ['age:baby', 'technique:structure'],
+        summary: 'Para 0-3 años: secuencia sensorial, texto mínimo y celebración constante.',
+        fullContent: `
+Para 0-3 años no conviene una historia con conflicto clásico. Funciona mejor una
+SECUENCIA DE MOMENTOS GOZOSOS y muy visuales:
+
+1. PRESENTACIÓN: El protagonista aparece y algo bonito llama su atención
+2. EXPLORACIÓN: Toca, mira, escucha o nombra lo que descubre
+3. REPETICIÓN: La misma estructura vuelve con una variación pequeña
+4. CELEBRACIÓN: El narrador valida y celebra al protagonista
+5. CIERRE: Final sereno, cálido y tranquilizador
+
+REGLAS DE ESCRITURA:
+- Máximo 15 palabras por página
+- Una frase por página suele bastar
+- Palabras concretas y cotidianas: sol, agua, mano, luna, casa
+- Sin diálogo separado ni explicaciones abstractas
+    `.trim(),
+        source: 'Board Book Editorial Guidelines - adapted reference.',
+    },
+    {
         id: 'story-001',
         collection: 'storytelling',
         tags: ['age:tiny', 'technique:structure'],
-        summary: 'Para 3-4 años: estructura lineal, máximo 3 eventos, final claro.',
+        summary: 'Para 3-4 años: estructura lineal, repetición y final claro.',
         fullContent: `
 La estructura narrativa para niños de 3-4 años debe ser LINEAL y SIMPLE:
 
@@ -24,7 +47,7 @@ La estructura narrativa para niños de 3-4 años debe ser LINEAL y SIMPLE:
 4. RESOLUCIÓN: Final feliz y claro (1-2 páginas)
 
 REGLAS DE ESCRITURA:
-- Máximo 20 palabras por página
+- Máximo 30 palabras por página
 - Frases: Sujeto + Verbo + Complemento
 - Onomatopeyas: ¡ZOOM! ¡PUM! ¡SPLASH!
 - Repetición: "Saltó una vez. Saltó dos veces. Saltó tres veces."
@@ -40,9 +63,9 @@ Bebió agua fresquita. ¡Qué feliz estaba Luna!"
         id: 'story-002',
         collection: 'storytelling',
         tags: ['age:little', 'technique:structure'],
-        summary: 'Para 5-6 años: arco simple con problema-intento-solución.',
+        summary: 'Para 4-5 años: arco simple con deseo, obstáculo y resolución.',
         fullContent: `
-Los niños de 5-6 años pueden seguir un arco narrativo con MÁS COMPLEJIDAD:
+Los niños de 4-5 años pueden seguir un arco narrativo con MÁS COMPLEJIDAD:
 
 ESTRUCTURA RECOMENDADA:
 1. MUNDO ORDINARIO: Héroe en su vida normal (1-2 páginas)
@@ -53,7 +76,7 @@ ESTRUCTURA RECOMENDADA:
 6. RESOLUCIÓN: Éxito + lección aprendida (1-2 páginas)
 
 REGLAS DE ESCRITURA:
-- Máximo 50 palabras por página
+- Máximo 55 palabras por página
 - Introducir diálogo simple: "¡Puedo hacerlo!", gritó Pablo.
 - Conectores básicos: entonces, pero, porque, después
 - Emociones nombradas: "Sintió miedo, pero también curiosidad."
@@ -65,25 +88,26 @@ REGLAS DE ESCRITURA:
         id: 'story-003',
         collection: 'storytelling',
         tags: ['age:reader', 'technique:structure'],
-        summary: 'Para 7-10 años: arco complejo con subtramas y dilemas.',
+        summary: 'Para 5-7 años: arco completo con nudo claro y resolución activa.',
         fullContent: `
-Los lectores de 7-10 años disfrutan COMPLEJIDAD NARRATIVA:
+Los lectores de 5-7 años ya toleran un ARCO NARRATIVO COMPLETO, pero todavía
+necesitan claridad y apoyo visual:
 
-ESTRUCTURA AVANZADA:
-1. GANCHO: Inicio intrigante que plantea una pregunta (1 página)
-2. MUNDO ORDINARIO: Contexto del héroe con detalles ricos (2 páginas)
-3. INCIDENTE INCITADOR: El catalizador del cambio (1-2 páginas)
-4. COMPLICACIONES: Obstáculos crecientes, no todo es fácil (3-4 páginas)
-5. PUNTO DE DECISIÓN: Dilema moral o elección difícil (1-2 páginas)
-6. CLÍMAX: Momento de máxima tensión (1-2 páginas)
-7. RESOLUCIÓN: Consecuencias + transformación del héroe (2 páginas)
+ESTRUCTURA RECOMENDADA:
+1. GANCHO: Presentar deseo o problema claro (1 página)
+2. MUNDO ORDINARIO: Contexto del héroe con detalles accesibles (1-2 páginas)
+3. INCIDENTE INCITADOR: El objeto mágico entra en juego (1-2 páginas)
+4. COMPLICACIONES: Obstáculos crecientes y uno o dos intentos fallidos (3 páginas)
+5. PUNTO DE DECISIÓN: El protagonista decide actuar por sí mismo (1 página)
+6. CLÍMAX: Momento de tensión comprensible (1 página)
+7. RESOLUCIÓN: Consecuencia emocional real y final satisfactorio (1-2 páginas)
 
 REGLAS DE ESCRITURA:
-- Hasta 120 palabras por página
-- Vocabulario rico: en lugar de "feliz", usar "radiante", "eufórico"
-- Metáforas simples: "Su corazón era un tambor"
-- Subtexto en diálogos: lo que dicen vs. lo que sienten
-- Giros narrativos: sorpresas que recontextualizan
+- Hasta 100 palabras por página
+- Vocabulario rico pero accesible
+- Comparaciones simples y onomatopeyas
+- Diálogos con personalidad, sin subtexto complejo
+- La resolución debe depender de la iniciativa del protagonista
     `.trim(),
         source: 'Vogler, C. (2007). The Writer\'s Journey.',
     },
@@ -127,6 +151,7 @@ FUNCIONES DEL DIÁLOGO:
 4. Modelar comunicación (cómo resolver conflictos)
 
 POR EDAD:
+- Baby: Integrar la voz del narrador dentro del caption. Evitar dialogue separado.
 - Tiny: Exclamaciones cortas. "¡Mira!" "¡No puedo!" "¡Sí puedo!"
 - Little: Frases completas simples. "Yo quiero ayudarte, pero tengo miedo."
 - Reader: Subtexto. "Está bien, no importa" (cuando SÍ importa).
@@ -151,6 +176,7 @@ TELL (evitar): "Pablo estaba muy enojado."
 SHOW (preferir): "Pablo apretó los puños. Su cara se puso roja como un tomate."
 
 POR EDAD:
+- Baby: Mostrar y nombrar lo visible o sensorial. "Manos suaves. Luna feliz."
 - Tiny: Mostrar CON nombrar. "Luna frunció el ceño. Estaba confundida."
 - Little: Mostrar primero, nombrar después. "Le temblaban las rodillas. 
   Eso era miedo, ¿verdad?"

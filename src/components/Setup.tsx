@@ -93,7 +93,7 @@ export default function Setup({
     description: initialItemModel || '',
   });
 
-  // Inferir ageGroup del heroData.ageRange
+  // Fallback solo para el render inicial. La edad es obligatoria antes de avanzar.
   const inferredAgeGroup: AgeGroup = heroData.ageRange
     ? mapAgeRangeToAgeGroup(heroData.ageRange)
     : 'little';
@@ -109,6 +109,7 @@ export default function Setup({
     switch (currentStep) {
       case 0:
         if (!heroData.name.trim()) return false;
+        if (!heroData.ageRange) return false;
         if (heroData.inputMode === 'photo' && !heroData.photo) return false;
         return true;
       case 1:

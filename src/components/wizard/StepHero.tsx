@@ -23,17 +23,38 @@ interface StepHeroProps {
   onChange: (data: HeroData) => void;
 }
 
+const AGE_RANGE_OPTIONS = [
+  {
+    value: '0-3',
+    label: '0 - 3 años',
+    description: 'El adulto lee en voz alta. Texto mínimo e imagen protagonista.',
+    emoji: '🍼',
+  },
+  {
+    value: '3-4',
+    label: '3 - 4 años',
+    description: 'Frases cortas y rítmicas. El niño escucha, señala y anticipa.',
+    emoji: '🌟',
+  },
+  {
+    value: '4-5',
+    label: '4 - 5 años',
+    description: 'Pequeñas aventuras con causa y efecto muy claros.',
+    emoji: '🚀',
+  },
+  {
+    value: '5-7',
+    label: '5 - 7 años',
+    description: 'Empieza a leer. Historia con nudo y desenlace reales.',
+    emoji: '📖',
+  },
+] as const;
+
 const OPTIONS = {
   gender: [
     { value: 'girl', label: 'Niña' },
     { value: 'boy', label: 'Niño' },
     { value: 'neutral', label: 'Prefiero no decir' },
-  ],
-  ageRange: [
-    { value: '3-4', label: '3-4 años' },
-    { value: '5-6', label: '5-6 años' },
-    { value: '7-8', label: '7-8 años' },
-    { value: '9-10', label: '9-10 años' },
   ],
   hairColor: [
     { value: 'blonde', label: 'Rubio' },
@@ -104,6 +125,47 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
         />
       </div>
 
+      {/* Edad */}
+      <div>
+        <label className="block text-sm font-bold text-[#1E293B] mb-2">
+          ¿Para qué edad quieres el cuento? <span className="text-red-500">* Obligatorio</span>
+        </label>
+        <p className="text-xs text-[#1E293B]/60 mb-3">
+          Este rango define el vocabulario, la estructura narrativa y el ritmo visual del cuento.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {AGE_RANGE_OPTIONS.map((option) => {
+            const isSelected = data.ageRange === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => updateField('ageRange', option.value)}
+                aria-pressed={isSelected}
+                className={`
+                  rounded-xl border-3 p-3 text-left transition-all
+                  ${isSelected
+                    ? 'border-[#8B5CF6] bg-[#8B5CF6]/10 shadow-[3px_3px_0px_#1E293B]'
+                    : 'border-[#1E293B]/20 bg-white hover:border-[#8B5CF6]/50'
+                  }
+                `}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl leading-none">{option.emoji}</span>
+                  <div>
+                    <p className="font-bold text-sm text-[#1E293B]">{option.label}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-[#1E293B]/70">
+                      {option.description}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Toggle foto/descripción */}
       <div>
         <label className="block text-sm font-bold text-[#1E293B] mb-2">
@@ -164,23 +226,6 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
                 >
                   <option value="">Seleccionar...</option>
                   {OPTIONS.gender.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Edad */}
-              <div>
-                <label className="block text-xs font-semibold text-[#1E293B]/70 mb-1">
-                  Edad
-                </label>
-                <select
-                  value={data.ageRange}
-                  onChange={(e) => updateField('ageRange', e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-lg border-3 border-[#1E293B]/30 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] bg-white cursor-pointer"
-                >
-                  <option value="">Seleccionar...</option>
-                  {OPTIONS.ageRange.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>

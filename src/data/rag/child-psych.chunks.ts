@@ -11,6 +11,25 @@ import type { RagChunk } from '../../types';
 
 export const childPsychChunks: RagChunk[] = [
     {
+        id: 'psych-000',
+        collection: 'child-psych',
+        tags: ['age:baby', 'emotion:separation', 'technique:attachment'],
+        summary: 'En 0-3 años funcionan mejor narrativas de apego, rutina y regreso seguro.',
+        fullContent: `
+En 0-3 años, las historias más útiles son las que refuerzan seguridad,
+rituales y regreso seguro al adulto de referencia.
+
+TÉCNICA NARRATIVA:
+1. Presentar al protagonista acompañado
+2. Explorar algo pequeño y amable
+3. Volver a un abrazo, una mirada o una rutina conocida
+
+El objeto mágico debe acompañar, no dramatizar. La clave es transmitir:
+"explorar es seguro y siempre hay un lugar al que volver".
+    `.trim(),
+        source: 'Attachment-informed storytelling - adapted reference.',
+    },
+    {
         id: 'psych-001',
         collection: 'child-psych',
         tags: ['age:tiny', 'topic:night-fears', 'technique:bibliotherapy'],
@@ -67,6 +86,7 @@ con deseo de autonomía. Los cuentos pueden:
 3. Ofrecer alternativas al estallido
 
 TÉCNICA NARRATIVA para cada edad:
+- Baby: El adulto co-regula con palabras suaves y repetitivas. El foco es calmar, no razonar.
 - Tiny: "Tomás sintió un volcán en su panza. Sus zapatos le susurraron: 
   respira hondo, cuenta hasta tres."
 - Little: El protagonista prueba gritar, no funciona. Prueba pedir ayuda, funciona.
@@ -80,9 +100,9 @@ CLAVE: El objeto mágico NO elimina la emoción. Ayuda a GESTIONARLA.
         id: 'psych-004',
         collection: 'child-psych',
         tags: ['age:reader', 'emotion:parents-divorce', 'technique:narrative-reframe'],
-        summary: 'El divorcio requiere narrativas que preserven la seguridad y eviten culpa.',
+        summary: 'Entre 5-7 años, el divorcio requiere narrativas que preserven seguridad y eviten culpa.',
         fullContent: `
-Los niños de 7-10 años pueden internalizar culpa por el divorcio de sus padres.
+Los niños de 5-7 años también pueden internalizar culpa por el divorcio de sus padres.
 La narrativa debe:
 
 1. Separar claramente: "Esto NO es tu culpa"
@@ -111,6 +131,7 @@ TÉCNICA NARRATIVA: Momentos donde el objeto mágico permite "ver"
 o "sentir" lo que otro personaje experimenta.
 
 Por edad:
+- Baby: "Sus zapatos brillaron y Pablo notó la carita triste de su amigo."
 - Tiny: "Sus zapatos brillaron y Pablo SINTIÓ la tristeza de su amigo."
 - Little: "Los zapatos le mostraron el mundo desde los ojos de María."
 - Reader: El protagonista debe elegir entre su beneficio y ayudar a otro.
