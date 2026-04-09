@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { parseJsonSafely } from '../src/utils/jsonParser.ts';
+import { buildSemanticQuery, resolveMaxChunks } from '../src/services/ragService.ts';
 import { generateArc } from '../src/services/agents/narrativeAgent.ts';
 import { generateBeats } from '../src/services/agents/storytellingAgent.ts';
 
@@ -175,4 +176,58 @@ test('generateBeats keeps branching only in choices and softens moralized ending
     assert.equal(beats[6]?.caption, 'Sara buscó la mano de un adulto.');
     assert.doesNotMatch(beats[9]?.caption ?? '', /comprendi[oó]\s+que/i);
     assert.equal(beats[9]?.caption, 'Sara reía.');
+});
+
+test('resolveMaxChunks grows with age and richer pedagogy signals', () => {
+    assert.equal(resolveMaxChunks({ ageGroup: 'baby' }), 4);
+    assert.equal(resolveMaxChunks({ ageGroup: 'tiny' }), 5);
+    assert.equal(resolveMaxChunks({ ageGroup: 'little' }), 6);
+    assert.equal(resolveMaxChunks({ ageGroup: 'reader' }), 7);
+
+    assert.equal(
+        resolveMaxChunks({
+            ageGroup: 'tiny',
+            pedagogy: createPedagogyProfile({
+                enabled: true,
+                customBehavior: 'frustracion',
+            }),
+        }),
+        6
+    );
+
+    assert.equal(
+        resolveMaxChunks({
+            ageGroup: 'reader',
+            pedagogy: createPedagogyProfile({
+                enabled: true,
+                behaviorChallenges: ['miedo a equivocarse'],
+                skillsToReinforce: ['resolver problemas'],
+                emotionalContext: ['se bloquea'],
+                customMotivation: 'inventos',
+            }),
+        }),
+        9
+    );
+});
+
+test('buildSemanticQuery includes custom Step 2 fields in the semantic retrieval prompt', () => {
+    const query = buildSemanticQuery({
+        ageGroup: 'little',
+        pedagogy: createPedagogyProfile({
+            enabled: true,
+            customBehavior: 'ansiedad por separacion',
+            customSkill: 'autonomia',
+            customEmotion: 'separacion de los padres',
+            customMotivation: 'animales',
+            customValue: 'valentia',
+            freeformContext: 'le calma jugar con su perro',
+        }),
+    });
+
+    assert.match(query, /ansiedad por separacion/i);
+    assert.match(query, /autonomia/i);
+    assert.match(query, /separacion de los padres/i);
+    assert.match(query, /animales/i);
+    assert.match(query, /valentia/i);
+    assert.match(query, /le calma jugar con su perro/i);
 });

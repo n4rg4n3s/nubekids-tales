@@ -93,7 +93,6 @@ export async function orchestrate(
             ageGroup: session.ageGroup,
             pedagogy: session.pedagogyProfile,
             collections: session.tenantConfig.ragCollections,
-            maxChunks: 5,
         }, deps);
 
         timing.ragMs = Date.now() - ragStart;

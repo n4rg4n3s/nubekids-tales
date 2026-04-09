@@ -16,8 +16,17 @@ import type { AgeGroup, PedagogyProfile, RagChunk } from '../types';
 
 const EMBEDDING_MODEL = 'gemini-embedding-001';
 const EMBEDDING_DIMENSIONS = 768;
-const DEFAULT_MAX_CHUNKS = 5;
 const SIMILARITY_THRESHOLD = 0.3;
+const BASE_MAX_CHUNKS_BY_AGE: Record<AgeGroup, number> = {
+  baby: 4,
+  tiny: 5,
+  little: 6,
+  reader: 7,
+};
+const PEDAGOGY_BONUS_CHUNKS = 1;
+const COMPLEX_PEDAGOGY_BONUS_CHUNKS = 1;
+const COMPLEX_PEDAGOGY_SIGNAL_THRESHOLD = 3;
+const MAX_ADAPTIVE_CHUNKS = 9;
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -60,7 +69,7 @@ async function generateQueryEmbedding(
 
 // ─── Build Semantic Query from Session Context ───────────────
 
-function buildSemanticQuery(params: RagQuery): string {
+export function buildSemanticQuery(params: RagQuery): string {
   const parts: string[] = [];
 
   const ageLabels: Record<AgeGroup, string> = {
@@ -72,26 +81,69 @@ function buildSemanticQuery(params: RagQuery): string {
   parts.push(ageLabels[params.ageGroup]);
 
   if (params.pedagogy?.enabled) {
-    if (params.pedagogy.behaviorChallenges?.length) {
-      parts.push(`behavioral challenges: ${params.pedagogy.behaviorChallenges.join(', ')}`);
+    const behaviorChallenges = collectPedagogyEntries(
+      params.pedagogy.behaviorChallenges,
+      params.pedagogy.customBehavior
+    );
+    const skills = collectPedagogyEntries(
+      params.pedagogy.skillsToReinforce,
+      params.pedagogy.customSkill
+    );
+    const emotions = collectPedagogyEntries(
+      params.pedagogy.emotionalContext,
+      params.pedagogy.customEmotion
+    );
+    const values = collectPedagogyEntries(
+      params.pedagogy.valuesToTransmit,
+      params.pedagogy.customValue
+    );
+    const motivations = collectPedagogyEntries(
+      params.pedagogy.motivations,
+      params.pedagogy.customMotivation
+    );
+
+    if (behaviorChallenges.length > 0) {
+      parts.push(`behavioral challenges: ${behaviorChallenges.join(', ')}`);
     }
-    if (params.pedagogy.skillsToReinforce?.length) {
-      parts.push(`skills to develop: ${params.pedagogy.skillsToReinforce.join(', ')}`);
+    if (skills.length > 0) {
+      parts.push(`skills to develop: ${skills.join(', ')}`);
     }
-    if (params.pedagogy.emotionalContext?.length) {
-      parts.push(`emotional context: ${params.pedagogy.emotionalContext.join(', ')}`);
+    if (emotions.length > 0) {
+      parts.push(`emotional context: ${emotions.join(', ')}`);
     }
-    if (params.pedagogy.valuesToTransmit?.length) {
-      parts.push(`values: ${params.pedagogy.valuesToTransmit.join(', ')}`);
+    if (values.length > 0) {
+      parts.push(`values: ${values.join(', ')}`);
     }
-    if (params.pedagogy.motivations?.length) {
-      parts.push(`child interests: ${params.pedagogy.motivations.join(', ')}`);
+    if (motivations.length > 0) {
+      parts.push(`child interests: ${motivations.join(', ')}`);
+    }
+    if (params.pedagogy.freeformContext?.trim()) {
+      parts.push(`session context: ${params.pedagogy.freeformContext.trim()}`);
     }
   }
 
   parts.push('therapeutic storytelling techniques for children, narrative structure, character development');
 
   return parts.join('. ');
+}
+
+export function resolveMaxChunks(params: RagQuery): number {
+  if (typeof params.maxChunks === 'number' && Number.isFinite(params.maxChunks) && params.maxChunks > 0) {
+    return Math.floor(params.maxChunks);
+  }
+
+  let maxChunks = BASE_MAX_CHUNKS_BY_AGE[params.ageGroup];
+  const pedagogySignalCount = countPedagogySignals(params.pedagogy);
+
+  if (pedagogySignalCount > 0) {
+    maxChunks += PEDAGOGY_BONUS_CHUNKS;
+  }
+
+  if (pedagogySignalCount >= COMPLEX_PEDAGOGY_SIGNAL_THRESHOLD) {
+    maxChunks += COMPLEX_PEDAGOGY_BONUS_CHUNKS;
+  }
+
+  return Math.min(maxChunks, MAX_ADAPTIVE_CHUNKS);
 }
 
 // ─── V2: Semantic Search via Supabase pgvector ───────────────
@@ -105,10 +157,13 @@ async function querySemanticV2(
     throw new Error('Supabase client not configured');
   }
 
-  const maxChunks = params.maxChunks || DEFAULT_MAX_CHUNKS;
+  const maxChunks = resolveMaxChunks(params);
   const semanticQuery = buildSemanticQuery(params);
+  const pedagogySignalCount = countPedagogySignals(params.pedagogy);
 
-  console.log('📚 RAG V2: Semantic query:', `${semanticQuery.slice(0, 100)}...`);
+  console.log(
+    `📚 RAG V2: maxChunks=${maxChunks}, pedagogySignals=${pedagogySignalCount}, query: ${semanticQuery.slice(0, 100)}...`
+  );
 
   const queryEmbedding = await generateQueryEmbedding(semanticQuery, deps);
   const collections = params.collections?.length
@@ -159,10 +214,14 @@ function buildTagsFromQuery(
   tags.push('age:all');
 
   if (pedagogy?.enabled) {
-    pedagogy.behaviorChallenges?.forEach((challenge) => tags.push(`topic:${challenge}`));
-    pedagogy.skillsToReinforce?.forEach((skill) => tags.push(`skill:${skill}`));
-    pedagogy.emotionalContext?.forEach((emotion) => tags.push(`emotion:${emotion}`));
-    pedagogy.valuesToTransmit?.forEach((value) => tags.push(`value:${value}`));
+    collectPedagogyEntries(pedagogy.behaviorChallenges, pedagogy.customBehavior)
+      .forEach((challenge) => tags.push(`topic:${challenge}`));
+    collectPedagogyEntries(pedagogy.skillsToReinforce, pedagogy.customSkill)
+      .forEach((skill) => tags.push(`skill:${skill}`));
+    collectPedagogyEntries(pedagogy.emotionalContext, pedagogy.customEmotion)
+      .forEach((emotion) => tags.push(`emotion:${emotion}`));
+    collectPedagogyEntries(pedagogy.valuesToTransmit, pedagogy.customValue)
+      .forEach((value) => tags.push(`value:${value}`));
   }
 
   return tags;
@@ -185,7 +244,7 @@ export async function queryRag(
   try {
     const { allChunks } = await import('../data/rag');
     const relevantTags = buildTagsFromQuery(params.ageGroup, params.pedagogy);
-    const maxChunks = params.maxChunks || DEFAULT_MAX_CHUNKS;
+    const maxChunks = resolveMaxChunks(params);
 
     let filtered = allChunks;
 
@@ -217,4 +276,28 @@ export function formatChunksForPrompt(chunks: RagChunk[]): string {
   return chunks
     .map((chunk) => `[${chunk.source}]:\n${chunk.fullContent}`)
     .join('\n\n---\n\n');
+}
+
+function collectPedagogyEntries(values: string[] | undefined, customValue?: string): string[] {
+  return [...(values ?? []), customValue ?? '']
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function countPedagogySignals(pedagogy?: PedagogyProfile): number {
+  if (!pedagogy?.enabled) {
+    return 0;
+  }
+
+  const groups = [
+    collectPedagogyEntries(pedagogy.behaviorChallenges, pedagogy.customBehavior),
+    collectPedagogyEntries(pedagogy.skillsToReinforce, pedagogy.customSkill),
+    collectPedagogyEntries(pedagogy.emotionalContext, pedagogy.customEmotion),
+    collectPedagogyEntries(pedagogy.motivations, pedagogy.customMotivation),
+    collectPedagogyEntries(pedagogy.valuesToTransmit, pedagogy.customValue),
+  ];
+
+  const freeformSignals = pedagogy.freeformContext?.trim() ? 1 : 0;
+
+  return groups.reduce((total, entries) => total + entries.length, 0) + freeformSignals;
 }
