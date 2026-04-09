@@ -20,7 +20,7 @@ const DEFAULT_BRAND_COLORS: BrandColors = {
     background: '#FDFBF7',
 };
 
-const DEFAULT_RAG_COLLECTIONS = ['neuro-dev', 'child-psych', 'storytelling'];
+const DEFAULT_RAG_COLLECTIONS = ['child-psych', 'storytelling'];
 
 interface TenantConfigInput {
     tenantId: string;

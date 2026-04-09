@@ -6,7 +6,6 @@
  * V2: Cargados desde Supabase pgvector
  */
 
-import { neuroDevChunks } from './neuro-dev.chunks';
 import { childPsychChunks } from './child-psych.chunks';
 import { storytellingChunks } from './storytelling.chunks';
 import type { RagChunk } from '../../types';
@@ -16,13 +15,12 @@ import type { RagChunk } from '../../types';
  * El ragService filtra por tags según la consulta.
  */
 export const allChunks: RagChunk[] = [
-    ...neuroDevChunks,
     ...childPsychChunks,
     ...storytellingChunks,
 ];
 
 // Re-exportar chunks individuales por si se necesitan por separado
-export { neuroDevChunks, childPsychChunks, storytellingChunks };
+export { childPsychChunks, storytellingChunks };
 
 // Utilidad: obtener chunks por colección
 export function getChunksByCollection(collection: string): RagChunk[] {

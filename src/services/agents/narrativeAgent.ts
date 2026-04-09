@@ -2,15 +2,17 @@
  * narrativeAgent.ts
  * NARRATIVE AGENT — Rol: Neuroeducador + Psicólogo Infantil
  *
- * Diseña el arco narrativo con intención pedagógica,
- * usando contexto del RAG científico.
+ * Destila el contexto experto en un brief narrativo operativo
+ * usando RAG científico y la verdad contextual del usuario.
  */
 
 import type { AgeGroup, ItemInteractionMode, PedagogyProfile } from '../../types';
 import type { AgentDependencies } from '../dependencies';
+import { formatEditorialGuardrails } from '../../config/editorialGuardrails';
 import { formatChunksForPrompt } from '../ragService';
 import { parseJsonSafely } from '../../utils/jsonParser';
 import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
+import type { ExpertNarrativeBrief } from './contracts';
 
 // ============================================
 // SYSTEM PROMPT
@@ -21,53 +23,17 @@ Eres un equipo de dos expertos colaborando:
 1. Un neuroeducador especialista en desarrollo cognitivo infantil (Piaget, Vygotsky, Gardner).
 2. Un psicólogo infantil experto en inteligencia emocional y bibliotherapy.
 
-Tu tarea es diseñar el ARCO NARRATIVO de un cuento infantil con intención pedagógica.
+Tu tarea es destilar un BRIEF NARRATIVO EXPERTO para un cuento infantil con intención pedagógica.
 
 REGLAS:
-- El arco debe tener un objetivo pedagógico claro (incluso si es solo "inspirar y entretener")
-- El viaje emocional del protagonista debe ser transformador pero sutil
-- El mensaje central debe ser apropiado para la edad
+- Prioriza la verdad del usuario y el contexto experto recuperado
+- Usa los guardrails editoriales solo como marco resumido, no como fuente científica principal
+- El brief debe conservar matices utiles para los agentes posteriores
 - El objeto mágico es CENTRAL en la resolución, no un accesorio
+- Evita moralejas explicadas y formulas del tipo "aprendio que", "comprendio que" o equivalentes
+- Si hay aprendizaje, expresalo como cambio observable, accion o clima emocional, no como leccion verbalizada
 - Responde SOLO con JSON válido, sin markdown, sin explicaciones
 `.trim();
-
-const NARRATIVE_AGE_INSTRUCTIONS: Record<AgeGroup, string> = {
-    baby: `
-El arco narrativo para 0-3 años NO es una historia convencional.
-Es una secuencia de momentos gozosos y sensoriales protagonizados por el niño.
-Estructura sugerida:
-- Página 1: presentación celebratoria
-- Páginas 2-8: exploración cotidiana o sensorial con el objeto mágico
-- Página 9: momento cumbre de alegría o descubrimiento
-- Página 10: cierre calmado y tranquilizador
-No hay antagonista ni conflicto. Solo observación, nombrar y celebrar.
-    `.trim(),
-    tiny: `
-Arco narrativo simple de 3 actos en 10 páginas:
-- Páginas 1-2: presentación del protagonista y su mundo
-- Páginas 3-4: aparece el objeto mágico o un deseo pequeño
-- Páginas 5-7: búsqueda o reto concreto
-- Páginas 8-9: resolución con pequeño esfuerzo propio
-- Página 10: final celebratorio y tranquilizador
-    `.trim(),
-    little: `
-Arco narrativo con causa-efecto claro:
-- Páginas 1-2: protagonista, mundo y deseo claro
-- Páginas 3-5: el objeto mágico complica o facilita el deseo
-- Páginas 6-8: obstáculo simple, intento, ajuste y nuevo intento
-- Página 9: superación del obstáculo con recursos propios
-- Página 10: resolución del deseo y aprendizaje emocional implícito
-    `.trim(),
-    reader: `
-Arco narrativo completo con tensión sostenida:
-- Páginas 1-2: mundo, protagonista y problema insinuado
-- Páginas 3-4: el objeto mágico entra en escena y el protagonista decide actuar
-- Páginas 5-7: nudo con complicaciones e intentos fallidos
-- Página 8: momento de máxima duda o tensión
-- Página 9: resolución por iniciativa del protagonista
-- Página 10: desenlace con consecuencia emocional real
-    `.trim(),
-};
 
 // ============================================
 // TYPES
@@ -85,26 +51,29 @@ export interface NarrativeInput {
     storeName?: string;
 }
 
-export interface NarrativeArc {
+interface NarrativeResponse extends Omit<Partial<ExpertNarrativeBrief>, 'keyMoments'> {
     pedagogicalObjective: string;
-    emotionalJourney: string;
+    emotionalObjective?: string;
+    emotionalJourney?: string;
     coreMessage: string;
-    narrativeArcSummary: string;
-    keyMoments: string[];
+    storyArcSummary?: string;
+    narrativeArcSummary?: string;
+    keyMoments: unknown;
     magicItemRole: string;
+    ageRationale?: string;
+    languageGuidance?: string[];
+    narrativeGuidance?: string[];
+    avoidPatterns?: string[];
+    visualGuidance?: string[];
 }
 
-// ============================================
-// MAIN FUNCTION
-// ============================================
-
 /**
- * Genera el arco narrativo basándose en el perfil del niño y el contexto RAG.
+ * Genera un brief experto basándose en el perfil del niño y el contexto RAG.
  */
 export async function generateArc(
     input: NarrativeInput,
     deps: AgentDependencies
-): Promise<NarrativeArc> {
+): Promise<ExpertNarrativeBrief> {
     // Formatear chunks RAG para el prompt
     const ragContext = formatChunksForPrompt(deps.ragChunks);
 
@@ -130,11 +99,12 @@ export async function generateArc(
     });
 
     const responseText = response.text || '';
-    const arc = parseJsonSafely<NarrativeArc>(responseText);
+    const rawBrief = parseJsonSafely<NarrativeResponse>(responseText);
+    const brief = normalizeExpertNarrativeBrief(rawBrief);
 
-    console.log(`[NarrativeAgent] Objetivo: ${arc.pedagogicalObjective}`);
+    console.log(`[NarrativeAgent] Objetivo: ${brief.pedagogicalObjective}`);
 
-    return arc;
+    return brief;
 }
 
 // ============================================
@@ -143,6 +113,7 @@ export async function generateArc(
 
 function buildPrompt(input: NarrativeInput, ragContext: string): string {
     const pedagogySection = buildPedagogySection(input.pedagogyProfile);
+    const ageGuardrails = formatEditorialGuardrails('narrative', input.ageGroup);
     const friendSection = input.friendName
         ? `- Co-protagonista: ${input.friendName}`
         : '';
@@ -164,23 +135,39 @@ ${storeSection}
 
 ${pedagogySection}
 
-INSTRUCCIONES NARRATIVAS PARA ${input.ageGroup.toUpperCase()}:
-${NARRATIVE_AGE_INSTRUCTIONS[input.ageGroup]}
+GUARDRAILS EDITORIALES PARA ${input.ageGroup.toUpperCase()}:
+${ageGuardrails}
 
-Diseña el ARCO NARRATIVO respondiendo SOLO con este JSON:
+Devuelve un BRIEF NARRATIVO EXPERTO respondiendo SOLO con este JSON:
 {
   "pedagogicalObjective": "El objetivo de aprendizaje/desarrollo del cuento (una frase clara)",
-  "emotionalJourney": "El viaje emocional del protagonista en una frase",
-  "coreMessage": "El mensaje central que el niño se llevará",
-  "narrativeArcSummary": "Resumen del arco narrativo en 3-4 frases",
-  "keyMoments": ["momento_inicio", "problema", "descubrimiento_magia", "punto_decision", "climax", "resolucion"],
-  "magicItemRole": "Cómo el objeto mágico ayuda específicamente en la resolución"
+  "emotionalObjective": "La emocion o transformacion emocional que debe quedar viva en el cuento",
+  "coreMessage": "La verdad emocional o relacional que sostendra el cuento, sin escribir una moraleja explicita",
+  "storyArcSummary": "Resumen del arco narrativo en 3-4 frases centrado en acciones y cambios observables, no en lecciones explicadas",
+  "keyMoments": {
+    "momento_inicio": "cómo empieza el cuento",
+    "problema": "qué reto pequeño aparece",
+    "descubrimiento_magia": "cómo aparece la magia",
+    "punto_decision": "qué decide el protagonista",
+    "climax": "momento culminante",
+    "resolucion": "cómo se resuelve en escena y emocion visible, sin frases del tipo 'ha aprendido que'"
+  },
+  "magicItemRole": "Cómo el objeto mágico ayuda específicamente en la resolución",
+  "ageRationale": "Por qué este enfoque es adecuado para la edad y el contexto del niño",
+  "languageGuidance": ["regla operativa de lenguaje 1", "regla operativa de lenguaje 2"],
+  "narrativeGuidance": ["regla operativa de estructura 1", "regla operativa de estructura 2"],
+  "avoidPatterns": ["patron a evitar 1", "patron a evitar 2"],
+  "visualGuidance": ["guia visual 1", "guia visual 2"]
 }
 
 IMPORTANTE:
-- El "pedagogicalObjective" debe ser concreto y alcanzable en un cuento corto
-- El "magicItemRole" debe explicar POR QUÉ el objeto mágico es esencial, no accesorio
-- Los "keyMoments" deben ser específicos para esta historia, no genéricos
+- Si el usuario ha dado contexto pedagogico, ese contexto debe gobernar el brief
+- Si el RAG aporta matices utiles, priorizalos sobre cualquier simplificacion general
+- "keyMoments" debe ser un OBJETO JSON con esas 6 claves exactas, no un array
+- "languageGuidance", "narrativeGuidance", "avoidPatterns" y "visualGuidance" deben ser concretos y accionables
+- El "magicItemRole" debe explicar POR QUE el objeto mágico es esencial, no accesorio
+- No escribas conclusiones doctrinales ni frases del tipo "aprendio que", "comprendio que", "ahora sabia que" o "la verdadera magia era"
+- Si debes expresar transformacion, hazlo como conducta visible, clima emocional o consecuencia dramatizada
   `.trim();
 }
 
@@ -234,4 +221,155 @@ El objetivo pedagógico será general: fomentar la imaginación, la valentía y 
     sections.push('Nunca moralizar directamente. El aprendizaje surge de la experiencia del protagonista.');
 
     return sections.join('\n');
+}
+
+function normalizeExpertNarrativeBrief(raw: NarrativeResponse): ExpertNarrativeBrief {
+    return {
+        pedagogicalObjective: raw.pedagogicalObjective || '',
+        emotionalObjective: raw.emotionalObjective || raw.emotionalJourney || '',
+        coreMessage: sanitizeCoreMessage(raw.coreMessage || ''),
+        storyArcSummary: sanitizeNarrativeSummary(raw.storyArcSummary || raw.narrativeArcSummary || ''),
+        keyMoments: normalizeKeyMoments(raw.keyMoments).map(sanitizeKeyMomentEntry),
+        magicItemRole: raw.magicItemRole || '',
+        ageRationale: raw.ageRationale || '',
+        languageGuidance: normalizeStringArray(raw.languageGuidance),
+        narrativeGuidance: normalizeStringArray(raw.narrativeGuidance),
+        avoidPatterns: normalizeStringArray(raw.avoidPatterns),
+        visualGuidance: normalizeStringArray(raw.visualGuidance),
+    };
+}
+
+function normalizeStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
+function normalizeKeyMoments(value: unknown): string[] {
+    if (Array.isArray(value)) {
+        return normalizeStringArray(value);
+    }
+
+    if (!value || typeof value !== 'object') {
+        return [];
+    }
+
+    return Object.entries(value)
+        .filter((entry): entry is [string, string] => typeof entry[0] === 'string' && typeof entry[1] === 'string')
+        .map(([key, description]) => `${key}: ${description.trim()}`)
+        .filter(Boolean);
+}
+
+const DIDACTIC_LEAD_IN_PATTERNS = [
+    /\bha\s+aprendido\s+que\s+/i,
+    /\bhan\s+aprendido\s+que\s+/i,
+    /\baprendi[oó]\s+que\s+/i,
+    /\bcomprendi[oó]\s+que\s+/i,
+    /\bdescubri[oó]\s+que\s+/i,
+    /\bahora\s+sab[ií]a\s+que\s+/i,
+    /\bahora\s+sabe\s+que\s+/i,
+    /\bla\s+verdadera\s+magia\s+era\s+/i,
+    /\blearned\s+that\s+/i,
+    /\brealized\s+that\s+/i,
+    /\bnow\s+(?:she|he|they)\s+knew\s+that\s+/i,
+    /\bthe\s+real\s+magic\s+was\s+/i,
+];
+
+const DIDACTIC_SENTENCE_PATTERNS = [
+    /\bha\s+aprendido\s+que\b/i,
+    /\bhan\s+aprendido\s+que\b/i,
+    /\baprendi[oó]\s+que\b/i,
+    /\bcomprendi[oó]\s+que\b/i,
+    /\bdescubri[oó]\s+que\b/i,
+    /\bahora\s+sab[ií]a\s+que\b/i,
+    /\bahora\s+sabe\s+que\b/i,
+    /\bla\s+verdadera\s+magia\s+era\b/i,
+    /\blearned\s+that\b/i,
+    /\brealized\s+that\b/i,
+    /\bnow\s+(?:she|he|they)\s+knew\s+that\b/i,
+    /\bthe\s+real\s+magic\s+was\b/i,
+];
+
+function sanitizeCoreMessage(text: string): string {
+    const stripped = stripDidacticLeadIns(normalizeWhitespace(text));
+    return normalizeSentenceCapitalization(stripped);
+}
+
+function sanitizeNarrativeSummary(text: string): string {
+    return sanitizeNarrativeSurface(text);
+}
+
+function sanitizeKeyMomentEntry(entry: string): string {
+    const separatorIndex = entry.indexOf(':');
+
+    if (separatorIndex === -1) {
+        return sanitizeNarrativeSurface(entry);
+    }
+
+    const key = entry.slice(0, separatorIndex).trim();
+    const description = entry.slice(separatorIndex + 1).trim();
+    const sanitizedDescription = sanitizeNarrativeSurface(description);
+
+    return `${key}: ${sanitizedDescription}`;
+}
+
+function sanitizeNarrativeSurface(text: string): string {
+    const normalized = normalizeWhitespace(text);
+
+    if (!normalized) {
+        return '';
+    }
+
+    const sentences = splitSentences(normalized);
+    const filteredSentences = sentences.filter((sentence) => !isDidacticSentence(sentence));
+
+    if (filteredSentences.length > 0) {
+        return filteredSentences
+            .map((sentence) => normalizeSentenceCapitalization(stripDidacticLeadIns(sentence)))
+            .filter(Boolean)
+            .join(' ');
+    }
+
+    return normalizeSentenceCapitalization(stripDidacticLeadIns(normalized));
+}
+
+function stripDidacticLeadIns(text: string): string {
+    let sanitized = text;
+
+    for (const pattern of DIDACTIC_LEAD_IN_PATTERNS) {
+        sanitized = sanitized.replace(pattern, '');
+    }
+
+    return normalizeWhitespace(sanitized);
+}
+
+function isDidacticSentence(sentence: string): boolean {
+    return DIDACTIC_SENTENCE_PATTERNS.some((pattern) => pattern.test(sentence));
+}
+
+function splitSentences(text: string): string[] {
+    const matches = text.match(/[^.!?]+[.!?]?/g) || [];
+
+    return matches
+        .map((sentence) => normalizeWhitespace(sentence))
+        .filter(Boolean);
+}
+
+function normalizeWhitespace(text: string): string {
+    return text.replace(/\s+/g, ' ').trim();
+}
+
+function normalizeSentenceCapitalization(text: string): string {
+    const trimmed = normalizeWhitespace(text);
+
+    if (!trimmed) {
+        return '';
+    }
+
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 }

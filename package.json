@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:unit": "node --import ./tests/register-ts-loader.mjs --test tests/agent-sanitizers.test.ts"
   },
   "dependencies": {
     "@google/genai": "^1.47.0",

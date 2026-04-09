@@ -1,8 +1,8 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-07 (Book móvil + export PDF móvil reforzados)
-> **Estado:** ✅ Preview `preview/fase11-launch-readiness` validada — Funnel B2B2C end-to-end funcional
-> **Próximo paso:** revalidar `Book`/PDF en móvil sobre preview y después rematar Fase 11
+> **Última actualización:** 2026-04-08 (realineación experta + limpieza documental)
+> **Estado:** ✅ `main` local alineado con pivote de edad + frontera experta realineada; pendiente revalidación manual móvil/go-live
+> **Próximo paso:** validar con casos reales de Step 2 que el núcleo experto llega al texto final y después rematar Fase 11
 
 ---
 
@@ -59,6 +59,18 @@
 3. ✅ **Permisos GitHub/Vercel saneados** — repo migrado a `n4rg4n3s/nubekids-tales`, `origin` corregido, credenciales locales renovadas y commits nuevos firmados como `n4rg4n3s`
 4. ✅ **`src/components/Book.tsx` reforzado para móvil** — en portrait muestra aviso "Gira el móvil"; en landscape pasa a modo de lectura inmersivo sin barra de botones inferior
 5. ✅ **`src/utils/pdfExport.ts` + `src/components/Book.tsx`** — el PDF ya no depende de `pdf.save()` en móvil; ahora se genera como `Blob` y ofrece flujo nativo de guardar/compartir/abrir
+
+### Realineación experta + pivote de edad (08 Abril 2026)
+
+1. ✅ **`AUDITORIA_FRONTERA_EXPERTA.md`** — auditoría profunda de frontera correcta entre RAG, agentes y guardrails
+2. ✅ **`src/config/tenantConfigFactory.ts` + `src/data/rag/index.ts`** — modelo experto activo consolidado en 2 colecciones: `child-psych` y `storytelling`; `neuro-dev` deja de ser colección runtime
+3. ✅ **`src/config/editorialGuardrails.ts`** — guardrails editoriales auditables, subordinados a `docs/segmentacion_edades.md` y `docs/words_x_age.md`
+4. ✅ **`src/services/agents/contracts.ts`** — nuevo contrato `ExpertNarrativeBrief` como núcleo de verdad destilada entre agentes
+5. ✅ **`src/services/agents/narrativeAgent.ts`** — el agente experto ahora destila objetivo pedagógico, objetivo emocional, racional por edad, guías narrativas/lingüísticas, patrones a evitar y guía visual
+6. ✅ **`src/services/agents/storytellingAgent.ts` + `visualBriefAgent.ts`** — ambos consumen `ExpertNarrativeBrief`; dejan de apoyarse en doctrina fija como fuente principal
+7. ✅ **`src/components/wizard/StepHero.tsx` + `src/components/Setup.tsx`** — `ageGroup` sube a Step 1, obligatorio, con rangos `0-3`, `3-4`, `4-5`, `5-7`
+8. ✅ **`src/components/Book.tsx` + `src/utils/pdfExport.ts`** — tipografía y densidad visual adaptativas por `ageGroup` y por volumen real de texto
+9. ✅ **`PLANNING.md` + `GUIA_MAESTRA_v2.md` + `HANDOFF.md`** — documentación principal alineada con la frontera experta nueva
 
 ### Cierre de riesgo B2B (04 Abril 2026)
 
@@ -169,15 +181,15 @@
 | Fase | Estado | Notas |
 |------|--------|-------|
 | Fase 1 — Multitenancy | ✅ Completa | Tenants, tokens, Supabase |
-| Fase 2 — Wizard Setup | ✅ Completa | 4 steps, validación |
-| Fase 3 — Sistema Multiagente + RAG V1 | ✅ Completa | Orchestrator + 3 agentes |
+| Fase 2 — Wizard Setup | ✅ Completa | 4 steps, validación, edad obligatoria en Step 1 |
+| Fase 3 — Sistema Multiagente + RAG V1 | ✅ Completa | Orchestrator + 3 agentes + `ExpertNarrativeBrief` |
 | Fase 4 — Imágenes + Book | ✅ Completa | Gemini images + page-flip + PDF |
 | Fase 5 — RAG V2 pgvector | ✅ Completa | 3105 chunks, búsqueda semántica |
 | Fase 6 — Bugfix + Estabilización | ✅ Completa | Todos los bugs críticos resueltos |
 | Fase 7 — Autenticación | ✅ Completa | Supabase Auth + Google OAuth |
 | Fase 8 — Sistema de Créditos | ✅ Completa | Prepago funcional end-to-end |
 | Fase 9 — Stripe | ✅ Completa | Pago end-to-end verificado |
-| Fase 10 — Flujo B2B → B2C | ✅ **COMPLETA** | **Funnel completo funcional** ← HOY |
+| Fase 10 — Flujo B2B → B2C | ✅ **COMPLETA** | **Funnel completo funcional** |
 | Fase 11 — Deploy + Dominio + Legal | ⏳ En curso | Preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo móvil `Book`/PDF |
 | Fase 12 — Dashboard Tenant | 🔮 Futuro | Post-lanzamiento |
 
@@ -200,6 +212,9 @@
 | **`post-story` como AppState** | CTA de conversión B2B→B2C sin interferir con el estado `reading` |
 | **Landings en `/public` como HTML estático** | Carga instantánea, SEO friendly, independientes del SPA |
 | **`itemInteractionMode` desacoplado de `tenant`** | `tenant` define branding e identidad comercial; `itemInteractionMode` define cómo el niño usa el objeto en narrativa e imagen |
+| **RAG = verdad experta; guardrails = marco editorial** | La doctrina pedagógica debe venir de `rag_chunks`; el código solo resume límites operativos y editoriales |
+| **Dos colecciones expertas activas** | `child-psych` y `storytelling`; `neuro-dev` queda absorbida para no fragmentar artificialmente las fuentes |
+| **`ExpertNarrativeBrief` como contrato entre agentes** | El contexto experto no debe perderse en un simple resumen; Storytelling y Visual necesitan un brief rico y trazable |
 | **Formulario B2B first-party + alta manual** | Capturamos leads en base propia y activamos manualmente el tenant antes de permitir compra B2B |
 | **B2B real por token one-time** | 1 compra = 1 token = 1 cuento; evita agotar el saldo del tenant por enlaces compartidos |
 
@@ -218,6 +233,10 @@
   - `direct-b2c` → `generic`
 - **Implicación práctica**: futuros tenants B2B no deben crearse siguiendo la taxonomía `shoe-store` / `fashion-store`; deben definirse por branding comercial y por `itemInteractionMode`.
 - **Runtime B2B real**: el flujo `?token=...` ya no debe depender de `tenantLoader`; construye `TenantConfig` desde la data real del tenant y usa `item_interaction_mode` o fallback legacy.
+- **Colecciones expertas activas**: `child-psych` y `storytelling`. `neuro-dev` debe leerse solo como referencia histórica/documental.
+- **Entrada de verdad experta al pipeline**: solo `narrativeAgent` recibe RAG bruto y lo destila.
+- **Contrato experto vigente**: `ExpertNarrativeBrief`. Storytelling y Visual Brief deben trabajar desde ese brief, no desde doctrina fija inventada en su prompt.
+- **Guardrails en código**: existen para contener formato, claridad, límites y calibración resumida por edad. No sustituyen la consulta al núcleo experto.
 - **Decisión operativa vigente para B2B**: el alta de nuevos tenants será asistida/manual en V1. El self-serve B2B queda explícitamente pospuesto hasta que haya demanda que lo justifique.
 - **Canal operativo recomendado para B2B V1**: formulario propio simple en `public/b2b.html`, con email obligatorio y WhatsApp opcional/recomendado como canal preferido.
 - **Fuente de verdad para enlaces B2B de cliente final**: `/?token=...`
@@ -303,6 +322,7 @@ D:\nubekids-tales\
 │   │   ├── queryParamsService.ts            # ✅ NUEVO Fase 10
 │   │   ├── sessionService.ts               # ✅ NUEVO Fase 10
 │   │   └── agents/
+│   │       ├── contracts.ts                # ✅ NUEVO 08 Abril — ExpertNarrativeBrief
 │   │       ├── orchestratorAgent.ts
 │   │       ├── narrativeAgent.ts
 │   │       ├── storytellingAgent.ts
@@ -315,6 +335,7 @@ D:\nubekids-tales\
 │   │   └── itemImageLoader.ts              # ✅ NUEVO Fase 10
 │   │
 │   └── config/
+│       ├── editorialGuardrails.ts          # ✅ NUEVO 08 Abril — guardrails auditables
 │       └── tenants/
 ```
 
@@ -402,17 +423,18 @@ FRONTEND_URL=http://localhost:5173
 
 ## 🚀 Próximos Pasos — Fase 11
 
-1. **Revalidar `Book` móvil en preview** — confirmar en iPhone/Android el nuevo aviso portrait y la lectura inmersiva en landscape
-2. **Revalidar export PDF móvil** — confirmar en iPhone/Android los flujos `Guardar o compartir`, `Abrir PDF` y `Descargar archivo`
-3. **Comprar dominio** (nubekids.io / nubekidstales.com)
-4. **Configurar DNS** en Vercel
-5. **Actualizar webhook Stripe** con URL de producción definitiva
-6. **Google OAuth** — completar config en GCP con dominio definitivo
-7. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
-8. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
-9. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
-10. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
-11. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
+1. **Validar núcleo experto con casos reales de Step 2** — comprobar que `pedagogyProfile` influye de verdad en `ExpertNarrativeBrief`, beats y texto final
+2. **Revalidar `Book` móvil en preview** — confirmar en iPhone/Android el nuevo aviso portrait y la lectura inmersiva en landscape
+3. **Revalidar export PDF móvil** — confirmar en iPhone/Android los flujos `Guardar o compartir`, `Abrir PDF` y `Descargar archivo`
+4. **Comprar dominio** (nubekids.io / nubekidstales.com)
+5. **Configurar DNS** en Vercel
+6. **Actualizar webhook Stripe** con URL de producción definitiva
+7. **Google OAuth** — completar config en GCP con dominio definitivo
+8. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
+9. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
+10. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
+11. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
+12. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
 
 ---
 
@@ -454,7 +476,7 @@ FRONTEND_URL=http://localhost:5173
 ✅ Fase 7:  Autenticación (Supabase Auth + OAuth) — COMPLETADA
 ✅ Fase 8:  Sistema de Créditos — COMPLETADA
 ✅ Fase 9:  Stripe + Compra de Créditos — COMPLETADA
-✅ Fase 10: Flujo B2B → B2C completo — COMPLETADA ← HOY
+✅ Fase 10: Flujo B2B → B2C completo — COMPLETADA
 ⏳ Fase 11: Deploy + Dominio + Legal — preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo `Book`/PDF en móvil
 
 🎯 ESTADO: MVP COMERCIAL COMPLETO

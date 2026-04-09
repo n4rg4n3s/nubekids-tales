@@ -9,7 +9,7 @@ interface BookProps {
     tenantConfig: TenantConfig;
     heroName: string;
     ageGroup: AgeGroup;
-    onReset: () => void;
+    onReset: (source?: string) => void;
 }
 
 interface PageProps {
@@ -351,7 +351,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                 e.preventDefault();
                 handlePrevPage();
             } else if (e.key === 'Escape') {
-                onReset();
+                onReset('escape-key');
             }
         };
 
@@ -567,7 +567,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                             </button>
 
                             <button
-                                onClick={onReset}
+                                onClick={() => onReset('portrait-close-button')}
                                 disabled={isExporting}
                                 className="w-full px-4 py-2.5 md:px-5 md:py-3 rounded-xl font-display font-bold text-base md:text-xl btn-tactile disabled:opacity-60"
                                 style={{
@@ -731,7 +731,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
             {isMobilePortrait ? (
                 <div className="h-full flex items-center justify-center">
                     <button
-                        onClick={onReset}
+                        onClick={() => onReset('portrait-close-button')}
                         disabled={isExporting}
                         className="fixed px-3 py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60 z-40"
                         style={{
@@ -798,7 +798,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                                     Pagina {displayPage} de {displayTotal}
                                 </span>
                                 <button
-                                    onClick={onReset}
+                                    onClick={() => onReset('desktop-close-button')}
                                     disabled={isExporting}
                                     className="px-3 md:px-4 py-1.5 md:py-2 rounded-lg font-display font-bold text-sm btn-tactile disabled:opacity-60"
                                     style={{
@@ -836,7 +836,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
 
                                 <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2">
                                     <button
-                                        onClick={onReset}
+                                        onClick={() => onReset('immersive-close-button')}
                                         disabled={isExporting}
                                         className="px-3 py-2 rounded-full font-display font-bold text-sm btn-tactile disabled:opacity-60"
                                         style={{

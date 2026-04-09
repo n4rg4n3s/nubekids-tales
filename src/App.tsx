@@ -6,6 +6,8 @@ import type { TenantData, TokenData } from './services/tokenService';
 import type { TenantConfig, AgentBrief, ComicFace, B2BSession } from './types';
 import type { SetupData } from './components/Setup';
 import { DEV_CONFIG, isDevMockMode } from './dev/mockConfig';
+import { buildFinalPageTrace, saveExpertTrace } from './dev/expertTrace';
+import type { ExpertPipelineTrace } from './dev/expertTrace';
 
 // Auth
 import { useAuthContext } from './context/useAuthContext';
@@ -157,6 +159,20 @@ function ChunkFallback() {
   );
 }
 
+function formatGenerationError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+
+  if (
+    message.includes('RESOURCE_EXHAUSTED') ||
+    message.includes('monthly spending cap') ||
+    message.includes('"code":429')
+  ) {
+    return 'La validación en modo real está bloqueada por cuota de Gemini/AI Studio agotada (429 RESOURCE_EXHAUSTED). No es un fallo del pipeline: hay que reactivar o ampliar el gasto del proyecto antes de seguir.';
+  }
+
+  return message;
+}
+
 // Estados de la aplicación
 type AppState =
   | 'loading'
@@ -271,6 +287,10 @@ function App() {
   // INICIALIZACIÓN
   // ============================================
   useEffect(() => {
+    if (appState !== 'loading') {
+      return;
+    }
+
     // Esperar a que AuthContext termine de cargar
     if (auth.loading) return;
 
@@ -445,7 +465,7 @@ function App() {
     }
 
     initialize();
-  }, [auth.loading, auth.isAuthenticated]);
+  }, [appState, auth.loading, auth.isAuthenticated]);
 
   // Construir SessionContext desde SetupData
   const buildSessionContext = useCallback((data: SetupData, config: TenantConfig): SessionContext => {
@@ -594,6 +614,8 @@ function App() {
     setAppState('orchestrating');
 
     try {
+      let currentDebugTrace: ExpertPipelineTrace | null = null;
+
       // FASE 1: Orchestrate (RAG + Narrative + Storytelling + Visual Brief)
       const sessionContext = buildSessionContext(data, tenantConfig);
       console.log('🎭 Iniciando orchestración...');
@@ -612,6 +634,16 @@ function App() {
           }
         : await generationModules!.orchestrate(sessionContext, generationModules!.agentDeps);
 
+      currentDebugTrace = orchestratorResult.debugTrace ?? null;
+
+      if (import.meta.env.DEV && currentDebugTrace) {
+        saveExpertTrace({
+          ...currentDebugTrace,
+          createdAt: new Date().toISOString(),
+          mode: isMockMode ? 'mock' : currentDebugTrace.mode,
+        });
+      }
+
       if (!orchestratorResult.success || !orchestratorResult.agentBrief) {
         throw new Error(orchestratorResult.error || 'Error en orchestración');
       }
@@ -625,6 +657,16 @@ function App() {
       console.log('🎨 Iniciando generación de imágenes...');
 
       const generatedPages = await generateImages(orchestratorResult.agentBrief, data);
+
+      if (import.meta.env.DEV && orchestratorResult.debugTrace) {
+        saveExpertTrace({
+          ...orchestratorResult.debugTrace,
+          createdAt: new Date().toISOString(),
+          mode: isMockMode ? 'mock' : 'real',
+          status: 'success',
+          finalPages: buildFinalPageTrace(generatedPages),
+        });
+      }
 
       // Marcar cuento generado en sesión B2B
       if (b2bSession) {
@@ -642,7 +684,7 @@ function App() {
 
     } catch (err) {
       console.error('Error en generación:', err);
-      setError(err instanceof Error ? err.message : 'Error desconocido');
+      setError(formatGenerationError(err));
       setAppState('error');
     }
   }, [tenantConfig, b2bSession, tokenData, auth.user, buildSessionContext, generateImages]);
@@ -650,7 +692,16 @@ function App() {
   // Reset / "volver al inicio"
   // En sesión B2B anónima tras generar → ir a post-story (CTA de conversión)
   // En cualquier otro caso → reset completo
-  const handleReset = useCallback(() => {
+  const handleReset = useCallback((source: string = 'unknown') => {
+    console.warn('[App] handleReset invoked', {
+      source,
+      appState,
+      hasB2BStory: Boolean(b2bSession?.storyGenerated),
+      tokenUsed: Boolean(tokenData?.isUsed),
+      pages: pages.length,
+      hasSetupData: Boolean(setupData),
+    });
+
     if (b2bSession?.storyGenerated || tokenData?.isUsed) {
       // El usuario B2B terminó su cuento gratuito → mostrar CTA
       setAppState('post-story');
@@ -669,7 +720,7 @@ function App() {
       });
     }
     setAppState('setup');
-  }, [b2bSession, tokenData]);
+  }, [appState, b2bSession, tokenData, pages.length, setupData]);
 
   // ============================================
   // RENDER: Loading con protección
@@ -796,7 +847,7 @@ function App() {
           <div className="text-5xl mb-4">😢</div>
           <p className="text-red-500 text-xl mb-4 font-medium">{error}</p>
           <button
-            onClick={handleReset}
+            onClick={() => handleReset('error-screen-button')}
             className="inline-block px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-lg border-3 border-[#1E293B] shadow-[3px_3px_0px_#1E293B] hover:shadow-[1px_1px_0px_#1E293B] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
           >
             Volver al inicio

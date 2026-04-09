@@ -15,6 +15,7 @@ import { queryRag } from '../ragService';
 import * as narrativeAgent from './narrativeAgent';
 import * as storytellingAgent from './storytellingAgent';
 import * as visualBriefAgent from './visualBriefAgent';
+import type { ExpertFailureStage, ExpertPipelineTrace } from '../../dev/expertTrace';
 
 // ============================================
 // TYPES
@@ -23,6 +24,7 @@ import * as visualBriefAgent from './visualBriefAgent';
 export interface OrchestratorResult {
     success: boolean;
     agentBrief?: AgentBrief;
+    debugTrace?: ExpertPipelineTrace;
     error?: string;
     timing: {
         ragMs: number;
@@ -53,6 +55,28 @@ export async function orchestrate(
         visualBriefMs: 0,
         totalMs: 0,
     };
+    let failureStage: ExpertFailureStage = 'unknown';
+    const debugTrace: ExpertPipelineTrace = {
+        createdAt: new Date().toISOString(),
+        mode: 'real',
+        status: 'partial',
+        session: {
+            tenantId: session.tenantConfig.tenantId,
+            tenantName: session.tenantConfig.tenantName,
+            heroName: session.heroName,
+            ageGroup: session.ageGroup,
+            language: session.language,
+            genre: session.genre,
+            itemLabel: session.tenantConfig.itemLabel,
+            itemDescription: session.itemDescription,
+            itemInteractionMode: session.tenantConfig.itemInteractionMode,
+            ragCollections: session.tenantConfig.ragCollections,
+            pedagogyProfile: session.pedagogyProfile,
+        },
+        ragChunks: [],
+        visualBriefs: [],
+        timing,
+    };
 
     console.log('🎭 [Orchestrator] Iniciando pipeline multiagente...');
     console.log(`🎭 [Orchestrator] Héroe: ${session.heroName}, Edad: ${session.ageGroup}`);
@@ -61,6 +85,7 @@ export async function orchestrate(
         // ═══════════════════════════════════════════
         // PASO 1: Consultar RAG
         // ═══════════════════════════════════════════
+        failureStage = 'rag';
         console.log('📚 [Orchestrator] Paso 1/4: Consultando RAG...');
         const ragStart = Date.now();
 
@@ -72,15 +97,23 @@ export async function orchestrate(
         }, deps);
 
         timing.ragMs = Date.now() - ragStart;
+        debugTrace.ragChunks = deps.ragChunks.map((chunk) => ({
+            id: chunk.id,
+            collection: chunk.collection,
+            source: chunk.source,
+            summary: chunk.summary,
+            tags: chunk.tags,
+        }));
         console.log(`   → ${deps.ragChunks.length} chunks encontrados (${timing.ragMs}ms)`);
 
         // ═══════════════════════════════════════════
         // PASO 2: Narrative Agent (Arco narrativo)
         // ═══════════════════════════════════════════
+        failureStage = 'narrative';
         console.log('🧠 [Orchestrator] Paso 2/4: Generando arco narrativo...');
         const narrativeStart = Date.now();
 
-        const narrativeArc = await narrativeAgent.generateArc(
+        const expertBrief = await narrativeAgent.generateArc(
             {
                 heroName: session.heroName,
                 friendName: undefined, // TODO: Extraer del contexto si existe
@@ -96,18 +129,21 @@ export async function orchestrate(
         );
 
         timing.narrativeMs = Date.now() - narrativeStart;
-        console.log(`   → Objetivo: "${narrativeArc.pedagogicalObjective}" (${timing.narrativeMs}ms)`);
+        debugTrace.expertBrief = expertBrief;
+        console.log(`   → Objetivo: "${expertBrief.pedagogicalObjective}" (${timing.narrativeMs}ms)`);
 
         // ═══════════════════════════════════════════
         // PASO 3: Storytelling Agent (Beats)
         // ═══════════════════════════════════════════
+        failureStage = 'storytelling';
         console.log('✍️ [Orchestrator] Paso 3/4: Generando beats...');
         const storytellingStart = Date.now();
 
         const storyBeats = await storytellingAgent.generateBeats(
             {
-                narrativeArc: narrativeArc.narrativeArcSummary,
+                expertBrief,
                 ageGroup: session.ageGroup,
+                pedagogyProfile: session.pedagogyProfile,
                 language: session.language,
                 genre: session.genre,
                 heroName: session.heroName,
@@ -121,17 +157,20 @@ export async function orchestrate(
         );
 
         timing.storytellingMs = Date.now() - storytellingStart;
+        debugTrace.storyBeats = storyBeats;
         console.log(`   → ${storyBeats.length} beats generados (${timing.storytellingMs}ms)`);
 
         // ═══════════════════════════════════════════
         // PASO 4: Visual Brief Agent (Prompts de imagen)
         // ═══════════════════════════════════════════
+        failureStage = 'visual';
         console.log('🎨 [Orchestrator] Paso 4/4: Generando briefs visuales...');
         const visualStart = Date.now();
 
         const visualBriefs = await visualBriefAgent.generateBriefs(
             {
                 storyBeats,
+                expertBrief,
                 ageGroup: session.ageGroup,
                 genre: session.genre,
                 itemLabel: session.tenantConfig.itemLabel,
@@ -146,18 +185,27 @@ export async function orchestrate(
         );
 
         timing.visualBriefMs = Date.now() - visualStart;
+        debugTrace.visualBriefs = visualBriefs.map((brief) => ({
+            pageIndex: brief.pageIndex,
+            compositionNote: brief.compositionNote,
+            lightingMood: brief.lightingMood,
+            characterDirection: brief.characterDirection,
+            magicItemVisibility: brief.magicItemVisibility,
+            fullPrompt: brief.fullPrompt,
+        }));
         console.log(`   → ${visualBriefs.length} briefs visuales generados (${timing.visualBriefMs}ms)`);
 
         // ═══════════════════════════════════════════
         // COMPILAR AgentBrief
         // ═══════════════════════════════════════════
         const agentBrief: AgentBrief = {
-            narrativeArc: narrativeArc.narrativeArcSummary,
+            narrativeArc: expertBrief.storyArcSummary,
             storyBeats,
             visualDirections: visualBriefs.map(vb => vb.fullPrompt),
         };
 
         timing.totalMs = Date.now() - startTime;
+        debugTrace.status = 'partial';
 
         console.log('✅ [Orchestrator] Pipeline completado exitosamente');
         console.log(`   → Tiempo total: ${timing.totalMs}ms`);
@@ -166,17 +214,22 @@ export async function orchestrate(
         return {
             success: true,
             agentBrief,
+            debugTrace,
             timing,
         };
 
     } catch (error) {
         timing.totalMs = Date.now() - startTime;
         const errorMessage = error instanceof Error ? error.message : String(error);
+        debugTrace.status = 'failed';
+        debugTrace.failureStage = failureStage;
+        debugTrace.errorMessage = errorMessage;
 
         console.error('❌ [Orchestrator] Error en pipeline:', errorMessage);
 
         return {
             success: false,
+            debugTrace,
             error: errorMessage,
             timing,
         };

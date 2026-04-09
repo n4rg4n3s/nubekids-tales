@@ -3,7 +3,7 @@
 > Documento vivo de decisiones arquitectónicas y roadmap.
 > Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-04-06
+> **Última actualización:** 2026-04-08
 
 ---
 
@@ -67,7 +67,7 @@
 **Decisión:** Ejecución estrictamente secuencial: Orchestrator → RAG → Narrative → Storytelling → Visual Brief.
 
 **Razón:**
-- Cada agente depende del output del anterior (el Storytelling necesita el arco del Narrative).
+- Cada agente depende del output del anterior (Storytelling y Visual Brief dependen hoy del `ExpertNarrativeBrief` destilado por Narrative).
 - La calidad pedagógica requiere que el arco narrativo guíe los beats, no al revés.
 - La paralelización solo ahorraría tiempo en Visual Brief (que ya es rápido).
 - La complejidad de manejar estados parciales y rollbacks no compensa el ahorro.
@@ -106,16 +106,22 @@
 
 ---
 
-### ADR-007: Edad del Lector Inferida del Protagonista
+### ADR-007: Segmentación de Edad Explícita y Obligatoria
 
-**Contexto:** Teníamos selector de Age Group separado y selector de edad del protagonista.
+**Contexto:** La edad dejó de ser un detalle secundario del wizard y pasó a gobernar narrativa, RAG, maquetación y visual.
 
-**Decisión:** La edad del lector (AgeGroup) se infiere automáticamente de la edad del protagonista en Step 1.
+**Decisión:** El `ageGroup` se selecciona de forma explícita y obligatoria en Step 1, al mismo nivel que el nombre del protagonista. Ya no se infiere desde otro selector ni se decide más tarde en el flujo.
 
-**Mapeo:**
+**Mapeo vigente:**
+- 0-3 años → `baby`
 - 3-4 años → `tiny`
-- 5-6 años → `little`
-- 7-8 años, 9-10 años → `reader`
+- 4-5 años → `little`
+- 5-7 años → `reader`
+
+**Consecuencias:**
+- El usuario no puede avanzar sin seleccionar el rango de edad.
+- Step 4 ya no “decide” la edad; solo refleja y aprovecha la segmentación elegida.
+- La maquetación de texto y la calibración de prompts deben respetar este `ageGroup` como fuente de verdad editorial.
 
 ---
 
@@ -332,6 +338,30 @@
 
 ---
 
+### ADR-022: Frontera Experta — RAG como Verdad; Guardrails como Marco
+
+**Contexto:** El producto se concibe como un sistema con soporte experto real, no como un escaparate de prompts. Era necesario definir dónde vive la verdad pedagógica y dónde solo viven restricciones operativas.
+
+**Decisión:**
+- La verdad experta parte de `docs/rag-sources` y llega al runtime vía `rag_chunks`.
+- Las colecciones expertas activas quedan consolidadas en `child-psych` y `storytelling`.
+- `neuro-dev` deja de existir como colección activa independiente; su contenido se considera absorbido en `child-psych`.
+- `narrativeAgent` es el único agente que consume contexto RAG bruto y lo destila en un `ExpertNarrativeBrief`.
+- `storytellingAgent` y `visualBriefAgent` no deben inventar doctrina; trabajan a partir del `ExpertNarrativeBrief`, del input real del usuario y de guardrails editoriales resumidos.
+- Los guardrails en código son subordinados a `docs/segmentacion_edades.md` y `docs/words_x_age.md`; no son la fuente científica principal.
+
+**Artefactos vigentes:**
+- Auditoría: `AUDITORIA_FRONTERA_EXPERTA.md`
+- Guardrails auditables: `src/config/editorialGuardrails.ts`
+- Contrato entre agentes: `src/services/agents/contracts.ts`
+
+**Consecuencias:**
+- Si hay tensión entre simplificación hardcodeada y contexto experto recuperado, prevalece el contexto experto y el brief narrativo resultante.
+- La trazabilidad arquitectónica ya no depende solo de “tener RAG”, sino de poder explicar qué reglas son doctrina experta recuperada y cuáles son límites editoriales/operativos.
+- Cualquier nueva heurística por edad debe justificarse contra los docs fuente y quedar expresada como guardrail, no como sustituto del RAG.
+
+---
+
 ## Roadmap de Implementación
 
 ### ✅ Fase 1 — Refactor Multitenancy (COMPLETADA)
@@ -345,10 +375,10 @@
 
 ### ✅ Fase 2 — Wizard de Setup (COMPLETADA)
 - [x] Crear wizard de 4 pasos
-- [x] StepHero con descripción por rasgos o foto
+- [x] StepHero con nombre + rango de edad obligatorio + descripción por rasgos o foto
 - [x] StepPedagogy con chips + campo "Otro" editable
 - [x] StepItem opcional con mención de tienda
-- [x] StepStory con edad inferida del Step 1
+- [x] StepStory desacoplado de la decisión de edad
 - [x] Validación por paso
 - [x] AppState machine (loading, setup, generating, reading, error)
 
@@ -356,13 +386,23 @@
 - [x] Crear jsonParser.ts (parseJsonSafely robusto)
 - [x] Crear dependencies.ts (contexto de sesión)
 - [x] Crear ragService.ts V1 (filtrado por tags)
-- [x] Crear chunks RAG iniciales (neuro-dev, child-psych, storytelling)
+- [x] Crear chunks RAG iniciales por colección experta (modelo activo consolidado en `child-psych` + `storytelling`)
 - [x] Crear storytellingAgent.ts
 - [x] Crear narrativeAgent.ts
 - [x] Crear visualBriefAgent.ts
 - [x] Crear orchestratorAgent.ts
 - [x] Integrar pipeline en App.tsx
 - [x] Testing end-to-end
+
+### ✅ Ajuste transversal — Segmentación editorial + frontera experta (COMPLETADA — 08 Abril 2026)
+- [x] Mover `ageGroup` a Step 1 como dato obligatorio y rector del flujo
+- [x] Adoptar rangos vigentes `baby/tiny/little/reader` (`0-3`, `3-4`, `4-5`, `5-7`)
+- [x] Adaptar maquetación web/PDF al volumen de texto por grupo de edad
+- [x] Eliminar `neuro-dev` como colección activa del runtime
+- [x] Crear `src/config/editorialGuardrails.ts` con guardrails auditables subordinados a docs fuente
+- [x] Crear `ExpertNarrativeBrief` como contrato explícito entre agentes
+- [x] Propagar el `ExpertNarrativeBrief` a `storytellingAgent` y `visualBriefAgent`
+- [x] Documentar la frontera correcta en `AUDITORIA_FRONTERA_EXPERTA.md`
 
 ### ✅ Fase 4 — Generación de Imágenes + Book (COMPLETADA)
 - [x] imageGenerationService.ts con Gemini

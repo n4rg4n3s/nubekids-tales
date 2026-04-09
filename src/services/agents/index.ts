@@ -17,8 +17,8 @@ export {
 export {
     generateArc,
     type NarrativeInput,
-    type NarrativeArc,
 } from './narrativeAgent';
+export type { ExpertNarrativeBrief } from './contracts';
 
 // Storytelling Agent - Beats/páginas
 export {

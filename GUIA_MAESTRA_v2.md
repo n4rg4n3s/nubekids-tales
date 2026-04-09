@@ -1,19 +1,26 @@
 # 🗺️ GUÍA MAESTRA V2: Sistema Multiagente + RAG para NubeKids
 
-> **Versión:** 2.0  
-> **Fecha:** 2026-03-27  
-> **Estado:** Listo para implementar Fase 3
+> **Versión:** 2.1  
+> **Fecha:** 2026-04-08  
+> **Estado:** Referencia base + addendum vigente de frontera experta
 
 ---
 
 ## Nota de Evolución
 
-Esta guía describe la arquitectura base del sistema multiagente. Desde el 04/04/2026, el SaaS ya no debe interpretar `shoe-store` y `fashion-store` como categorías narrativas de producto.
+Esta guía describe la arquitectura base del sistema multiagente. Debe leerse junto con `AUDITORIA_FRONTERA_EXPERTA.md` cuando la duda afecte a la frontera entre RAG, agentes y guardrails.
+
+Desde el 04/04/2026, el SaaS ya no debe interpretar `shoe-store` y `fashion-store` como categorías narrativas de producto.
 
 Regla actual:
 
 - `tenant` = identidad comercial / branding
 - `itemInteractionMode` = cómo se relaciona el niño con el objeto en narrativa e imagen
+- colecciones expertas activas = `child-psych` + `storytelling`
+- `neuro-dev` queda absorbida en `child-psych`; ya no es una colección runtime independiente
+- solo `narrativeAgent` consume RAG bruto y lo destila en `ExpertNarrativeBrief`
+- `storytellingAgent` y `visualBriefAgent` consumen `ExpertNarrativeBrief` + verdad del usuario
+- los guardrails en código son un marco resumido subordinado a `docs/segmentacion_edades.md` y `docs/words_x_age.md`
 
 Asignación actual en producción:
 
@@ -43,28 +50,33 @@ Las URLs legacy con `?tenant=shoe-store-default` y `?tenant=fashion-store-defaul
      │                      │
      └──────────┬───────────┘
                 ▼
-    ┌───────────────────────┐
-    │  NARRATIVE AGENT      │
-    │  (Neuroeducador +     │
-    │   Psicólogo Infantil) │
-    │  Output: NarrativeArc │
-    └──────────┬────────────┘
+    ┌────────────────────────────┐
+    │  NARRATIVE AGENT           │
+    │  (Neuroeducador +          │
+    │   Psicólogo Infantil)      │
+    │  Usa RAG bruto             │
+    │  Output: ExpertNarrative-  │
+    │          Brief             │
+    └──────────┬─────────────────┘
                │
                ▼
-    ┌───────────────────────┐
-    │  STORYTELLING AGENT   │
-    │  (Escritor Creativo)  │
-    │  Calibra por AgeGroup │
-    │  Output: Beat[]       │
-    └──────────┬────────────┘
+    ┌────────────────────────────┐
+    │  STORYTELLING AGENT        │
+    │  (Escritor Creativo)       │
+    │  Usa ExpertNarrativeBrief  │
+    │  + verdad del usuario      │
+    │  Output: Beat[]            │
+    └──────────┬─────────────────┘
                │
                ▼
-    ┌───────────────────────┐
-    │ VISUAL BRIEF AGENT    │
-    │ (Ilustrador)          │
-    │ Output: string[]      │
-    │ (prompts de imagen)   │
-    └──────────┬────────────┘
+    ┌────────────────────────────┐
+    │ VISUAL BRIEF AGENT         │
+    │ (Ilustrador)               │
+    │ Usa ExpertNarrativeBrief   │
+    │ + beats                    │
+    │ Output: string[]           │
+    │ (prompts de imagen)        │
+    └──────────┬─────────────────┘
                │
                ▼
         ┌─────────────┐
@@ -91,30 +103,48 @@ src/
 ├── services/
 │   ├── geminiService.ts          # MODIFICAR: Integrar orchestrator
 │   ├── agents/
+│   │   ├── contracts.ts          # NUEVO: ExpertNarrativeBrief
 │   │   ├── index.ts              # Re-exports
-│   │   ├── orchestratorAgent.ts  # CREAR
-│   │   ├── narrativeAgent.ts     # CREAR
-│   │   ├── storytellingAgent.ts  # CREAR
-│   │   └── visualBriefAgent.ts   # CREAR
-│   ├── ragService.ts             # CREAR
-│   └── dependencies.ts           # CREAR
+│   │   ├── orchestratorAgent.ts  # ACTIVO
+│   │   ├── narrativeAgent.ts     # ACTIVO
+│   │   ├── storytellingAgent.ts  # ACTIVO
+│   │   └── visualBriefAgent.ts   # ACTIVO
+│   ├── ragService.ts             # ACTIVO
+│   └── dependencies.ts           # ACTIVO
+│
+├── config/
+│   └── editorialGuardrails.ts    # NUEVO: marco editorial auditado
 │
 ├── utils/
 │   ├── itemInteraction.ts        # NUEVO: semántica narrativa/visual del objeto
-│   └── jsonParser.ts             # CREAR
+│   └── jsonParser.ts             # ACTIVO
 │
 ├── data/
 │   └── rag/
 │       ├── index.ts              # Exporta todos los chunks
-│       ├── neuro-dev.chunks.ts   # CREAR
-│       ├── child-psych.chunks.ts # CREAR
-│       └── storytelling.chunks.ts# CREAR
+│       ├── child-psych.chunks.ts # fallback local / histórico
+│       └── storytelling.chunks.ts# fallback local / histórico
 │
 ```
 
 Nota:
 
 - En la implementación actual, cualquier lógica nueva que cambie cómo aparece o se usa el objeto mágico debe apoyarse en `itemInteractionMode`, no en `verticalId` ni en el nombre del tenant.
+- En la implementación actual, cualquier nueva regla editorial debe decidir si pertenece a RAG o a guardrails. Si compite con doctrina experta, no debe vivir en código.
+
+---
+
+## ✅ Estado Vigente del Núcleo Experto (08/04/2026)
+
+- Fuente de verdad experta: `docs/rag-sources` → `rag_chunks` → recuperación semántica.
+- Colecciones expertas activas: `child-psych` y `storytelling`.
+- `narrativeAgent` es el único punto donde entra RAG bruto al pipeline.
+- `narrativeAgent` destila un `ExpertNarrativeBrief` que conserva objetivo pedagógico, objetivo emocional, racional por edad, guías de lenguaje, guías narrativas, patrones a evitar y guías visuales.
+- `storytellingAgent` y `visualBriefAgent` deben obedecer ese brief; no son la fuente primaria de doctrina.
+- `editorialGuardrails.ts` contiene solo un marco editorial resumido y trazable. Su función es contener, no sustituir al núcleo experto.
+- Cuando haya conflicto entre simplificación en código y contexto experto recuperado, prevalece el contexto experto recuperado y su destilación en el brief.
+
+Todo lo que sigue debe leerse como guía de implementación base e histórica. Si una sección inferior contradice este bloque, prevalece este bloque y la auditoría `AUDITORIA_FRONTERA_EXPERTA.md`.
 
 ---
 
@@ -365,33 +395,33 @@ export function formatChunksForPrompt(chunks: RagChunk[]): string {
 
 ```typescript
 /**
- * Exporta todos los chunks RAG.
+ * Exporta todos los chunks RAG fallback locales.
  * V1: Hardcodeados en archivos .ts
  * V2: Cargados desde Supabase pgvector
+ * Runtime vigente: colecciones activas `child-psych` y `storytelling`
  */
 
-import { neuroDevChunks } from './neuro-dev.chunks';
 import { childPsychChunks } from './child-psych.chunks';
 import { storytellingChunks } from './storytelling.chunks';
 import type { RagChunk } from '../../types';
 
 export const allChunks: RagChunk[] = [
-  ...neuroDevChunks,
   ...childPsychChunks,
   ...storytellingChunks,
 ];
 
-export { neuroDevChunks, childPsychChunks, storytellingChunks };
+export { childPsychChunks, storytellingChunks };
 ```
 
 ---
 
-#### 5. Ejemplo: `src/data/rag/neuro-dev.chunks.ts`
+#### 5. Ejemplo: `src/data/rag/child-psych.chunks.ts`
 
 ```typescript
 /**
- * Chunks de Neuroeducación y Desarrollo Infantil.
- * Fuentes: Piaget, Vygotsky, Gardner, investigación moderna.
+ * Chunks de psicología infantil y desarrollo.
+ * Nota: `neuro-dev` dejó de existir como colección independiente.
+ * El conocimiento evolutivo y neuroeducativo se consolida aquí.
  * 
  * NOTA: Estos son chunks de ejemplo/placeholder.
  * Reemplazar con contenido real de los PDFs procesados.
@@ -399,29 +429,29 @@ export { neuroDevChunks, childPsychChunks, storytellingChunks };
 
 import type { RagChunk } from '../../types';
 
-export const neuroDevChunks: RagChunk[] = [
+export const childPsychChunks: RagChunk[] = [
   {
-    id: 'neuro-001',
-    collection: 'neuro-dev',
-    tags: ['age:tiny', 'topic:tantrums', 'technique:emotion-naming'],
-    summary: 'Los niños de 3-4 años necesitan vocabulario emocional.',
+    id: 'child-psych-001',
+    collection: 'child-psych',
+    tags: ['age:baby', 'topic:co-regulation', 'technique:sensory-language'],
+    summary: 'Entre 0 y 3 años conviene priorizar lenguaje sensorial, calma y previsibilidad.',
     fullContent: `
-Los niños de 3-4 años experimentan emociones intensas pero carecen del 
-vocabulario para expresarlas. La técnica de "nombrar emociones" en cuentos:
+En 0-3 años la experiencia del cuento depende en gran medida de la co-regulación
+con el adulto lector. La narrativa debe sostener seguridad, ritmo y referencias
+sensoriales concretas:
 
-1. Desarrolla conciencia emocional temprana
-2. Provee lenguaje para situaciones futuras
-3. Normaliza sentimientos difíciles
+1. Nombra sensaciones y acciones visibles
+2. Refuerza previsibilidad y celebración
+3. Evita sobrecargar la escena con conflicto convencional
 
-TÉCNICA NARRATIVA: Usar frases explícitas como "Luna se sintió frustrada 
-porque no podía alcanzar la estrella. Su corazón latía rápido y sus manos 
-se apretaban." Esto modela tanto la emoción como las sensaciones físicas.
+TÉCNICA NARRATIVA: "Leo toca la manta suave. Mami sonríe. Todo está bien."
+La imagen sostiene gran parte del peso narrativo y el texto acompaña.
     `.trim(),
-    source: 'Piaget, J. (1952). The Origins of Intelligence in Children.'
+    source: 'Fuentes de desarrollo temprano y regulación emocional (colección child-psych).'
   },
   {
-    id: 'neuro-002',
-    collection: 'neuro-dev',
+    id: 'child-psych-002',
+    collection: 'child-psych',
     tags: ['age:little', 'topic:sharing', 'technique:perspective-taking'],
     summary: 'A los 5-6 años emerge la capacidad de ver perspectivas ajenas.',
     fullContent: `
@@ -441,8 +471,8 @@ Esto refuerza:
     source: 'Vygotsky, L.S. (1978). Mind in Society.'
   },
   {
-    id: 'neuro-003',
-    collection: 'neuro-dev',
+    id: 'child-psych-003',
+    collection: 'child-psych',
     tags: ['age:reader', 'topic:problem-solving', 'technique:metacognition'],
     summary: 'Los 7-10 años es ideal para introducir pensamiento metacognitivo.',
     fullContent: `
@@ -496,9 +526,10 @@ REGLAS ABSOLUTAS:
 - Responde SOLO con JSON válido, sin markdown, sin explicaciones
 
 CALIBRACIÓN POR EDAD:
-- tiny (3-4 años): Frases sujeto+verbo+complemento. Onomatopeyas. Repetición.
-- little (5-6 años): Adjetivos y conectores básicos. Diálogo simple. Emociones nombradas.
-- reader (7-10 años): Vocabulario rico. Metáforas simples. Dilemas morales leves.
+- baby (0-3 años): Texto mínimo, musical y sensorial. Una sola idea clara por página.
+- tiny (3-4 años): Frases cortas, repetición con variación y reto pequeño tranquilizador.
+- little (4-5 años): Progreso narrativo claro, vocabulario expandible con apoyo visual.
+- reader (5-7 años): Mayor agencia, lenguaje más rico e inferencia moderada.
 `;
 
 export interface StorytellingInput {
@@ -614,12 +645,12 @@ Eres un equipo de dos expertos colaborando:
 1. Un neuroeducador especialista en desarrollo cognitivo infantil (Piaget, Vygotsky, Gardner).
 2. Un psicólogo infantil experto en inteligencia emocional y bibliotherapy.
 
-Tu tarea es diseñar el ARCO NARRATIVO de un cuento infantil con intención pedagógica.
+Tu tarea es destilar el BRIEF NARRATIVO EXPERTO de un cuento infantil con intención pedagógica.
 
 REGLAS:
-- El arco debe tener un objetivo pedagógico claro
-- El viaje emocional del protagonista debe ser transformador pero sutil
-- El mensaje central debe ser apropiado para la edad
+- Prioriza la verdad del usuario y el contexto experto recuperado
+- Usa los guardrails editoriales solo como marco resumido
+- El brief debe conservar matices útiles para Storytelling y Visual Brief
 - Responde SOLO con JSON válido, sin markdown
 `;
 
@@ -632,18 +663,23 @@ export interface NarrativeInput {
   baseSystemPrompt: string;
 }
 
-export interface NarrativeArc {
+export interface ExpertNarrativeBrief {
   pedagogicalObjective: string;
-  emotionalJourney: string;
+  emotionalObjective: string;
   coreMessage: string;
-  narrativeArcSummary: string;
+  storyArcSummary: string;
   keyMoments: string[];
+  ageRationale: string;
+  languageGuidance: string[];
+  narrativeGuidance: string[];
+  avoidPatterns: string[];
+  visualGuidance: string[];
 }
 
 export async function generateArc(
   input: NarrativeInput,
   deps: AgentDependencies
-): Promise<NarrativeArc> {
+): Promise<ExpertNarrativeBrief> {
   // Formatear chunks RAG para el prompt
   const ragContext = formatChunksForPrompt(deps.ragChunks);
   
@@ -659,7 +695,7 @@ export async function generateArc(
   });
   
   const responseText = response.text || '';
-  return parseJsonSafely<NarrativeArc>(responseText);
+  return parseJsonSafely<ExpertNarrativeBrief>(responseText);
 }
 
 function buildPrompt(input: NarrativeInput, ragContext: string): string {
@@ -833,10 +869,10 @@ export async function orchestrate(
   console.log(`   → ${deps.ragChunks.length} chunks encontrados`);
   
   // ═══════════════════════════════════════════
-  // PASO 2: Narrative Agent (Arco narrativo)
+  // PASO 2: Narrative Agent (Brief experto)
   // ═══════════════════════════════════════════
   console.log('🧠 Paso 2: Generando arco narrativo...');
-  const narrativeArc = await narrativeAgent.generateArc({
+  const expertBrief = await narrativeAgent.generateArc({
     heroName: session.heroName,
     itemLabel: session.tenantConfig.itemLabel,
     itemDescription: session.itemDescription,
@@ -844,15 +880,16 @@ export async function orchestrate(
     pedagogyProfile: session.pedagogyProfile,
     baseSystemPrompt: session.tenantConfig.baseSystemPrompt
   }, deps);
-  console.log(`   → Objetivo: ${narrativeArc.pedagogicalObjective}`);
+  console.log(`   → Objetivo: ${expertBrief.pedagogicalObjective}`);
   
   // ═══════════════════════════════════════════
   // PASO 3: Storytelling Agent (Beats)
   // ═══════════════════════════════════════════
   console.log('✍️ Paso 3: Generando beats...');
   const storyBeats = await storytellingAgent.generateBeats({
-    narrativeArc: narrativeArc.narrativeArcSummary,
+    expertBrief,
     ageGroup: session.ageGroup,
+    pedagogyProfile: session.pedagogyProfile,
     language: session.language,
     genre: session.genre,
     heroName: session.heroName,
@@ -867,6 +904,8 @@ export async function orchestrate(
   console.log('🎨 Paso 4: Generando briefs visuales...');
   const visualBriefs = await visualBriefAgent.generateBriefs({
     storyBeats,
+    expertBrief,
+    ageGroup: session.ageGroup,
     genre: session.genre,
     itemLabel: session.tenantConfig.itemLabel,
     heroName: session.heroName,
@@ -878,7 +917,7 @@ export async function orchestrate(
   // COMPILAR AgentBrief
   // ═══════════════════════════════════════════
   const agentBrief: AgentBrief = {
-    narrativeArc: narrativeArc.narrativeArcSummary,
+    narrativeArc: expertBrief.storyArcSummary,
     storyBeats,
     visualDirections: visualBriefs.map(vb => vb.fullPrompt)
   };

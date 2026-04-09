@@ -88,9 +88,40 @@ function repairCommonJsonIssues(input: string): string {
         .replace(/[\u201C\u201D]/g, '"')
         .replace(/[\u2018\u2019]/g, "'");
 
+    repaired = repairPseudoObjectArrays(repaired);
     repaired = escapeInnerQuotes(repaired);
 
     return repaired;
+}
+
+function repairPseudoObjectArrays(input: string): string {
+    let repaired = input;
+
+    const fieldNames = ['keyMoments'];
+
+    for (const fieldName of fieldNames) {
+        const pattern = new RegExp(`("${fieldName}"\\s*:\\s*)\\[([\\s\\S]*?)\\]`, 'g');
+
+        repaired = repaired.replace(pattern, (match, prefix, body) => {
+            const trimmedBody = String(body).trim();
+
+            if (!looksLikePseudoObjectBody(trimmedBody)) {
+                return match;
+            }
+
+            return `${prefix}{${trimmedBody}}`;
+        });
+    }
+
+    return repaired;
+}
+
+function looksLikePseudoObjectBody(body: string): boolean {
+    if (!body) {
+        return false;
+    }
+
+    return /^"(?:\\.|[^"\\])+"\s*:/.test(body);
 }
 
 function escapeInnerQuotes(input: string): string {
