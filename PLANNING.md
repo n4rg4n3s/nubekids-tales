@@ -3,7 +3,7 @@
 > Documento vivo de decisiones arquitectónicas y roadmap.
 > Leer al inicio de cada sesión junto con HANDOFF.md y BUSINESS_TECH_SPEC.md.
 >
-> **Última actualización:** 2026-04-08
+> **Última actualización:** 2026-04-09
 
 ---
 
@@ -403,6 +403,8 @@
 - [x] Crear `ExpertNarrativeBrief` como contrato explícito entre agentes
 - [x] Propagar el `ExpertNarrativeBrief` a `storytellingAgent` y `visualBriefAgent`
 - [x] Documentar la frontera correcta en `AUDITORIA_FRONTERA_EXPERTA.md`
+- [x] Validar manualmente la frontera experta con casos reales `Leo` (`baby`), `Sara` (`tiny`), `Mateo` (`reader`) y `Oscar` (`little`)
+- [x] Añadir tests unitarios mínimos para parser y saneados editoriales (`tests/agent-sanitizers.test.ts`)
 
 ### ✅ Fase 4 — Generación de Imágenes + Book (COMPLETADA)
 - [x] imageGenerationService.ts con Gemini
@@ -526,6 +528,8 @@
 - [x] Documentar snippet técnico de integración para `/api/b2b/create-token` en `docs/INTEGRACION_PREMIUM.md`
 - [x] Implementar aviso `Gira el móvil` en portrait y modo de lectura inmersivo en landscape para `Book`
 - [x] Rehacer export PDF móvil para usar flujo `Blob` + `Guardar o compartir` / `Abrir PDF` / `Descargar archivo`
+- [ ] Revalidar en dispositivo real `Book` y export PDF móvil ya corregidos desde `main`
+- [ ] Hacer checklist final de go/no-go móvil antes de pasar a dominio/legal
 - [ ] Preparar colección Postman opcional para demos comerciales B2B
 - [ ] **Referencia:** `BUSINESS_TECH_SPEC.md` § 10
 
@@ -569,7 +573,7 @@
 | `consumeCredit` sin refund si falla generación | Media | Aceptable V1 | 8 |
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio | 9 |
 | Violations react-pageflip touchstart | Baja | Ignorable (librería externa) | 4 |
-| No hay tests unitarios | Alta | Pendiente | - |
+| Cobertura de tests aún parcial | Media | ✅ Existen tests mínimos para parser + saneados de agentes; faltan tests más amplios del pipeline/UI | - |
 | OCR para 4 PDFs de solo imágenes | Media | Pendiente | 5 |
 | Tags vacíos en rag_chunks | Baja | Semántica pura OK | 5 |
 

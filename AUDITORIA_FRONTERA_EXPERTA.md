@@ -1,8 +1,10 @@
 # AUDITORIA_FRONTERA_EXPERTA.md
 
 > Fecha: 2026-04-08
-> Estado: auditoria arquitectonica
+> Estado: realineacion ejecutada y validada manualmente el 2026-04-09
 > Objetivo: definir la frontera correcta entre conocimiento experto, guardrails de producto y creatividad generativa para que el "alma" experta de NubeKids sea real y verificable.
+
+> Nota de vigencia (2026-04-09): esta auditoria ya no describe una intencion futura. La realineacion propuesta se implemento en runtime, se consolido en `main` y se valido manualmente con los casos `Leo`, `Sara`, `Mateo` y `Oscar`. A partir de ahora debe leerse como fundamento arquitectonico y como criterio de regresion si se vuelve a tocar `ragService`, `narrativeAgent`, `storytellingAgent` o `visualBriefAgent`.
 
 ---
 
@@ -499,14 +501,25 @@ La respuesta correcta para NubeKids debe ser:
 
 ---
 
-## 15. Siguiente Paso Recomendado
+## 15. Estado Posterior y Siguiente Paso
 
-Abrir una mini-fase de realineacion arquitectonica con este orden:
+La mini-fase propuesta en esta auditoria ya se ejecuto:
 
-1. limpiar `neuro-dev`
-2. definir `ExpertNarrativeBrief`
-3. conectar ese brief a `storytellingAgent`
-4. reducir las instrucciones por edad a guardrails auditables
-5. verificar con casos reales de Step 2 que la intencion experta llega hasta el texto final
+1. `neuro-dev` dejo de existir como coleccion runtime
+2. `ExpertNarrativeBrief` quedo introducido como contrato real entre agentes
+3. `storytellingAgent` y `visualBriefAgent` ya consumen ese brief
+4. las instrucciones por edad quedaron reducidas a guardrails auditables
+5. la cadena completa se valido con casos reales de Step 2
 
-Si esta fase no se hace, la app seguira teniendo apariencia experta fuerte, pero no garantia suficiente de que esa expertise gobierna el output final.
+Resultado:
+
+- la frontera experta queda cerrada para esta iteracion
+- el siguiente foco del producto ya no es arquitectonico, sino operativo
+- la siguiente sesion debe volver a Fase 11: revalidacion movil final de `Book`/PDF y checklist de go-live
+
+Solo deberia reabrirse esta auditoria si una regresion futura vuelve a romper alguna de estas transiciones:
+
+- `RAG -> ExpertNarrativeBrief`
+- `ExpertNarrativeBrief -> storyBeats`
+- `storyBeats -> texto final`
+- `ExpertNarrativeBrief -> visualBriefs`

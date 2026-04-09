@@ -1,5 +1,8 @@
 # Validacion local de la frontera experta
 
+> Estado 2026-04-09: validacion manual cerrada y consolidada en `main`.
+> Uso recomendado a partir de ahora: documento de evidencia y referencia de regresion, no checklist pendiente.
+
 ## Objetivo
 
 Validar que el soporte experto de la app es real y llega hasta el cuento final.
@@ -141,7 +144,7 @@ Un caso solo se considera valido si se cumplen las 4 capas:
 ---
 
 
-## Caso 4: Reader con foco emocional y agencia
+## Caso 4: Little con separacion suave y autonomia
 
 ### Input sugerido
 - Nombre: Oscar
@@ -157,16 +160,16 @@ Un caso solo se considera valido si se cumplen las 4 capas:
 - Genero: `Anime Adventure`
 
 ### Lo que deberia pasar
-- RAG: deben entrar chunks de agencia, causa-efecto, error como parte del aprendizaje o lector emergente.
-- Brief: debe preservar matiz; no reducir todo a "ser valiente".
-- Beats: debe haber decision real, consecuencia emocional comprensible y cierre con agencia del protagonista.
-- Final: el cuento debe mostrar iniciativa propia y algo de inferencia moderada.
+- RAG: deben entrar chunks de apego seguro, juego simbolico, separacion suave y autonomia emocional.
+- Brief: debe tratar la separacion con sutileza, sin convertirla en conflicto directo ni en explicacion doctrinal.
+- Beats: el perro debe funcionar como ancla emocional y motor activo del cambio, no como mero acompañante decorativo.
+- Final: el cuento debe dejar sensacion de seguridad y calma, no moraleja explicita.
 
 ### Señales de fallo
-- Resolucion por rescate externo.
-- Lenguaje plano, igual al de `tiny/little`.
-- El error aparece, pero no afecta a la estructura del cuento.
-- El texto final borra la complejidad emocional que si estaba en el brief.
+- Sobre-dramatizar la separacion o mencionar el conflicto parental de forma frontal.
+- Convertir al perro en simple mascota estetica sin impacto narrativo.
+- Cerrar con una leccion explicada del tipo `aprendio que...`.
+- Usar lenguaje demasiado abstracto o demasiado plano para `little`.
 
 ---
 
@@ -204,16 +207,16 @@ Para cada cuento, revisar la traza en este orden:
 
 ## Decision final
 
-La realineacion se considerara validada si:
+Resultado consolidado de la ejecucion 2026-04-09:
 
-- los 3 casos muestran diferencias claras por edad
-- el input de Step 2 llega al texto final en los casos 2 y 3
-- `storytellingAgent` no aplana el `expertBrief`
-- `visualBriefAgent` refleja la misma intencion emocional/pedagogica
+- `Leo` valida `baby` con tono sensorial y texto minimo
+- `Sara` valida `tiny` tras corregir parser, fuga de opciones y moralizacion residual
+- `Mateo` valida `reader` con buena agencia y complejidad emocional
+- `Oscar` valida `little` con separacion tratada con sutileza y buen uso del perro como ancla emocional
 
-Si falla, anotar donde se rompe la cadena:
+Veredicto final:
 
-- `RAG -> brief`
-- `brief -> beats`
-- `beats -> texto final`
-- `brief -> visual`
+- la realineacion experta queda validada para esta iteracion
+- `main` se considera consolidado respecto a pivote de edad + frontera experta
+- la siguiente sesion ya no debe volver a esta bateria salvo regresion real
+- el siguiente foco operativo pasa a ser Fase 11: revalidacion movil final de `Book`/PDF y checklist de go-live

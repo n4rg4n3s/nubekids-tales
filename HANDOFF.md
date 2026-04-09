@@ -1,8 +1,8 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-08 (realineación experta + limpieza documental)
-> **Estado:** ✅ `main` local alineado con pivote de edad + frontera experta realineada; pendiente revalidación manual móvil/go-live
-> **Próximo paso:** validar con casos reales de Step 2 que el núcleo experto llega al texto final y después rematar Fase 11
+> **Última actualización:** 2026-04-09 (validación experta cerrada + `main` sincronizado con remoto)
+> **Estado:** ✅ `main` y `origin/main` alineados tras pivote de edad, realineación experta, saneados editoriales y validación manual de 4 casos; foco siguiente desplazado a Fase 11
+> **Próximo paso:** revalidar en móvil real `Book` + export PDF desde `main` y, si pasa, entrar en checklist de go-live (dominio, legal, webhook y OAuth)
 
 ---
 
@@ -71,6 +71,15 @@
 7. ✅ **`src/components/wizard/StepHero.tsx` + `src/components/Setup.tsx`** — `ageGroup` sube a Step 1, obligatorio, con rangos `0-3`, `3-4`, `4-5`, `5-7`
 8. ✅ **`src/components/Book.tsx` + `src/utils/pdfExport.ts`** — tipografía y densidad visual adaptativas por `ageGroup` y por volumen real de texto
 9. ✅ **`PLANNING.md` + `GUIA_MAESTRA_v2.md` + `HANDOFF.md`** — documentación principal alineada con la frontera experta nueva
+
+### Cierre de validación experta y consolidación (09 Abril 2026)
+
+1. ✅ **`src/services/agents/narrativeAgent.ts`** — el brief experto ya no nace con moralejas explícitas; sanea `coreMessage`, `storyArcSummary` y `keyMoments`
+2. ✅ **`src/services/agents/storytellingAgent.ts`** — las opciones interactivas quedan confinadas a `choices`; limpieza defensiva de bifurcaciones narradas y cierres doctrinales
+3. ✅ **`src/App.tsx` + `src/components/Book.tsx`** — corregido el salto inesperado del lector al wizard y trazado el origen de futuros resets
+4. ✅ **`tests/agent-sanitizers.test.ts` + `package.json`** — suite unitaria mínima con `node:test` para parser y saneados de `narrative/storytelling`
+5. ✅ **`docs/validacion_frontera_experta.md` + `docs/validacion_frontera_experta_resultados.md`** — validación manual cerrada con 4 casos reales (`Leo`, `Sara`, `Mateo`, `Oscar`)
+6. ✅ **`main` remoto consolidado** — commits `289faf7` y `321cc05` ya empujados a `origin/main`
 
 ### Cierre de riesgo B2B (04 Abril 2026)
 
@@ -190,7 +199,7 @@
 | Fase 8 — Sistema de Créditos | ✅ Completa | Prepago funcional end-to-end |
 | Fase 9 — Stripe | ✅ Completa | Pago end-to-end verificado |
 | Fase 10 — Flujo B2B → B2C | ✅ **COMPLETA** | **Funnel completo funcional** |
-| Fase 11 — Deploy + Dominio + Legal | ⏳ En curso | Preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo móvil `Book`/PDF |
+| Fase 11 — Deploy + Dominio + Legal | ⏳ En curso | Núcleo experto ya validado; faltan revalidación móvil real de `Book`/PDF y checklist de go-live |
 | Fase 12 — Dashboard Tenant | 🔮 Futuro | Post-lanzamiento |
 
 ---
@@ -423,17 +432,17 @@ FRONTEND_URL=http://localhost:5173
 
 ## 🚀 Próximos Pasos — Fase 11
 
-1. **Validar núcleo experto con casos reales de Step 2** — comprobar que `pedagogyProfile` influye de verdad en `ExpertNarrativeBrief`, beats y texto final
-2. **Revalidar `Book` móvil en preview** — confirmar en iPhone/Android el nuevo aviso portrait y la lectura inmersiva en landscape
-3. **Revalidar export PDF móvil** — confirmar en iPhone/Android los flujos `Guardar o compartir`, `Abrir PDF` y `Descargar archivo`
+1. **Revalidar `Book` móvil en dispositivo real desde `main`** — confirmar en iPhone/Android el aviso portrait y la lectura inmersiva en landscape
+2. **Revalidar export PDF móvil desde `main`** — confirmar `Guardar o compartir`, `Abrir PDF` y `Descargar archivo`
+3. **Go / no-go de móvil** — si 1 y 2 pasan, cerrar esta rama de riesgo y no reabrirla salvo regresión real
 4. **Comprar dominio** (nubekids.io / nubekidstales.com)
 5. **Configurar DNS** en Vercel
 6. **Actualizar webhook Stripe** con URL de producción definitiva
 7. **Google OAuth** — completar config en GCP con dominio definitivo
-8. **Legal** — política de privacidad (GDPR, datos de menores), términos de servicio, aviso legal, cookies
+8. **Legal** — completar política de privacidad, términos, aviso legal y cookies con datos fiscales reales
 9. **Landing B2C** — copy basado en investigación NotebookLM (pendiente si se quiere una versión comercial más refinada)
 10. **Cerrar referencias históricas de pricing** — `docs/BUSINESS_TECH_SPEC.md` + migraciones antiguas
-11. **Completar datos fiscales/mercantiles** — legales públicos ya generados pero aún con placeholders
+11. **Completar datos fiscales/mercantiles** — los legales públicos ya existen, pero siguen con placeholders
 12. **Opcional: archivar evidencia operativa del test real de `/api/b2b/create-token`** — el flujo ya quedó validado manualmente; solo faltaría guardar captura/SQL si se quiere trazabilidad adicional
 
 ---
@@ -453,7 +462,7 @@ FRONTEND_URL=http://localhost:5173
 | Webhook Stripe apunta a URL Vercel temporal | Media | Actualizar al tener dominio |
 | Doble generación mismo usuario anónimo (2 pestañas) | Baja | Aceptable V1 |
 | Violations react-pageflip touchstart | Baja | Ignorable (librería externa) |
-| No hay tests unitarios | Alta | Pendiente |
+| Cobertura de tests todavía parcial | Media | ✅ Existen tests mínimos para parser + saneados de agentes; faltan tests más amplios del pipeline y UI |
 | OCR para 4 PDFs de solo imágenes | Media | Pendiente |
 
 ---
@@ -477,7 +486,7 @@ FRONTEND_URL=http://localhost:5173
 ✅ Fase 8:  Sistema de Créditos — COMPLETADA
 ✅ Fase 9:  Stripe + Compra de Créditos — COMPLETADA
 ✅ Fase 10: Flujo B2B → B2C completo — COMPLETADA
-⏳ Fase 11: Deploy + Dominio + Legal — preview validada; faltan dominio/legal y revalidación manual final del nuevo flujo `Book`/PDF en móvil
+⏳ Fase 11: Deploy + Dominio + Legal — núcleo experto ya validado; faltan móvil real + dominio/legal/go-live
 
 🎯 ESTADO: MVP COMERCIAL COMPLETO
 💳 PAGOS: Stripe end-to-end verificado en LIVE mode
@@ -486,6 +495,7 @@ FRONTEND_URL=http://localhost:5173
 🌐 LANDINGS: B2B lista, B2C pendiente de copy
 
 Falta para lanzamiento:
+- Revalidación móvil real de `Book` y PDF desde `main`
 - Dominio propio + configuración DNS
 - Completar datos fiscales/mercantiles en los legales ya publicados
 - Google OAuth + webhook final con dominio definitivo
@@ -498,4 +508,4 @@ Estimación hasta lanzamiento: ~1 semana.
 
 ---
 
-*Preview validada. Funnel B2B2C funcional end-to-end. `Book`/PDF móvil ya reforzados en código; próximo foco: revalidación manual final y después dominio/legal antes del merge a `main`.*
+*`main` ya está consolidado y sincronizado con remoto. Funnel B2B2C funcional end-to-end. Núcleo experto validado con 4 casos reales. Próximo foco: revalidación móvil final y después dominio/legal para go-live.*
