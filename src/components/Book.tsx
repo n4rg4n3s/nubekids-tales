@@ -75,12 +75,22 @@ function computeBookSize(viewport: ViewportState): { spreadWidth: number; spread
     const availableWidth = Math.max(320, viewport.width - horizontalPadding);
     const availableHeight = Math.max(220, viewport.height - chromeAllowance);
 
+    if (isImmersiveMobile) {
+        // En movil landscape aprovechamos todo el viewport disponible sin forzar ratio.
+        // Aseguramos paridad par para que pageWidth*2 === spreadWidth.
+        const evenWidth = Math.floor(availableWidth / 2) * 2;
+        return {
+            spreadWidth: evenWidth,
+            spreadHeight: Math.floor(availableHeight),
+        };
+    }
+
     let spreadWidth = viewport.width >= 1024 && !viewport.isMobile
         ? Math.min(TARGET_SPREAD_WIDTH, availableWidth)
         : availableWidth;
     let spreadHeight = spreadWidth / SPREAD_RATIO;
 
-    if (viewport.width < 1024 || isImmersiveMobile) {
+    if (viewport.width < 1024) {
         if (spreadHeight > availableHeight) {
             spreadHeight = availableHeight;
             spreadWidth = spreadHeight * SPREAD_RATIO;
@@ -207,7 +217,7 @@ const TextPage = forwardRef<HTMLDivElement, TextPageProps>(function TextPage(
                     ref={viewportRef}
                     className="flex-1 overflow-hidden flex"
                     style={{
-                        alignItems: layout.verticalAlign === 'center' ? 'center' : 'flex-start',
+                        alignItems: isImmersiveMobile || layout.verticalAlign === 'center' ? 'center' : 'flex-start',
                     }}
                 >
                     <div
@@ -452,7 +462,33 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
         const bookPages: ReactNode[] = [];
 
         bookPages.push(
-            <Page key="cover" className="cover-page">
+            <Page key="cover-decor" className="cover-page-left">
+                <div
+                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
+                    style={{ backgroundColor: colors.background }}
+                >
+                    <div className="flex flex-col items-center justify-center gap-2 md:gap-3 text-center">
+                        <div className="text-3xl md:text-5xl leading-none" style={{ color: colors.primary }}>*</div>
+                        <p
+                            className="font-display text-xs md:text-sm tracking-[0.3em] uppercase"
+                            style={{ color: INK_BLACK, opacity: 0.55 }}
+                        >
+                            Un cuento de
+                        </p>
+                        <p
+                            className="font-display font-bold text-sm md:text-base"
+                            style={{ color: colors.primary }}
+                        >
+                            {tenantConfig.tenantName}
+                        </p>
+                        <div className="text-2xl md:text-4xl leading-none" style={{ color: colors.accent }}>*</div>
+                    </div>
+                </div>
+            </Page>
+        );
+
+        bookPages.push(
+            <Page key="cover" className="cover-page-right">
                 <div
                     className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
                     style={{ backgroundColor: colors.background }}
@@ -488,9 +524,9 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                         style={{ backgroundColor: colors.background }}
                     >
                         <div
-                            className="w-auto h-full max-w-full max-h-full rounded-lg overflow-hidden bg-white"
+                            className={`${isImmersiveMobile ? 'w-full h-full' : 'w-auto h-full max-w-full max-h-full'} rounded-lg overflow-hidden bg-white`}
                             style={{
-                                aspectRatio: '4/5',
+                                aspectRatio: isImmersiveMobile ? undefined : '4/5',
                                 border: isImmersiveMobile ? 'none' : '1px solid #E5E7EB',
                             }}
                         >
@@ -498,7 +534,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                                 <img
                                     src={page.imageUrl}
                                     alt={`Ilustracion pagina ${idx + 1}`}
-                                    className="w-full h-full object-contain"
+                                    className={`w-full h-full ${isImmersiveMobile ? 'object-cover' : 'object-contain'}`}
                                 />
                             ) : (
                                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">
@@ -524,7 +560,46 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
         });
 
         bookPages.push(
-            <Page key="back-cover" className="back-cover-page">
+            <Page key="back-cover-actions" className="back-cover-page-left">
+                <div
+                    className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
+                    style={{ backgroundColor: colors.background }}
+                >
+                    <div className="w-full max-w-[240px] md:max-w-[320px] flex flex-col gap-3 md:gap-4">
+                        <button
+                            onClick={handleExportPdf}
+                            disabled={isExporting}
+                            className="w-full px-4 py-2.5 md:px-5 md:py-3 rounded-xl font-display font-bold text-base md:text-xl btn-tactile disabled:opacity-60"
+                            style={{
+                                backgroundColor: colors.primary,
+                                border: `3px solid ${INK_BLACK}`,
+                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                color: 'white',
+                            }}
+                        >
+                            {exportButtonLabel}
+                        </button>
+
+                        <button
+                            onClick={() => onReset('portrait-close-button')}
+                            disabled={isExporting}
+                            className="w-full px-4 py-2.5 md:px-5 md:py-3 rounded-xl font-display font-bold text-base md:text-xl btn-tactile disabled:opacity-60"
+                            style={{
+                                backgroundColor: colors.accent,
+                                border: `3px solid ${INK_BLACK}`,
+                                boxShadow: `4px 4px 0px ${INK_BLACK}`,
+                                color: INK_BLACK,
+                            }}
+                        >
+                            Nuevo cuento
+                        </button>
+                    </div>
+                </div>
+            </Page>
+        );
+
+        bookPages.push(
+            <Page key="back-cover-fin" className="back-cover-page-right">
                 <div
                     className={`h-full flex items-center justify-center ${isImmersiveMobile ? 'p-2' : 'p-3 md:p-4'}`}
                     style={{ backgroundColor: colors.background }}
@@ -550,36 +625,6 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                             <br />
                             esta aventura magica
                         </p>
-
-                        <div className="mt-4 flex flex-col gap-3 md:mt-5 md:gap-4">
-                            <button
-                                onClick={handleExportPdf}
-                                disabled={isExporting}
-                                className="w-full px-4 py-2.5 md:px-5 md:py-3 rounded-xl font-display font-bold text-base md:text-xl btn-tactile disabled:opacity-60"
-                                style={{
-                                    backgroundColor: colors.primary,
-                                    border: `3px solid ${INK_BLACK}`,
-                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
-                                    color: 'white',
-                                }}
-                            >
-                                {exportButtonLabel}
-                            </button>
-
-                            <button
-                                onClick={() => onReset('portrait-close-button')}
-                                disabled={isExporting}
-                                className="w-full px-4 py-2.5 md:px-5 md:py-3 rounded-xl font-display font-bold text-base md:text-xl btn-tactile disabled:opacity-60"
-                                style={{
-                                    backgroundColor: colors.accent,
-                                    border: `3px solid ${INK_BLACK}`,
-                                    boxShadow: `4px 4px 0px ${INK_BLACK}`,
-                                    color: INK_BLACK,
-                                }}
-                            >
-                                Nuevo cuento
-                            </button>
-                        </div>
                     </div>
                 </div>
             </Page>
@@ -599,10 +644,10 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
         tenantConfig.tenantName,
         textLayoutSignature,
     ]);
-    const displayPage = Math.floor((currentPage + 1) / 2) + 1;
-    const displayTotal = Math.ceil((bookPagesElements.length - 2) / 2) + 2;
-    const isFirstPage = currentPage === 0;
-    const isLastPage = currentPage >= bookPagesElements.length - 1;
+    const displayPage = Math.floor(currentPage / 2) + 1;
+    const displayTotal = Math.max(1, Math.ceil(bookPagesElements.length / 2));
+    const isFirstPage = currentPage <= 1;
+    const isLastPage = currentPage >= bookPagesElements.length - 2;
     const pageWidth = Math.floor(bookSize.spreadWidth / 2);
     const pageHeight = Math.floor(bookSize.spreadHeight);
     const canSharePreparedPdf = preparedPdf
@@ -874,7 +919,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                                 maxWidth={pageWidth}
                                 minHeight={180}
                                 maxHeight={pageHeight}
-                                showCover={true}
+                                showCover={false}
                                 mobileScrollSupport={true}
                                 drawShadow={true}
                                 flippingTime={1200}
@@ -983,12 +1028,20 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
           overflow: hidden;
         }
         
-        .cover-page {
+        .cover-page-left {
+          border-radius: 8px 0 0 8px;
+        }
+
+        .cover-page-right {
           border-radius: 0 8px 8px 0;
         }
-        
-        .back-cover-page {
+
+        .back-cover-page-left {
           border-radius: 8px 0 0 8px;
+        }
+
+        .back-cover-page-right {
+          border-radius: 0 8px 8px 0;
         }
 
         .image-page img {
