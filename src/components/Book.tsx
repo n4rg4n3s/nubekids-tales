@@ -76,12 +76,18 @@ function computeBookSize(viewport: ViewportState): { spreadWidth: number; spread
     const availableHeight = Math.max(220, viewport.height - chromeAllowance);
 
     if (isImmersiveMobile) {
-        // En movil landscape aprovechamos todo el viewport disponible sin forzar ratio.
-        // Aseguramos paridad par para que pageWidth*2 === spreadWidth.
-        const evenWidth = Math.floor(availableWidth / 2) * 2;
+        let spreadWidth = availableWidth;
+        let spreadHeight = spreadWidth / SPREAD_RATIO;
+
+        if (spreadHeight > availableHeight) {
+            spreadHeight = availableHeight;
+            spreadWidth = spreadHeight * SPREAD_RATIO;
+        }
+
+        const evenWidth = Math.floor(spreadWidth / 2) * 2;
         return {
             spreadWidth: evenWidth,
-            spreadHeight: Math.floor(availableHeight),
+            spreadHeight: Math.floor(spreadHeight),
         };
     }
 
@@ -524,9 +530,9 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                         style={{ backgroundColor: colors.background }}
                     >
                         <div
-                            className={`${isImmersiveMobile ? 'w-full h-full' : 'w-auto h-full max-w-full max-h-full'} rounded-lg overflow-hidden bg-white`}
+                            className="w-auto h-full max-w-full max-h-full rounded-lg overflow-hidden bg-white"
                             style={{
-                                aspectRatio: isImmersiveMobile ? undefined : '4/5',
+                                aspectRatio: '4/5',
                                 border: isImmersiveMobile ? 'none' : '1px solid #E5E7EB',
                             }}
                         >
@@ -534,7 +540,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
                                 <img
                                     src={page.imageUrl}
                                     alt={`Ilustracion pagina ${idx + 1}`}
-                                    className={`w-full h-full ${isImmersiveMobile ? 'object-cover' : 'object-contain'}`}
+                                    className="w-full h-full object-contain"
                                 />
                             ) : (
                                 <div className="w-full h-full bg-gray-200 flex items-center justify-center">
