@@ -76,18 +76,10 @@ function computeBookSize(viewport: ViewportState): { spreadWidth: number; spread
     const availableHeight = Math.max(220, viewport.height - chromeAllowance);
 
     if (isImmersiveMobile) {
-        let spreadWidth = availableWidth;
-        let spreadHeight = spreadWidth / SPREAD_RATIO;
-
-        if (spreadHeight > availableHeight) {
-            spreadHeight = availableHeight;
-            spreadWidth = spreadHeight * SPREAD_RATIO;
-        }
-
-        const evenWidth = Math.floor(spreadWidth / 2) * 2;
+        const evenWidth = Math.floor(availableWidth / 2) * 2;
         return {
             spreadWidth: evenWidth,
-            spreadHeight: Math.floor(spreadHeight),
+            spreadHeight: Math.floor(availableHeight),
         };
     }
 
@@ -780,7 +772,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
             )}
 
             {isMobilePortrait ? (
-                <div className="h-full flex items-center justify-center">
+                <div className="min-h-[100dvh] flex items-center justify-center">
                     <button
                         onClick={() => onReset('portrait-close-button')}
                         disabled={isExporting}
