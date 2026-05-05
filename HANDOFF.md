@@ -1,8 +1,45 @@
 # HANDOFF.md — NubeKids Platform
 
-> **Última actualización:** 2026-04-09 (validación experta cerrada + `main` sincronizado con remoto)
-> **Estado:** ✅ `main` y `origin/main` alineados tras pivote de edad, realineación experta, saneados editoriales y validación manual de 4 casos; foco siguiente desplazado a Fase 11
-> **Próximo paso:** revalidar en móvil real `Book` + export PDF desde `main` y, si pasa, entrar en checklist de go-live (dominio, legal, webhook y OAuth)
+> **Última actualización:** 2026-05-05
+> **Estado:** ⚠️ Dos bugs visuales pendientes en `Book.tsx` — ver sección "Sesión Activa" abajo
+> **Próximo paso:** Fix portrait centering + landscape fill en `src/components/Book.tsx`
+
+---
+
+## 🔴 Sesión Activa — Fix Book Layout (2026-05-05)
+
+**Branch:** `claude/fix-story-container-layout-wBWJ5` (crear desde main si no existe)
+**Último Commit deployado:** `08accd7` — fix: restore 16:9 ratio and 4:5 image aspect ratio for mobile landscape
+**Modelo:** Claude Sonnet 4.6
+
+### Bugs Pendientes (reportados con screenshots)
+
+#### Bug 1 — Portrait: "Gira el movil" NO centrado verticalmente
+- **Archivo:** `src/components/Book.tsx:782-833`
+- **Causa probable:** El contenedor raíz (línea ~663) usa `min-h-screen` en lugar de `h-screen`/`100dvh`, por lo que `h-full` del hijo no resuelve a 100vh
+- **Fix:** Añadir `h-screen` al contenedor raíz cuando `isMobilePortrait`, o usar `min-h-[100dvh]` con `flex items-center justify-center` directamente en el wrapper interno
+
+#### Bug 2 — Landscape: Imagen+texto NO llenan el contenedor del libro
+- **Archivo:** `src/components/Book.tsx:906-917` (wrapper del HTMLFlipBook)
+- **Síntoma:** Espacio vacío en parte inferior y derecha del spread container
+- **Contexto:** El wrapper tiene `width: spreadWidth` y `height: spreadHeight` pero el flipbook no ocupa todo ese espacio
+- **Fix a investigar:** Si `computeBookSize` calcula bien las dimensiones, puede ser que falte que el `.stf__parent` (elemento interno de react-pageflip) tenga `width: 100%` o similar
+
+### Decisiones Previas — NO revertir
+- `showCover={false}` + páginas cover manuales (`cover-decor` + `cover`)
+- `aspectRatio: '4/5'` + `object-contain` en imagen (NO object-cover)
+- `SPREAD_RATIO = 16/9` en `computeBookSize`
+- `verticalAlign: center` en `TextPage`
+- jsPDF landscape 320×180mm en `pdfExport.ts` — no tocar
+
+### Callejones Sin Salida — NO repetir
+- Investigar `Setup.tsx` / `WizardNavigation.tsx` / `creditService.ts` por bug "Crear cuento" — era bloqueo momentáneo, no código
+
+### Estado de Validación
+- **Build:** PASS en `08accd7`
+- **Deploy:** `origin/main` = nubekids-tales.vercel.app
+
+---
 
 ---
 
