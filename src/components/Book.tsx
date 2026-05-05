@@ -76,10 +76,18 @@ function computeBookSize(viewport: ViewportState): { spreadWidth: number; spread
     const availableHeight = Math.max(220, viewport.height - chromeAllowance);
 
     if (isImmersiveMobile) {
-        const evenWidth = Math.floor(availableWidth / 2) * 2;
+        let spreadWidth = availableWidth;
+        let spreadHeight = spreadWidth / SPREAD_RATIO;
+
+        if (spreadHeight > availableHeight) {
+            spreadHeight = availableHeight;
+            spreadWidth = spreadHeight * SPREAD_RATIO;
+        }
+
+        const evenWidth = Math.floor(spreadWidth / 2) * 2;
         return {
             spreadWidth: evenWidth,
-            spreadHeight: Math.floor(availableHeight),
+            spreadHeight: Math.floor(spreadHeight),
         };
     }
 
