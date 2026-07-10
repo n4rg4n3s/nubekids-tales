@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "npm run test:unit",
     "test:unit": "node --import ./tests/register-ts-loader.mjs --test tests/agent-sanitizers.test.ts"
   },
   "dependencies": {

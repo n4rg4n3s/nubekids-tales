@@ -176,9 +176,14 @@ const TextPage = forwardRef<HTMLDivElement, TextPageProps>(function TextPage(
     const contentRef = useRef<HTMLDivElement | null>(null);
     const layout = layouts[Math.min(layoutIndex, layouts.length - 1)];
 
-    useEffect(() => {
+    // Reset del layout cuando cambia el contenido: patrón "adjust state during
+    // render" (React docs) en lugar de setState dentro de un efecto.
+    const layoutResetKey = `${ageGroup}|${caption}|${dialogue}|${layoutSignature}`;
+    const [prevLayoutResetKey, setPrevLayoutResetKey] = useState(layoutResetKey);
+    if (prevLayoutResetKey !== layoutResetKey) {
+        setPrevLayoutResetKey(layoutResetKey);
         setLayoutIndex(0);
-    }, [ageGroup, caption, dialogue, layoutSignature]);
+    }
 
     useLayoutEffect(() => {
         const viewport = viewportRef.current;
@@ -191,6 +196,10 @@ const TextPage = forwardRef<HTMLDivElement, TextPageProps>(function TextPage(
             || content.scrollWidth > viewport.clientWidth + 1;
 
         if (overflowing && layoutIndex < layouts.length - 1) {
+            // Medición DOM: el texto solo puede evaluarse tras el render, y el
+            // ajuste debe ser síncrono (useLayoutEffect) para evitar un flash
+            // de texto desbordado antes del repintado.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLayoutIndex((current) => current + 1);
         }
     }, [ageGroup, caption, dialogue, layoutIndex, layoutSignature, layouts.length]);
