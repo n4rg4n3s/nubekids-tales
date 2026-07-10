@@ -78,27 +78,43 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
   }
 
   try {
-    const { data: tokenRow, error: tokenError } = await supabase
-      .from('tokens')
-      .select('id, token, tenant_id, brand_name, item_image_url, item_name, customer_email, is_used, expires_at')
-      .eq('token', tokenCode)
-      .single();
+    // La tabla tokens ya no es legible desde el cliente (seguridad).
+    // La validación exige conocer el token exacto vía RPC SECURITY DEFINER.
+    const { data: validation, error: tokenError } = await supabase
+      .rpc('validate_b2b_token', { p_token: tokenCode });
 
-    if (tokenError || !tokenRow) {
-      return { valid: false, code: 'not_found', error: 'Token no válido o no encontrado' };
+    if (tokenError || !validation) {
+      console.error('Error validating token via RPC:', tokenError);
+      return { valid: false, code: 'connection_error', error: 'Error de conexión' };
     }
 
-    if (tokenRow.is_used) {
-      return { valid: false, code: 'already_used', error: 'Este enlace ya ha sido utilizado' };
+    if (validation.valid !== true) {
+      const code = (validation.code as TokenErrorCode) || 'not_found';
+      const errorMessages: Partial<Record<TokenErrorCode, string>> = {
+        not_found: 'Token no válido o no encontrado',
+        already_used: 'Este enlace ya ha sido utilizado',
+        expired: 'Este enlace ha expirado',
+      };
+      return { valid: false, code, error: errorMessages[code] || 'Token no válido' };
     }
 
-    if (tokenRow.expires_at && new Date(tokenRow.expires_at) < new Date()) {
-      return { valid: false, code: 'expired', error: 'Este enlace ha expirado' };
-    }
+    const tokenRow = validation.token as {
+      id: string;
+      token: string;
+      tenant_id: string;
+      brand_name: string | null;
+      item_image_url: string | null;
+      item_name: string | null;
+      customer_email: string | null;
+      is_used: boolean;
+      expires_at: string | null;
+    };
 
     const { data: tenantRow, error: tenantError } = await supabase
       .from('tenants')
-      .select('*')
+      .select(
+        'id, tenant_id, name, brand_name, integration_level, vertical_id, item_label, brand_colors, pedagogy_enabled, tokens_total, tokens_used, item_interaction_mode'
+      )
       .eq('id', tokenRow.tenant_id)
       .single();
 
@@ -149,11 +165,11 @@ export async function validateToken(tokenCode: string): Promise<ValidateTokenRes
         token: tokenRow.token,
         tenantId: tokenRow.tenant_id,
         brandName: tokenRow.brand_name || tenantRow.brand_name,
-        itemImageUrl: tokenRow.item_image_url,
-        itemName: tokenRow.item_name,
-        customerEmail: tokenRow.customer_email,
+        itemImageUrl: tokenRow.item_image_url ?? undefined,
+        itemName: tokenRow.item_name ?? undefined,
+        customerEmail: tokenRow.customer_email ?? undefined,
         isUsed: tokenRow.is_used,
-        expiresAt: tokenRow.expires_at,
+        expiresAt: tokenRow.expires_at ?? undefined,
       },
       tenant: tenantData,
       tenantConfig: buildTenantConfigFromRuntimeTenant(tenantData),
