@@ -8,6 +8,7 @@
 
 import type { AgeGroup, Beat, Genre, ItemInteractionMode } from '../../types';
 import type { AgentDependencies } from '../dependencies';
+import { GEMINI_TEXT_MODEL } from '../../config/aiModels';
 import { formatEditorialGuardrails } from '../../config/editorialGuardrails';
 import { parseJsonSafely } from '../../utils/jsonParser';
 import {
@@ -86,7 +87,7 @@ export async function generateBriefs(
     console.log(`[VisualBriefAgent] Género: ${input.genre}, Páginas: ${input.storyBeats.length}`);
 
     const response = await deps.geminiClient.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: GEMINI_TEXT_MODEL,
         contents: prompt,
         config: {
             systemInstruction: `${SYSTEM_PROMPT}\n\nGUARDRAILS EDITORIALES:\n${formatEditorialGuardrails('visual', input.ageGroup)}`,

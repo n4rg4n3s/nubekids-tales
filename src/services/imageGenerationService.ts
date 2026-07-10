@@ -6,6 +6,7 @@
  */
 
 import type { GenerateContentResponse, Part } from '@google/genai';
+import { GEMINI_IMAGE_MODEL } from '../config/aiModels';
 import type { AgentDependencies } from './dependencies';
 
 // ============================================
@@ -36,7 +37,7 @@ export interface ImageGenerationResult {
 // CONSTANTS
 // ============================================
 
-const IMAGE_MODEL = 'gemini-3.1-flash-image-preview';
+const IMAGE_MODEL = GEMINI_IMAGE_MODEL;
 const IMAGE_ASPECT_RATIO = '4:5';
 
 // Prefijo para mejorar la calidad de generación

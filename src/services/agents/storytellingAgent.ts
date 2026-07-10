@@ -17,6 +17,7 @@ import type {
 } from '../../types';
 import { AGE_GROUP_CONFIGS } from '../../types';
 import type { AgentDependencies } from '../dependencies';
+import { GEMINI_TEXT_MODEL } from '../../config/aiModels';
 import { formatEditorialGuardrails } from '../../config/editorialGuardrails';
 import {
     resolveAnchorPhrase,
@@ -87,7 +88,7 @@ export async function generateBeats(
     console.log(`[StorytellingAgent] AgeGroup: ${input.ageGroup}, MaxWords: ${ageGroupConfig.maxWordsPerPage}`);
 
     const response = await deps.geminiClient.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: GEMINI_TEXT_MODEL,
         contents: prompt,
         config: {
             systemInstruction: `${SYSTEM_PROMPT}\n\nGUARDRAILS EDITORIALES:\n${formatEditorialGuardrails('storytelling', input.ageGroup)}`,

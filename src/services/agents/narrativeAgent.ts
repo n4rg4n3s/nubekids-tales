@@ -8,6 +8,7 @@
 
 import type { AgeGroup, ItemInteractionMode, PedagogyProfile } from '../../types';
 import type { AgentDependencies } from '../dependencies';
+import { GEMINI_TEXT_MODEL } from '../../config/aiModels';
 import { formatEditorialGuardrails } from '../../config/editorialGuardrails';
 import {
     resolveAnchorPhrase,
@@ -111,7 +112,7 @@ export async function generateArc(
         .join('\n\n');
 
     const response = await deps.geminiClient.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: GEMINI_TEXT_MODEL,
         contents: prompt,
         config: {
             systemInstruction: fullSystemPrompt,
