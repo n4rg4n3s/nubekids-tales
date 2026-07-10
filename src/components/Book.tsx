@@ -789,7 +789,7 @@ export default function Book({ pages, tenantConfig, heroName, ageGroup, onReset 
             )}
 
             {isMobilePortrait ? (
-                <div className="h-full flex items-center justify-center">
+                <div className="min-h-[100dvh] flex items-center justify-center">
                     <button
                         onClick={() => onReset('portrait-close-button')}
                         disabled={isExporting}
