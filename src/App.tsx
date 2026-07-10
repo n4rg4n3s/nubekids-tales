@@ -474,6 +474,7 @@ function App() {
       heroName: data.heroName,
       heroDescription: data.heroDescription,
       heroPhoto: data.heroPhoto,
+      heroPersonality: data.heroPersonality,
       itemImage: data.itemImage,
       itemDescription: data.itemDescription,
       ageGroup: data.ageGroup,

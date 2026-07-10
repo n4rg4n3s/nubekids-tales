@@ -26,6 +26,8 @@ export interface SessionContext {
     heroName: string;
     heroDescription: string | null;
     heroPhoto: string | null;
+    /** Rasgos de carácter (ids del catálogo) — modulan narrativa, no añaden objetivos */
+    heroPersonality: string[];
 
     // Objeto mágico
     itemImage: string | null;

@@ -115,23 +115,40 @@ export interface TenantConfig {
 }
 
 // ============================================
-// PEDAGOGY SYSTEM
+// PEDAGOGY SYSTEM — Modelo "Ancla + Foco" (v2)
 // ============================================
+// En un cuento de 10 páginas cabe UN universo y UNA transformación.
+// · anchor  = la gran pasión/sueño del niño → el MUNDO del cuento
+// · focus   = la ÚNICA cosa a trabajar (categoría + sub-opción)
+// · reinforcementValue = valor secundario opcional para la resolución
+// Los ids se resuelven a frases operativas en config/pedagogyCatalog.ts.
+
+export type FocusCategory = 'emotion-behavior' | 'life-situation' | 'skill' | 'value';
+
+export interface PedagogyAnchor {
+  /** id del catálogo de pasiones, o 'custom' */
+  id: string;
+  /** texto libre cuando id === 'custom' */
+  custom?: string;
+}
+
+export interface PedagogyFocus {
+  category: FocusCategory;
+  /** id de la sub-opción del catálogo, o 'custom' */
+  id: string;
+  /** texto libre cuando id === 'custom' */
+  custom?: string;
+  /** matiz opcional del padre/madre (1 línea) */
+  nuance?: string;
+}
 
 export interface PedagogyProfile {
   enabled: boolean;
-  behaviorChallenges: string[];
-  skillsToReinforce: string[];
-  emotionalContext: string[];
-  motivations: string[];
-  valuesToTransmit: string[];
+  anchor: PedagogyAnchor | null;
+  focus: PedagogyFocus | null;
+  /** Valor de refuerzo — solo cuando focus.category !== 'value' */
+  reinforcementValue: string | null;
   freeformContext?: string;
-  // Campos "Otro" personalizados por el usuario
-  customBehavior?: string;
-  customSkill?: string;
-  customEmotion?: string;
-  customMotivation?: string;
-  customValue?: string;
 }
 
 // ============================================

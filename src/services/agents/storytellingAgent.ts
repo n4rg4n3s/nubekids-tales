@@ -18,6 +18,12 @@ import type {
 import { AGE_GROUP_CONFIGS } from '../../types';
 import type { AgentDependencies } from '../dependencies';
 import { formatEditorialGuardrails } from '../../config/editorialGuardrails';
+import {
+    resolveAnchorPhrase,
+    resolveFocus,
+    resolveReinforcementPhrase,
+    resolvePersonalityPhrases,
+} from '../../config/pedagogyCatalog';
 import { parseJsonSafely } from '../../utils/jsonParser';
 import { getItemInteractionModeInstruction } from '../../utils/itemInteraction';
 import type { ExpertNarrativeBrief } from './contracts';
@@ -52,6 +58,8 @@ export interface StorytellingInput {
     language: Language;
     genre: Genre;
     heroName: string;
+    /** Rasgos de carácter del protagonista (ids del catálogo) */
+    heroPersonality?: string[];
     friendName?: string;
     itemLabel: string;
     itemInteractionMode: ItemInteractionMode;
@@ -112,6 +120,10 @@ function buildPrompt(
     const friendSection = input.friendName
         ? `- Co-protagonista: ${input.friendName}`
         : '- Sin co-protagonista';
+    const personalityPhrases = resolvePersonalityPhrases(input.heroPersonality);
+    const personalitySection = personalityPhrases.length > 0
+        ? `- Personalidad del protagonista: ${personalityPhrases.join('; ')} (modula sus reacciones y su voz, no añade mensajes)`
+        : '';
     const babyPromptNote = input.ageGroup === 'baby'
         ? '- Para baby, cada página funciona como un pie de imagen ritmico y visual. Todo el texto debe vivir preferentemente en "caption".'
         : '';
@@ -126,6 +138,7 @@ ${pedagogySection}
 
 CONFIGURACIÓN:
 - Protagonista: ${input.heroName}
+${personalitySection}
 ${friendSection}
 - Objeto mágico: ${input.itemLabel}${input.itemDescription ? ` (${input.itemDescription})` : ''}
 - Modo de interacción del objeto: ${input.itemInteractionMode}
@@ -174,6 +187,7 @@ IMPORTANTE:
 - focus_char puede ser "hero", "friend", o "other"
 - "scene" debe ser muy descriptiva para el ilustrador
 - "caption" debe respetar el límite de palabras ESTRICTAMENTE
+- Si hay FOCO PEDAGOGICO: el objetivo único es el hilo de acción de las páginas 4-9, y el mundo/pasión del ancla debe verse en la escena de TODAS las páginas
 ${input.ageGroup === 'baby' ? '- En baby, si necesitas una exclamacion o voz del narrador, integrala dentro de "caption". Evita "dialogue".' : ''}
   `.trim();
 }
@@ -194,29 +208,29 @@ function buildExpertBriefSection(expertBrief: ExpertNarrativeBrief): string {
 }
 
 function buildPedagogyFocusSection(pedagogy: PedagogyProfile): string {
-    if (!pedagogy.enabled) {
+    const anchorPhrase = resolveAnchorPhrase(pedagogy.anchor);
+    const focus = resolveFocus(pedagogy.focus);
+    const reinforcement = resolveReinforcementPhrase(pedagogy.reinforcementValue);
+    const freeform = pedagogy.freeformContext?.trim();
+
+    if (!pedagogy.enabled || (!anchorPhrase && !focus && !freeform)) {
         return 'MODO INSPIRACIONAL: sin personalizacion pedagogica explicita adicional.';
     }
 
-    const notes: string[] = ['FOCO PEDAGOGICO REAL DE LA SESION:'];
+    const notes: string[] = ['FOCO PEDAGOGICO REAL DE LA SESION (Ancla + Foco):'];
 
-    if (pedagogy.behaviorChallenges.length > 0 || pedagogy.customBehavior) {
-        notes.push(`- Retos: ${[...pedagogy.behaviorChallenges, pedagogy.customBehavior].filter(Boolean).join(', ')}`);
+    if (anchorPhrase) {
+        notes.push(`- ANCLA (mundo del cuento): ${anchorPhrase}. La pasión del protagonista es el escenario visible de TODAS las páginas.`);
     }
-    if (pedagogy.skillsToReinforce.length > 0 || pedagogy.customSkill) {
-        notes.push(`- Habilidades: ${[...pedagogy.skillsToReinforce, pedagogy.customSkill].filter(Boolean).join(', ')}`);
+    if (focus) {
+        const nuance = focus.nuance ? ` Matiz del padre/madre: ${focus.nuance}.` : '';
+        notes.push(`- OBJETIVO ÚNICO (${focus.promptLabel}): ${focus.phrase}.${nuance} Es el hilo de acción de las páginas 4 a 9. No introduzcas otros aprendizajes que compitan.`);
     }
-    if (pedagogy.emotionalContext.length > 0 || pedagogy.customEmotion) {
-        notes.push(`- Contexto emocional: ${[...pedagogy.emotionalContext, pedagogy.customEmotion].filter(Boolean).join(', ')}`);
+    if (reinforcement) {
+        notes.push(`- VALOR DE REFUERZO: ${reinforcement}. Solo emerge en la resolución, sin trama propia.`);
     }
-    if (pedagogy.motivations.length > 0 || pedagogy.customMotivation) {
-        notes.push(`- Motivaciones: ${[...pedagogy.motivations, pedagogy.customMotivation].filter(Boolean).join(', ')}`);
-    }
-    if (pedagogy.valuesToTransmit.length > 0 || pedagogy.customValue) {
-        notes.push(`- Valores: ${[...pedagogy.valuesToTransmit, pedagogy.customValue].filter(Boolean).join(', ')}`);
-    }
-    if (pedagogy.freeformContext) {
-        notes.push(`- Contexto libre: ${pedagogy.freeformContext}`);
+    if (freeform) {
+        notes.push(`- Contexto libre: ${freeform}`);
     }
 
     return notes.join('\n');

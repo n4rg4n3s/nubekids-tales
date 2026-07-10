@@ -11,6 +11,11 @@
 
 import type { AgentDependencies } from './dependencies';
 import type { AgeGroup, PedagogyProfile, RagChunk } from '../types';
+import {
+  resolveAnchorPhrase,
+  resolveFocus,
+  resolveReinforcementPhrase,
+} from '../config/pedagogyCatalog';
 
 // ─── Configuration ───────────────────────────────────────────
 
@@ -81,41 +86,19 @@ export function buildSemanticQuery(params: RagQuery): string {
   parts.push(ageLabels[params.ageGroup]);
 
   if (params.pedagogy?.enabled) {
-    const behaviorChallenges = collectPedagogyEntries(
-      params.pedagogy.behaviorChallenges,
-      params.pedagogy.customBehavior
-    );
-    const skills = collectPedagogyEntries(
-      params.pedagogy.skillsToReinforce,
-      params.pedagogy.customSkill
-    );
-    const emotions = collectPedagogyEntries(
-      params.pedagogy.emotionalContext,
-      params.pedagogy.customEmotion
-    );
-    const values = collectPedagogyEntries(
-      params.pedagogy.valuesToTransmit,
-      params.pedagogy.customValue
-    );
-    const motivations = collectPedagogyEntries(
-      params.pedagogy.motivations,
-      params.pedagogy.customMotivation
-    );
+    const focus = resolveFocus(params.pedagogy.focus);
+    const anchorPhrase = resolveAnchorPhrase(params.pedagogy.anchor);
+    const reinforcement = resolveReinforcementPhrase(params.pedagogy.reinforcementValue);
 
-    if (behaviorChallenges.length > 0) {
-      parts.push(`behavioral challenges: ${behaviorChallenges.join(', ')}`);
+    if (focus) {
+      const nuance = focus.nuance ? ` — ${focus.nuance}` : '';
+      parts.push(`primary developmental focus (${focus.promptLabel}): ${focus.phrase}${nuance}`);
     }
-    if (skills.length > 0) {
-      parts.push(`skills to develop: ${skills.join(', ')}`);
+    if (reinforcement) {
+      parts.push(`supporting value: ${reinforcement}`);
     }
-    if (emotions.length > 0) {
-      parts.push(`emotional context: ${emotions.join(', ')}`);
-    }
-    if (values.length > 0) {
-      parts.push(`values: ${values.join(', ')}`);
-    }
-    if (motivations.length > 0) {
-      parts.push(`child interests: ${motivations.join(', ')}`);
+    if (anchorPhrase) {
+      parts.push(`child interests and story world: ${anchorPhrase}`);
     }
     if (params.pedagogy.freeformContext?.trim()) {
       parts.push(`session context: ${params.pedagogy.freeformContext.trim()}`);
@@ -205,6 +188,13 @@ async function querySemanticV2(
 
 // ─── V1 Fallback: Tag-based filtering ────────────────────────
 
+const FOCUS_CATEGORY_TAG_PREFIX: Record<string, string> = {
+  'emotion-behavior': 'topic',
+  'life-situation': 'emotion',
+  skill: 'skill',
+  value: 'value',
+};
+
 function buildTagsFromQuery(
   ageGroup: AgeGroup,
   pedagogy?: PedagogyProfile
@@ -214,14 +204,17 @@ function buildTagsFromQuery(
   tags.push('age:all');
 
   if (pedagogy?.enabled) {
-    collectPedagogyEntries(pedagogy.behaviorChallenges, pedagogy.customBehavior)
-      .forEach((challenge) => tags.push(`topic:${challenge}`));
-    collectPedagogyEntries(pedagogy.skillsToReinforce, pedagogy.customSkill)
-      .forEach((skill) => tags.push(`skill:${skill}`));
-    collectPedagogyEntries(pedagogy.emotionalContext, pedagogy.customEmotion)
-      .forEach((emotion) => tags.push(`emotion:${emotion}`));
-    collectPedagogyEntries(pedagogy.valuesToTransmit, pedagogy.customValue)
-      .forEach((value) => tags.push(`value:${value}`));
+    const focus = pedagogy.focus;
+    if (focus?.id && focus.id !== 'custom') {
+      const prefix = FOCUS_CATEGORY_TAG_PREFIX[focus.category] ?? 'topic';
+      tags.push(`${prefix}:${focus.id}`);
+    }
+    if (pedagogy.reinforcementValue) {
+      tags.push(`value:${pedagogy.reinforcementValue}`);
+    }
+    if (pedagogy.anchor?.id && pedagogy.anchor.id !== 'custom') {
+      tags.push(`interest:${pedagogy.anchor.id}`);
+    }
   }
 
   return tags;
@@ -278,26 +271,18 @@ export function formatChunksForPrompt(chunks: RagChunk[]): string {
     .join('\n\n---\n\n');
 }
 
-function collectPedagogyEntries(values: string[] | undefined, customValue?: string): string[] {
-  return [...(values ?? []), customValue ?? '']
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
-
 function countPedagogySignals(pedagogy?: PedagogyProfile): number {
   if (!pedagogy?.enabled) {
     return 0;
   }
 
-  const groups = [
-    collectPedagogyEntries(pedagogy.behaviorChallenges, pedagogy.customBehavior),
-    collectPedagogyEntries(pedagogy.skillsToReinforce, pedagogy.customSkill),
-    collectPedagogyEntries(pedagogy.emotionalContext, pedagogy.customEmotion),
-    collectPedagogyEntries(pedagogy.motivations, pedagogy.customMotivation),
-    collectPedagogyEntries(pedagogy.valuesToTransmit, pedagogy.customValue),
+  // Modelo Ancla + Foco: máx. 4 señales (foco, ancla, valor, contexto libre)
+  const signals = [
+    Boolean(resolveFocus(pedagogy.focus)),
+    Boolean(resolveAnchorPhrase(pedagogy.anchor)),
+    Boolean(resolveReinforcementPhrase(pedagogy.reinforcementValue)),
+    Boolean(pedagogy.freeformContext?.trim()),
   ];
 
-  const freeformSignals = pedagogy.freeformContext?.trim() ? 1 : 0;
-
-  return groups.reduce((total, entries) => total + entries.length, 0) + freeformSignals;
+  return signals.filter(Boolean).length;
 }

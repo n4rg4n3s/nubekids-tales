@@ -24,6 +24,8 @@ export interface SetupData {
   heroInputMode: 'description' | 'photo';
   heroPhoto: string | null;
   heroDescription: string | null;
+  /** Rasgos de carácter del protagonista (ids del catálogo, máx. 2) */
+  heroPersonality: string[];
   pedagogy: PedagogyData;
   itemImage: string | null;
   itemDescription: string;
@@ -66,21 +68,15 @@ export default function Setup({
     eyeColor: '',
     skinTone: '',
     peculiarities: '',
+    personalityTraits: [],
   });
 
   const [pedagogyData, setPedagogyData] = useState<PedagogyData>({
     enabled: false,
-    behaviorChallenges: [],
-    skillsToReinforce: [],
-    emotionalContext: [],
-    motivations: [],
-    valuesToTransmit: [],
+    anchor: null,
+    focus: null,
+    reinforcementValue: null,
     freeformContext: '',
-    customBehavior: '',
-    customSkill: '',
-    customEmotion: '',
-    customMotivation: '',
-    customValue: '',
   });
 
   // Inicializar con datos pre-rellenados del B2B (o vacío si no hay)
@@ -145,6 +141,7 @@ export default function Setup({
       heroDescription: heroData.inputMode === 'description'
         ? formatHeroDescription(heroData)
         : null,
+      heroPersonality: heroData.personalityTraits,
       pedagogy: pedagogyData,
       itemImage: itemData.image,
       itemDescription: itemData.description,

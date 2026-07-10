@@ -116,6 +116,7 @@ export async function orchestrate(
             {
                 heroName: session.heroName,
                 friendName: undefined, // TODO: Extraer del contexto si existe
+                heroPersonality: session.heroPersonality,
                 itemLabel: session.tenantConfig.itemLabel,
                 itemInteractionMode: session.tenantConfig.itemInteractionMode,
                 itemDescription: session.itemDescription,
@@ -146,6 +147,7 @@ export async function orchestrate(
                 language: session.language,
                 genre: session.genre,
                 heroName: session.heroName,
+                heroPersonality: session.heroPersonality,
                 friendName: undefined, // TODO: Extraer del contexto si existe
                 itemLabel: session.tenantConfig.itemLabel,
                 itemInteractionMode: session.tenantConfig.itemInteractionMode,

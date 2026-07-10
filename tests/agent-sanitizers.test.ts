@@ -23,17 +23,10 @@ function createMockDeps(responseText: string, ragChunks: RagChunk[] = []): Agent
 function createPedagogyProfile(overrides: Partial<PedagogyProfile> = {}): PedagogyProfile {
     return {
         enabled: false,
-        behaviorChallenges: [],
-        skillsToReinforce: [],
-        emotionalContext: [],
-        motivations: [],
-        valuesToTransmit: [],
+        anchor: null,
+        focus: null,
+        reinforcementValue: null,
         freeformContext: '',
-        customBehavior: '',
-        customSkill: '',
-        customEmotion: '',
-        customMotivation: '',
-        customValue: '',
         ...overrides,
     };
 }
@@ -88,7 +81,10 @@ test('generateArc strips didactic conclusions from the expert brief surface', as
             itemInteractionMode: 'generic',
             itemDescription: 'varita de burbujas',
             ageGroup: 'tiny',
-            pedagogyProfile: createPedagogyProfile({ enabled: true, customSkill: 'Pedir ayuda' }),
+            pedagogyProfile: createPedagogyProfile({
+                enabled: true,
+                focus: { category: 'skill', id: 'custom', custom: 'Pedir ayuda' },
+            }),
             baseSystemPrompt: '',
         },
         createMockDeps(narrativeResponse, [
@@ -189,45 +185,66 @@ test('resolveMaxChunks grows with age and richer pedagogy signals', () => {
             ageGroup: 'tiny',
             pedagogy: createPedagogyProfile({
                 enabled: true,
-                customBehavior: 'frustracion',
+                focus: { category: 'emotion-behavior', id: 'custom', custom: 'frustracion' },
             }),
         }),
         6
     );
 
+    // Ancla + Foco + Valor = 3 señales → bonus doble
     assert.equal(
         resolveMaxChunks({
             ageGroup: 'reader',
             pedagogy: createPedagogyProfile({
                 enabled: true,
-                behaviorChallenges: ['miedo a equivocarse'],
-                skillsToReinforce: ['resolver problemas'],
-                emotionalContext: ['se bloquea'],
-                customMotivation: 'inventos',
+                anchor: { id: 'science' },
+                focus: { category: 'emotion-behavior', id: 'perfectionism' },
+                reinforcementValue: 'perseverance',
             }),
         }),
         9
     );
 });
 
-test('buildSemanticQuery includes custom Step 2 fields in the semantic retrieval prompt', () => {
+test('buildSemanticQuery resolves Anchor + Focus signals into the semantic retrieval prompt', () => {
     const query = buildSemanticQuery({
         ageGroup: 'little',
         pedagogy: createPedagogyProfile({
             enabled: true,
-            customBehavior: 'ansiedad por separacion',
-            customSkill: 'autonomia',
-            customEmotion: 'separacion de los padres',
-            customMotivation: 'animales',
-            customValue: 'valentia',
+            anchor: { id: 'custom', custom: 'los caballos' },
+            focus: {
+                category: 'emotion-behavior',
+                id: 'custom',
+                custom: 'ansiedad por separacion',
+                nuance: 'sobre todo al entrar al cole',
+            },
+            reinforcementValue: 'valentia sin miedo',
             freeformContext: 'le calma jugar con su perro',
         }),
     });
 
     assert.match(query, /ansiedad por separacion/i);
-    assert.match(query, /autonomia/i);
-    assert.match(query, /separacion de los padres/i);
-    assert.match(query, /animales/i);
-    assert.match(query, /valentia/i);
+    assert.match(query, /sobre todo al entrar al cole/i);
+    assert.match(query, /los caballos/i);
+    assert.match(query, /valentia sin miedo/i);
     assert.match(query, /le calma jugar con su perro/i);
+});
+
+test('buildSemanticQuery expands catalog ids into operative phrases (no raw ids)', () => {
+    const query = buildSemanticQuery({
+        ageGroup: 'tiny',
+        pedagogy: createPedagogyProfile({
+            enabled: true,
+            anchor: { id: 'dinosaurs' },
+            focus: { category: 'emotion-behavior', id: 'night-fears' },
+            reinforcementValue: 'courage',
+        }),
+    });
+
+    // Frases operativas del catálogo, no ids crudos
+    assert.match(query, /miedo a la oscuridad/i);
+    assert.match(query, /dinosaurios/i);
+    assert.match(query, /valentía/i);
+    assert.doesNotMatch(query, /night-fears/);
+    assert.doesNotMatch(query, /\bdinosaurs\b/);
 });

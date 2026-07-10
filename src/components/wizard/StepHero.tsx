@@ -4,6 +4,7 @@
 import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatHeroDescription } from './stepHeroUtils';
+import { MAX_PERSONALITY_TRAITS, PERSONALITY_TRAITS } from '../../config/pedagogyCatalog';
 
 export interface HeroData {
   name: string;
@@ -16,6 +17,8 @@ export interface HeroData {
   eyeColor: string;
   skinTone: string;
   peculiarities: string;
+  /** Rasgos de carácter (máx. 2) — modulan cómo reacciona el héroe en el cuento */
+  personalityTraits: string[];
 }
 
 interface StepHeroProps {
@@ -90,6 +93,16 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
 
   const updateField = (field: keyof HeroData, value: string) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const togglePersonalityTrait = (traitId: string) => {
+    const current = data.personalityTraits;
+    if (current.includes(traitId)) {
+      onChange({ ...data, personalityTraits: current.filter((id) => id !== traitId) });
+      return;
+    }
+    if (current.length >= MAX_PERSONALITY_TRAITS) return;
+    onChange({ ...data, personalityTraits: [...current, traitId] });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -381,6 +394,45 @@ export default function StepHero({ data, onChange }: StepHeroProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Personalidad — modula cómo reacciona el héroe en el cuento */}
+      <div>
+        <label className="block text-sm font-bold text-[#1E293B] mb-1">
+          ¿Cómo es tu peque? <span className="font-normal text-[#1E293B]/50">(opcional, máx. {MAX_PERSONALITY_TRAITS})</span>
+        </label>
+        <p className="text-xs text-[#1E293B]/60 mb-3">
+          El protagonista reaccionará en el cuento con su forma de ser.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {PERSONALITY_TRAITS.map((trait) => {
+            const isSelected = data.personalityTraits.includes(trait.id);
+            const isDisabled = !isSelected && data.personalityTraits.length >= MAX_PERSONALITY_TRAITS;
+
+            return (
+              <button
+                key={trait.id}
+                type="button"
+                onClick={() => togglePersonalityTrait(trait.id)}
+                aria-pressed={isSelected}
+                disabled={isDisabled}
+                className={`
+                  px-3 py-2 rounded-lg text-sm font-medium transition-all
+                  flex items-center gap-2 border-2
+                  ${isSelected
+                    ? 'bg-[#8B5CF6] text-white border-[#8B5CF6] shadow-[2px_2px_0px_#1E293B]'
+                    : isDisabled
+                      ? 'bg-white border-[#1E293B]/10 text-[#1E293B]/30 cursor-not-allowed'
+                      : 'bg-white border-[#1E293B]/20 text-[#1E293B] hover:border-[#8B5CF6]/50'
+                  }
+                `}
+              >
+                <span>{trait.icon}</span>
+                <span>{trait.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </motion.div>
   );
 }
